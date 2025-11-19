@@ -1,0 +1,377 @@
+﻿---
+title: "Introductie tot R"
+output: 
+  word_document:
+    toc: true
+    toc_depth: 3
+  pdf_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# Introductie
+
+R is een programmeertaal en omgeving die veel wordt gebruikt voor statistische analyse, datawetenschap en grafische weergave. Het is open-source en biedt een breed scala aan pakketten voor verschillende toepassingen. R is populair onder statistici, data-analisten en onderzoekers vanwege zijn flexibiliteit en kracht.
+
+Misschien denk je nu: "Programmeren? Dat klinkt eng en moeilijk!" Maak je geen zorgen - dat is heel normaal. Veel mensen voelen angst wanneer ze "programmeertaal" horen. 
+
+De realiteit is dat **R leren vergelijkbaar is met het verwerven van een nieuwe taal**. Net zoals bij het leren van een vreemde taal, moet je de fundamentele structuur begrijpen: functies (vergelijkbaar met werkwoorden), operatoren (vergelijkbaar met voorzetsels), en logische verbindingen (vergelijkbaar met voegwoorden). 
+
+Het verschil is dat R een formele syntaxis heeft die consistenter is dan natuurlijke talen. Waar Nederlandse grammatica vol uitzonderingen zit, volgt R-code logische patronen die je kunt leren en toepassen.
+
+**De pedagogische aanpak van dit cursusmateriaal** is gebaseerd op progressieve complexiteit en praktische toepassing. Het primaire doel is studenten een solide fundament te bieden in R-programmering door concepten systematisch op te bouwen, van basisfuncties naar geavanceerde data-analysemethoden. Door middel van concrete voorbeelden en hands-on oefeningen wordt de theoretische kennis direct gekoppeld aan praktische vaardigheden. 
+
+Deze cursus vereist geen voorafgaande programmeerervaring of diepgaande wiskundige achtergrond. Met consistente studie en praktijkoefening kunnen studenten zelfstandigheid ontwikkelen in statistische data-analyse en onderzoeksmethodologie.  
+
+# Voordelen van R
+
+R biedt verschillende significante voordelen voor academische en professionele data-analyse:
+
+**Open Source en Kosteloos:** R is volledig gratis beschikbaar en wordt ontwikkeld door een wereldwijde gemeenschap van statistici en programmeurs. Dit betekent dat studenten en onderzoekers toegang hebben tot geavanceerde statistische tools zonder licentiekosten.
+
+**Reproduceerbaarheid:** R-scripts maken onderzoek volledig reproduceerbaar. Anderen kunnen exact dezelfde analyses uitvoeren met dezelfde resultaten, wat essentieel is voor wetenschappelijke integriteit en peer review. Reproduceerbaarheid is een kernprincipe van open science. Door R-scripts bij te voegen als bijlage bij scripties of te delen met uitgevers, kunnen onderzoekers en reviewers precies zien welke stappen zijn ondernomen in de data-analyse. Deze transparantie versterkt de geloofwaardigheid van het onderzoek en maakt onafhendelijke verificatie mogelijk.
+
+**Uitgebreide Online Ondersteuning:** De R-gemeenschap is zeer actief, met uitgebreide documentatie, tutorials, forums (zoals Stack Overflow), en online cursussen. Problemen worden snel opgelost door de gemeenschap.
+
+**R Markdown voor Academisch Schrijven:** Met R Markdown kunnen onderzoekers hun analyses, tabellen, grafieken en tekst in één document integreren. Dit elimineert de noodzaak om handmatig tabellen en figuren te kopiëren naar Word-documenten, waardoor fouten worden vermeden en tijd wordt bespaard bij het schrijven van scripties en onderzoeksartikelen Bovendien genereert R Markdown automatisch referenties en bibliografieën, en kan output worden geëxporteerd naar verschillende formaten zoals Word (docx) of PDF, afhankelijk van de vereisten van het tijdschrift of de instelling. Een belangrijk voordeel is dat handmatige invoer van statistische waarden in tekst volledig wordt vermeden - wanneer data of analyses worden bijgewerkt, veranderen de waarden in de tekst automatisch mee, wat de consistentie en nauwkeurigheid van het document garandeert.
+
+**Uitgebreide Pakketbibliotheek:** Met meer dan 18.000 pakketten op CRAN dekt R vrijwel elk statistisch en analytisch domein, van basis statistiek tot machine learning en bioinformatica.
+
+**Krachtige Visualisatiemogelijkheden:** R's grafische mogelijkheden, vooral via ggplot2, stellen gebruikers in staat professionele, publicatie-kwaliteit visualisaties te creëren.
+
+# Installeren van R 
+R is beschikbaar voor Windows, macOS en Linux. Volg deze stappen om R te installeren:
+1. Bezoek de CRAN-website: Ga naar https://cran.r-project.org/.
+2. Kies je besturingssysteem: Klik op de link voor jouw besturingssysteem (Windows, macOS, of Linux).
+3. Download R: Volg de instructies op de pagina om de nieuwste versie van R te downloaden en te installeren.
+
+Zie Figuur 1.1 van de CRAN-website en kies de juiste versie voor jouw besturingssysteem.
+
+![R CRAN pagina](<screenshots_and_images/R_CRAN_page.png>)
+**Figuur 1.1:** R CRAN pagina
+
+# Installeren van RStudio
+RStudio is een geïntegreerde ontwikkelomgeving (IDE) voor R die het schrijven van code, het beheren van projecten en het visualiseren van resultaten vereenvoudigt. Volg deze stappen om RStudio te installeren:
+1. Bezoek de RStudio-website: Ga naar https://posit.co/download/rstudio
+2. Kies de gratis versie: Klik op de link voor RStudio Desktop Open Source License.
+3. Download RStudio: Selecteer de juiste installer voor jouw besturingssysteem (Windows, macOS, of Linux) en volg de instructies om RStudio te installeren.
+4. Optioneel: Kies "add desktop shortcut" wanneer daarom gevraagd wordt voor gemakkelijke toegang, of open RStudio later via het Start-menu onder geïnstalleerde programma's.
+
+![RStudio download pagina](<screenshots_and_images/Install_R_studio.png>)
+**Figuur 1.2:** RStudio download pagina
+
+# RStudio Interface
+
+Wanneer je RStudio voor het eerst opent, zie je een interface die is opgedeeld in vier hoofdpanelen. Deze lay-out is ontworpen om efficiënt werken met R mogelijk te maken.
+
+**Source (Broncode):** Dit is het linkerbovenvenster waar je R-scripts schrijft en bewerkt. Hier typ je je code voordat je deze uitvoert. Je kunt meerdere bestanden tegelijk openen in tabs.
+
+**Console:** Het linkerondervenster toont de R-console waar commando's direct kunnen worden uitgevoerd. Hier zie je ook de output van je code en eventuele foutmeldingen. De console toont ook informatie over de R-versie bij het opstarten.
+
+**Environment (Omgeving):** Het rechterbovenvenster toont alle variabelen, datasets, en objecten die momenteel in het geheugen zijn geladen. Dit helpt je om bij te houden welke data beschikbaar is voor analyse.
+
+**Output:** Het rechterondervenster bevat verschillende tabs:
+- **Files:** Bestandsbeheer en navigatie door mappen
+- **Plots:** Visualisaties en grafieken die je hebt gemaakt
+- **Packages:** Beheer van geïnstalleerde R-pakketten
+- **Help:** Documentatie en hulp voor R-functies
+- **Viewer:** Voor het bekijken van HTML-output en interactieve content
+
+**Figuur 1.3:** RStudio Interface Layout
+![RStudio Interface](<screenshots_and_images/R_studio_source_and_console.png>)
+
+# Mapstructuur voor Reproduceerbaarheid
+
+**Stap 1: Hoofdmap aanmaken**
+
+Voordat je begint met je onderzoek, maak eerst een hoofdmap aan op een locatie naar keuze op je computer (bijvoorbeeld op je D of E schijf). Geef deze map een duidelijke naam zoals "Thesis", "Masterscriptie", "Onderzoek2024", of de specifieke titel van je onderzoek.
+
+**Stap 2: Submappen aanmaken**
+
+Maak binnen deze hoofdmap de volgende submappen aan:
+
+- **Data:** Bevat alle oorspronkelijke datasets, bewerkte data, en databestanden die gebruikt worden in het onderzoek.
+- **Script:** Alle R-scripts die gebruikt worden voor data-analyse, data-cleaning, en statistische berekeningen.
+- **Literatures:** Gerelateerde literatuur, onderzoeksartikelen, en referentiemateriaal die relevant zijn voor het onderzoek.
+- **Drafts:** Verschillende versies van het manuscript, van eerste concepten tot definitieve versies.
+- **Output:** Gegenereerde tabellen, figuren, grafieken, en andere resultaten van de analyses.
+
+Deze structuur zorgt ervoor dat:
+- Alle projectgerelateerde bestanden op één centrale locatie staan
+- Collaborateurs en supervisors gemakkelijk toegang hebben tot alle materialen
+- Het project reproduceerbaar is voor andere onderzoekers
+- Versiecontrole en backup eenvoudig te beheren zijn
+
+# R Project Aanmaken in Thesis Map
+
+**Stap 3: R Project aanmaken**
+
+Voor een georganiseerde werkwijze is het belangrijk om een R Project aan te maken binnen je thesis map. Een R Project helpt bij het beheren van bestanden en zorgt ervoor dat alle paden relatief zijn, wat de reproduceerbaarheid ten goede komt.
+
+**Stappen om een R Project aan te maken:**
+
+1. **Project Wizard openen:** Klik op het project-icoon (kijk figuur 1.4) rechtsboven in RStudio of ga naar File > New Project.
+
+2. **Existing Directory kiezen:** Selecteer "Existing Directory" omdat je al een thesis map hebt met de gewenste mapstructuur.
+
+**Figuur 1.4:** R Project Creation Wizard
+![R Project Wizard](<screenshots_and_images/R_project.png>) 
+
+3. **Thesis map selecteren:** Browse naar je thesis map die de submappen (Data, Script, Literatures, Drafts, Output) bevat.
+
+**Figuur 1.5:** Select Project Directory
+![Select Directory](<screenshots_and_images/Select_project_folder.png>)
+
+4. **Project aanmaken:** Klik op "Create Project" om het R Project te voltooien.
+
+Na het aanmaken van het project zie je een `.Rproj` bestand in je thesis map en de mapstructuur wordt automatisch zichtbaar in het Files panel van RStudio.
+
+**Figuur 1.6:** Project Structure after Creation
+![Project Created](<screenshots_and_images/R_projected_created.png>)
+
+# R Script Aanmaken en Opslaan
+
+**Stap 4: Nieuw R Script aanmaken**
+
+Na het opzetten van je project en mapstructuur, is het tijd om je eerste R script aan te maken:
+
+1. **Nieuw script openen:** Ga naar File > New File > R Script (of gebruik Ctrl+Shift+N)
+
+**Figuur 1.7:** New R Script Creation
+![New R Script](<screenshots_and_images/open_new_script.png>)
+
+2. **Script opslaan in Script map:** Sla het script ALTIJD op in de "Script" map van je project.
+
+## Naamgevingsconventie voor Scripts
+
+**Belangrijk:** Gebruik ALTIJD de volgende naamgevingsconventie voor je scripts:
+
+**Format:** `DDMMYYYY_beschrijving.R`
+
+**Voorbeelden:**
+- `18112025_hotspot_analysis.R`
+- `25112025_descriptive_statistics.R`
+- `03122025_regression_analysis.R`
+
+**Versiecontrole:**
+Wanneer je significante wijzigingen maakt aan een bestaand script:
+
+- **Bij werken op een andere datum:** Sla op met de nieuwe datum
+  - Origineel: `18112025_hotspot_analysis.R`
+  - Nieuw bestand: `25112025_hotspot_analysis.R`
+
+- **Bij meerdere versies op dezelfde dag:** Voeg versienummer toe
+  - `25112025_hotspot_analysis_V1.R`
+  - `25112025_hotspot_analysis_V2.R`
+
+**Voordelen van deze methode:**
+- Je verliest nooit oude versies van je werk
+- Duidelijk overzicht van wanneer wijzigingen zijn gemaakt
+- Scripts staan automatisch op chronologische volgorde
+- Eenvoudig teruggaan naar eerdere versies indien nodig
+- Supervisors kunnen de evolutie van je werk volgen
+
+**Tip:** Sorteer bestanden in Windows Explorer op "Date modified" om de meest recente versies bovenaan te zien.
+
+# Eerste Stappen in R
+
+Nu je je project hebt opgezet en een R script hebt aangemaakt, kun je beginnen met het leren van de basis van R programmeren.
+
+## Commentaar in R
+
+**Belangrijk:** Alles wat je typt na een `#` (hekje) wordt beschouwd als commentaar en wordt NIET uitgevoerd door R. 
+
+**Waarom commentaar zo belangrijk is:**
+- **Voor jezelf:** Je begrijpt je eigen code beter wanneer je er later naar terugkijkt
+- **Voor anderen:** Collega's, supervisors, en reviewers kunnen je code begrijpen
+- **Voor documentatie:** Het legt uit WAT je doet en WAAROM je het doet
+
+```r
+# Dit is een commentaar - R voert deze regel niet uit
+2 + 3  # Dit is ook een commentaar na de code
+
+# Uitleg van wat de volgende code doet
+x <- 10  # Ken waarde 10 toe aan variabele x
+y <- 5   # Ken waarde 5 toe aan variabele y
+result <- x * y  # Bereken het product van x en y
+```
+
+## Code Secties Organiseren
+
+**Tip:** Gebruik `# sectienaam ----` (minimaal 3 streepjes) om secties te maken in je script. Dit maakt je code overzichtelijker:
+
+```r
+# Data Cleaning ----
+# Hier doe je alle data cleaning activiteiten
+
+# Data Analysis ----  
+# Hier voer je je statistische analyses uit
+
+# Visualization ----
+# Hier maak je grafieken en plots
+
+# Tables ----
+# Hier creëer je tabellen voor je rapport
+```
+
+Deze secties verschijnen in de code outline van RStudio en maken navigatie door lange scripts veel eenvoudiger.
+
+## Code Uitvoeren
+
+Er zijn twee manieren om code uit te voeren in RStudio:
+
+1. **Run knop:** Klik op de "Run" knop bovenaan in het script venster
+2. **Sneltoets:** Plaats je cursor op de regel en druk **Ctrl + Enter**
+
+**Figuur 1.8:** Run Button in RStudio
+![Run Button](<screenshots_and_images/run_option.png>)
+
+## Basis Rekenen in R
+
+Laten we beginnen met enkele eenvoudige berekeningen. Typ de volgende code in je script of direct in de console:
+
+```r
+# Eenvoudige berekening
+2 + 3
+
+# Andere rekenen operaties
+10 - 4
+6 * 7
+20 / 4
+2^3  # 2 tot de macht 3
+```
+
+**Probeer dit uit:** Typ `2 + 3` in de console en druk op **Enter**, of typ het in je script en druk **Ctrl + Enter**. Je ziet de output `[1] 5` in de console.
+
+## Variabelen Toewijzen
+
+In R gebruiken we `<-` (pijltje naar links) om waarden toe te wijzen aan variabelen:
+
+```r
+# Variabelen aanmaken
+x <- 5
+y <- 7
+
+# Variabelen gebruiken in berekeningen
+x + y      # Optelling: 5 + 7 = 12
+x * y      # Vermenigvuldiging: 5 * 7 = 35
+x - y      # Aftrekking: 5 - 7 = -2
+y / x      # Deling: 7 / 5 = 1.4
+x^2        # x tot de macht 2: 5^2 = 25
+y^3        # y tot de macht 3: 7^3 = 343
+```
+
+**Let op:** Variabelnamen zijn hoofdlettergevoelig. `x` en `X` zijn verschillende variabelen!
+
+**Oefening:** 
+1. Maak een nieuw R script aan
+2. Voeg commentaar toe met je naam en datum
+3. Probeer de bovenstaande voorbeelden uit
+4. Experimenteer met verschillende getallen en bewerkingen
+
+**Voordelen van R Projects:**
+- Automatisch instellen van de werkmap (working directory)
+- Relatieve bestandspaden werken consistent
+- Eenvoudig delen van projecten met anderen
+- Geïntegreerde versiecontrole mogelijkheden
+- Gescheiden omgevingen voor verschillende projecten
+
+# Praktisch Voorbeeld Script
+
+
+```{r}
+# Dit is een eenvoudig R script voorbeeld
+# type 2 + 3 
+
+`
+
+Het complete voorbeeldscript demonstreert een goed georganiseerde R workflow met vier hoofdsecties: Data Cleaning, Data Analysis, Visualization, en Tables.
+
+# R Keyboard Shortcuts
+
+RStudio heeft vele handige sneltoetsen die je productiviteit significant kunnen verhogen. Het leren van deze shortcuts is een investering die zich snel terugbetaalt.
+
+## Toegang tot Keyboard Shortcuts
+
+Er zijn twee manieren om de complete lijst van keyboard shortcuts te bekijken:
+
+1. **Via menu:** Ga naar **Tools** > **Keyboard Shortcuts Help** 
+2. **Via sneltoets:** Druk op **Alt + Shift + K**
+
+**Figuur 2.1:** Toegang via Tools Menu
+![Tools Menu](<screenshots_and_images/Folder_structure.png>)
+
+**Figuur 2.2:** Complete Keyboard Shortcuts Reference
+![Keyboard Shortcuts](<screenshots_and_images/keyboard_shortcuts.png>)
+
+## Belangrijkste Shortcuts voor Beginners
+
+### Code Uitvoering
+- **Ctrl + Enter:** Voer huidige regel/selectie uit
+- **Ctrl + Shift + Enter:** Voer hele script uit
+- **Ctrl + Alt + R:** Voer script uit vanaf begin tot cursor
+
+### Navigatie en Document Overzicht
+- **Ctrl + Shift + O:** Toon Document Outline (Table of Contents)
+- **Ctrl + G:** Ga naar specifieke regel  
+- **Ctrl + F:** Zoek in document
+- **Ctrl + H:** Zoek en vervang
+
+### Code Bewerking
+- **Ctrl + Shift + C:** Commentaar aan/uit voor geselecteerde regels
+- **Ctrl + I:** Auto-indent geselecteerde regels
+- **Ctrl + Shift + A:** Automatisch code formatteren
+- **Ctrl + Z:** Ongedaan maken
+- **Ctrl + Y:** Opnieuw uitvoeren
+
+### Secties en Organisatie
+- **Ctrl + Shift + R:** Nieuwe sectie invoegen
+- **Alt + L:** Code sectie inklappen/uitklappen
+- **Alt + Shift + L:** Alle secties inklappen
+- **Alt + Shift + O:** Alle secties uitklappen
+
+### Bestanden en Projecten
+- **Ctrl + N:** Nieuw bestand
+- **Ctrl + O:** Bestand openen
+- **Ctrl + S:** Bestand opslaan
+- **Ctrl + Shift + N:** Nieuw R Script
+
+### Workspace
+- **Ctrl + L:** Console wissen
+- **Ctrl + 1:** Focus naar Source editor
+- **Ctrl + 2:** Focus naar Console
+
+## Praktische Tips
+
+**Document Outline gebruiken:**
+- Druk **Ctrl + Shift + O** om een overzicht te krijgen van alle secties in je script
+- Dit toont alle headers die je hebt gemaakt met # Sectienaam ----
+- Klik op een sectie om er direct naartoe te springen
+
+**Effici�nt commenteren:**
+- Selecteer meerdere regels en druk **Ctrl + Shift + C** om ze allemaal tegelijk te (de)commentari�ren
+- Handig voor het tijdelijk uitschakelen van code blokken
+
+**Code opruimen:**
+- Selecteer je code en druk **Ctrl + Shift + A** voor automatische opmaak
+- Dit zorgt voor consistente indentatie en spacing
+
+**Sectie navigatie:**
+- Gebruik **Alt + L** om secties in en uit te klappen
+- Dit helpt bij het overzichtelijk houden van lange scripts
+
+## Waarom Shortcuts Belangrijk Zijn
+
+Het leren van keyboard shortcuts heeft verschillende voordelen:
+
+- **Snelheid:** Significant sneller werken dan met de muis
+- **Workflow:** Minder onderbreking van je denkproces  
+- **Professionaliteit:** Laat zien dat je ervaren bent met de tool
+- **Productiviteit:** Meer tijd voor analyse, minder tijd voor navigatie
+- **Focus:** Blijf gefocust op je code zonder naar menu's te zoeken
+
+**Tip:** Begin met het leren van 3-5 shortcuts die je het meest gebruikt, en voeg geleidelijk meer toe naarmate je comfortabeler wordt.

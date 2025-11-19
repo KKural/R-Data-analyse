@@ -1,0 +1,9 @@
+# link for CRAN repository
+[CRAN R Project](https://cran.r-project.org/)
+
+# link for R studio download
+[R Studio Download](https://posit.co/download/rstudio-desktop/)
+
+
+# link for R and R studio installation
+[Installing R and RStudio](https://www.youtube.com/watch?v=by5HyJX6H1I)

@@ -1,0 +1,469 @@
+---
+title: "Jean-Claude Van Damme"
+author: "Kuralarasan Kumar"
+date: "`r Sys.Date()`"
+output: 
+  powerpoint_presentation:
+    slide_level: 1
+    reference_doc: model.pptx
+  ioslides_presentation: default
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+---
+
+# Introductie
+
+**Jean-Claude Van Damme**
+
+* Belgische acteur & vechtsporter
+* Geboren: 18 oktober 1960, Brussel
+* "The Muscles from Brussels"
+* Lokale school in Brussel, geen universiteit
+* Karate & Ballet training
+
+::: notes
+1) Jean-Claude Van Damme is een Belgische acteur en vechtsporter. Vechtsporter betekent een sport waar mensen vechten om te winnen, zoals karate of judo.
+2) Zijn echte naam is Jean-Claude Camille François Van Varenberg.
+3) Hij is geboren op 18 oktober 1960 in Brussel, België.
+4) Hij heet "The Muscles from Brussels" omdat hij gespierd is en uit Brussel komt.
+7) Hij volgde een lokale school in Brussel, maar ging niet naar de universiteit.
+:::
+
+---
+
+# Familie en Jeugd
+
+**Achtergrond:**
+
+* Vader: Eugène Van Varenberg (bloemenwinkel)
+* Moeder: Elaine Moës (zorgde voor gezin)
+* Een Zus: Véronique Van Varenberg 
+
+**Huwelijken & Kinderen:**
+
+* 5 keer getrouwd
+* 3 kinderen: Kristopher, Bianca, Nicholas
+
+::: notes
+1) Zijn vader, Eugène Van Varenberg, had een bloemenwinkel in Brussel.
+2) Zijn moeder, Elaine Moës, zorgde voor het gezin.
+3) De familie woonde in Brussel, België.
+4) Jean-Claude had één zus: Véronique Van Varenberg.
+5) In zijn leven was Jean-Claude vijf keer getrouwd. 
+6) Sommige huwelijken waren kort, andere langer.
+7) Hij heeft drie kinderen: Kristopher Van Varenberg, Bianca Bree en Nicholas Van Varenberg.
+8) Zijn kinderen zijn nu volwassen.
+9) Kristopher en Bianca werken ook in films.
+10) Familie is nu heel belangrijk voor hem.
+:::
+
+---
+
+# Training en Discipline
+
+**Karate:**
+
+* Trainde vanaf kind
+* Werd kampioen van België
+
+**Ballet:**
+
+* Voor flexibiliteit
+* "zwaarste training ter wereld"
+
+::: notes
+1) Vanaf kind trainde Jean-Claude bijna elke dag karate.
+2) Hij werd kampioen van België in karate (1979).
+3) Hij deed ook ballet.
+4) Ballet maakte zijn lichaam flexibel. 
+5) Dit hielp hem later.
+6) Hij zei: "Ballet is de zwaarste training ter wereld."
+7) Hij deed mooie stunts in films.
+:::
+
+---
+
+# Filmcarrière Begint
+
+**De grote stap:**
+
+* 24 jaar oud
+* Naar Hollywood, Verenigde Staten
+* Droomde van filmacteur
+
+**Moeilijkheden:**
+
+* Geen geld
+* Geen contacten
+* Geen faam
+* Werkte in restaurants & sportscholen (in USA)
+
+**Maar:**
+
+* Gaf niet op
+* Bleef trainen
+* Bleef audities doen
+
+::: notes
+1) Op 24 jaar ging hij naar Amerika.
+2) Hij ging naar Hollywood.
+3) Hij wilde filmacteur worden.
+4) Maar het was heel moeilijk.
+5) Hij had geen geld en kende niemand.
+7) Hij werkte in restaurants en sportscholen.
+8) Hij voelde zich eenzaam betekent dat hij zich alleen voelde.
+9) Dit verhaal lijkt op ons. Wij verlaten ook ons land en komen naar België.
+10) Wij hebben ook dromen en willen iets bereiken.
+11) Jean-Claude verliet zijn comfort zone. Wij doen dat ook.
+12) Wanneer er geen geld is en het leven moeilijk is, zouden veel mensen stoppen.
+13) Maar Jean-Claude stopte niet.
+14) Hij bleef geduldig en probeerde steeds opnieuw.
+15) Hij had succes door niet op te geven.
+:::
+
+---
+
+# Doorbraak
+
+**1988: Bloodsport**
+
+* EERSTE grote film
+* ENORM succes
+* Hij werd beroemd
+
+**Grote films daarna:**
+
+* Kickboxer (1989)
+* Universal Soldier (1992)
+* Timecop (1994)
+* Double Impact (1991)
+
+**Zijn stijl:**
+
+* Snelle bewegingen
+* Spagaten in gevechten
+* Sport + show
+* Veel zelf stunts
+
+::: notes
+1) In 1988 kwam de film Bloodsport uit.
+2) Dit was zijn doorbraakfilm.
+3) De film was een enorm succes wereldwijd.
+4) Eindelijk! Twaalf jaar nadat hij naar Hollywood ging!
+5) De film toonde zijn karate-skills op een spannende manier.
+6) Het publiek hield van hem en zijn stijl.
+7) Na Bloodsport kwamen meer grote films.
+9) Kickboxer was nog beter dan Bloodsport.
+10) Universal Soldier, Double Impact en Timecop was ook een groot succes.
+13) Zijn stijl was uniek en anders dan anderen.
+14) Hij combineerde echte martial arts met film show.
+17) Hij deed veel stunts zelf, niet met stand-ins.
+18) Dit was gevaarlijk maar maakte de films authentiek en spectaculair.
+:::
+
+---
+
+# Hoogtepunten & Awards
+
+**Succes:**
+
+* Wereldberoemd
+* Fans overal
+* Jaren '80-'90 filmlegende
+
+**Prijzen:**
+
+* Filmprijzen
+* MTV Awards
+* Erkenning in Hollywood
+
+**Impact:**
+
+* Veranderde actiefilms
+* Inspireerde anderen
+* Wordt ontvangen als icoon
+
+::: notes
+1) Na Bloodsport werd Jean-Claude wereldberoemd.
+2) Hij had fans in bijna elk land van de wereld.
+3) Kinderen kenden zijn naam en wilden hem zien.
+4) Volwassenen gingen naar zijn films in de bioscoop.
+5) Hij was een van de grootste filmsterren van de jaren '80 en '90.
+6) Hij won verschillende filmprijzen en awards.
+7) MTV kende hem en bracht zijn films.
+8) Hollywood erkende zijn talent en potentiaal.
+9) Zijn impact op de filmindustrie was groot.
+10) Hij veranderde hoe actiefilms werden gemaakt.
+11) Vóór Van Damme waren actiefilms vaak ruw en simpel.
+12) Van Damme bracht elegantie in actiefilms.
+13) Hij bracht flexibiliteit en gratie.
+14) Hij bracht echte martial arts training.
+15) Hij inspireerde veel andere acteurs om hetzelfde te doen.
+16) Tot vandaag wordt hij gezien als een icoon van actiefilms.
+17) Hij is een icoon van die gouden periode in de jaren '80 en '90.
+:::
+
+---
+
+# Problemen
+
+**Na groot succes:**
+
+* Stress & spanning
+* Familieproblemen
+* Scheiding
+* Alcohol
+
+**Mentale gezondheid:**
+
+* Depressie
+* Vermoeidheid
+* Drugs & alcohol
+* Zware periode
+
+**Carrière impact:**
+
+* Films werden slechter
+* Publiek verliest interesse
+* Zelfvertrouwen weg
+
+::: notes
+1) Na al zijn succes en faam kreeg Jean-Claude veel problemen.
+2) Het geluid van succes is niet altijd gezond.
+3) Hij had veel stress van zijn filmwerk.
+4) Zijn relaties braken op en hij was drie keer getrouwd.
+5) Hij had problemen met alcohol en drugs.
+6) Dit begon langzaam maar werd steeds erger.
+7) Hij had depressie en voelde zich verloren.
+8) De "Muscles from Brussels" streed hard met zijn problemen.
+9) Niemand in het publiek wist hoe slecht het werkelijk met hem ging.
+10) Zijn films van deze periode waren niet goed.
+11) Het publiek begon interesse te verliezen.
+12) Zijn zelfvertrouwen verdween.
+13) Dit gebeurde in de jaren '90.
+14) Internet was nog niet groot op dat moment.
+15) Weinig iemand wist hoe slecht het werkelijk met hem ging.
+:::
+
+---
+
+# Comeback & Herstel
+
+**Wat hij deed:**
+
+* Zei: "Iedereen kan vallen"
+* Vroeg hulp
+* Ging naar therapie
+* Stopte met alcohol en drugs
+
+**Resultaat:**
+
+* Gezonder leven
+* Nieuwe goede films
+* JCVD (2008)
+* The Expendables 2 (2012)
+* Fans steunden hem
+* Tweede kans
+
+::: notes
+1) Dit is het mooiste deel.
+2) Jean-Claude vroeg hulp.
+3) Hij ging naar therapie.
+4) Hij stopte met alcohol en drugs.
+5) Dit was moeilijk.
+6) Langzaam werd zijn leven beter.
+7) Hij maakte een nieuwe film: JCVD (2008).
+8) Deze film was heel goed.
+9) Later maakte hij meer films: The Expendables 2 (2012) en Kickboxer: Retaliation (2018).
+10) Zijn fans bleven hem steunen.
+11) Hij kreeg een tweede kans.
+12) Hij werd sterker dan voor.
+:::
+
+---
+
+# Leven Vandaag
+
+**Waar:**
+
+* Los Angeles
+* Regelmatig Brussel
+* Dicht bij wortels
+
+**Gezondheid:**
+
+* Sport elke dag
+* Oud maar fit
+* Gezond eten
+* Geen alcohol
+
+**Interesses:**
+
+* Dierenbescherming
+* Milieu
+* Natuur
+* Familie
+* Spiritualiteit
+
+::: notes
+1) Jean-Claude woont nu vooral in Los Angeles.
+2) Maar hij komt regelmatig naar België terug.
+3) Hij gaat naar Brussel waar hij werd geboren.
+4) Dit is heel belangrijk voor hem.
+5) Hij vergeet niet waar hij vandaan komt.
+6) Ondanks zijn leeftijd - hij is nu meer dan 60 jaar oud.
+7) Sport hij nog elke dag.
+8) Dit is nog steeds een belangrijk onderdeel van zijn leven.
+9) De discipline van karate blijft in hem.
+10) Hij eet gezond en drinkt geen alcohol meer.
+11) In zijn leven nu richt hij zich op andere belangrijke zaken.
+12) Hij doet veel werk voor dierenbescherming.
+13) Hij houdt van dieren en ondersteunt dierenrechten.
+14) Hij ondersteunt milieuprojecten.
+15) Hij houdt van de natuur en de omgeving.
+16) Familie is heel belangrijk voor hem geworden.
+17) Hij zoekt spirituele betekenis in zijn leven.
+18) Dit hielp hem door zijn moeilijke periode heen.
+19) Hij is niet meer de jonge "Muscles from Brussels".
+20) Hij is nu een volwassen man die geleerd heeft wat echt belangrijk is.
+:::
+
+---
+
+# Lessen & Inspiratie
+
+**Van normale jongen tot wereldster**
+
+1. **Discipline werkt**
+   * Elke dag trainen
+   * Geen shortcuts
+
+2. **Doorzetten**
+   * Niet opgeven
+   * Na teleurstelling terugkomen
+
+3. **Problemen overwinnen**
+   * Niemand perfect
+   * Hulp is sterkte
+   * Herstel mogelijk
+
+4. **Bescheiden blijven**
+   * Succes voorbijgaand
+   * Familie #1
+   * Mens > faam
+
+::: notes
+1) Dit is waarom Jean-Claude's verhaal zo inspirerend is voor ons.
+2) Hij was een normale jongen uit Brussel.
+3) Hij verliet België en ging naar Amerika voor een betere toekomst.
+4) Net als wij die naar België kwamen voor een betere toekomst.
+5) Hij had een droom en verliet zijn comfort zone.
+6) Wij doen hetzelfde - wij verlaten ons land voor dromen en kansen.
+7) Hij was klein, verlegen, en werd geplagd op school.
+8) Maar met discipline en geduld werd hij een wereldster.
+5) Dit kan anderen motiveren dat zij hetzelfde kunnen bereiken.
+6) Als hij het kon, dan kunnen zij het ook.
+7) We hebben vier lessen uit zijn verhaal.
+8) Eerste les: Discipline werkt echt.
+9) Het is niet geluk en niet faam.
+10) Het is dagelijks hard werken.
+11) Tweede les: Doorzetten is essentieel.
+12) Je mag niet opgeven.
+13) Ook niet na teleurstelling en mislukking.
+14) Derde les: Problemen overwinnen is mogelijk.
+15) Problemen zijn normaal voor iedereen.
+16) Over je problemen spreken is sterk.
+17) Hulp zoeken is sterk, niet zwak.
+18) Herstel is altijd mogelijk.
+19) Vierde les: Bescheid blijven in succes.
+20) Familie en gezondheid zijn belangrijker dan faam.
+21) Een mens is belangrijker dan beroemdheid.
+22) Dit zijn lessen voor iedereen.
+23) Niet alleen voor acteurs.
+24) Dit zijn universele lessen.
+:::
+
+---
+
+# Zijn Boodschap
+
+*"Iedereen kan vallen, maar je moet weer opstaan."*
+
+*"Blijf oefenen, geloof in jezelf en geef niet op."*
+
+::: notes
+1) Dit zijn zijn twee beroemde en krachtige zinnen.
+2) Deze zinnen vatten eigenlijk alles in zijn verhaal samen.
+3) De eerste quote erkent dat iedereen problemen heeft in het leven.
+4) Je hoeft niet perfect te zijn.
+5) Je mag vallen en problemen hebben.
+6) De tweede zin geeft hoop aan mensen.
+7) Je kunt terugkomen van je problemen.
+8) Je kunt sterker terugkeren.
+9) En de derde zin: blijf oefenen.
+10) Geloof in jezelf.
+11) Geef niet op.
+12) Dit zijn sterke boodschappen van iemand.
+13) Iemand die het werkelijk heeft meegemaakt.
+14) Dit zijn niet loze woorden.
+15) Dit is uit zijn echte ervaring.
+16) Dit is wat hij zelf heeft gevoeld.
+:::
+
+---
+
+# Samenvatting
+
+**Jean-Claude Van Damme...**
+
+✓ Belgische acteur & vechtsporter
+✓ Begon klein → wereldberoemd
+✓ Had moeilijke periodes
+✓ Bleef sterker terugkomen
+✓ Leeft nu gezond & gelukkig
+✓ Inspireert anderen
+
+::: notes
+1) Dit vat eigenlijk alles samen uit zijn hele verhaal.
+2) Van klein verlegen jongetje uit Brussel.
+3) Tot filmster in Hollywood.
+4) Van groot succes.
+5) Tot ernstige problemen.
+6) Van problemen.
+7) Tot een prachtige comeback.
+8) En nu: een volwassen man.
+9) Die anderen inspireert met zijn verhaal.
+10) Zijn reis is niet voorbij.
+11) Hij leert nog steeds.
+12) Hij groeit nog steeds.
+13) Dit is waarom zijn verhaal zo belangrijk is.
+14) Het is echt en authentiek.
+15) Het is menselijk.
+16) Het toont dat niemand alleen is met problemen.
+17) Het toont dat hoop altijd mogelijk is.
+18) Voor iedereen.
+:::  
+
+---
+
+# Dankjewel!
+
+**Vragen?**
+
+::: notes
+1) Dit was het einde van de presentatie.
+2) Bedank het publiek voor hun aandacht.
+3) Open jezelf voor vragen van het publiek.
+4) Je kunt meer details geven als iemand vragen heeft.
+5) Dit is een goed moment om interactie te hebben met het publiek.
+6) Luister naar hun vragen en antwoord eerlijk.
+:::
+
+---

@@ -1,0 +1,836 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Introductie tot R},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Introductie tot R}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\section{Introductie}\label{introductie}
+
+R is een programmeertaal en omgeving die veel wordt gebruikt voor
+statistische analyse, datawetenschap en grafische weergave. Het is
+open-source en biedt een breed scala aan pakketten voor verschillende
+toepassingen. R is populair onder statistici, data-analisten en
+onderzoekers vanwege zijn flexibiliteit en kracht.
+
+Misschien denk je nu: ``Programmeren? Dat klinkt eng en moeilijk!'' Maak
+je geen zorgen - dat is heel normaal. Veel mensen voelen angst wanneer
+ze ``programmeertaal'' horen.
+
+De realiteit is dat \textbf{R leren vergelijkbaar is met het verwerven
+van een nieuwe taal}. Net zoals bij het leren van een vreemde taal, moet
+je de fundamentele structuur begrijpen: functies (vergelijkbaar met
+werkwoorden), operatoren (vergelijkbaar met voorzetsels), en logische
+verbindingen (vergelijkbaar met voegwoorden).
+
+Het verschil is dat R een formele syntaxis heeft die consistenter is dan
+natuurlijke talen. Waar Nederlandse grammatica vol uitzonderingen zit,
+volgt R-code logische patronen die je kunt leren en toepassen.
+
+\textbf{De pedagogische aanpak van dit cursusmateriaal} is gebaseerd op
+progressieve complexiteit en praktische toepassing. Het primaire doel is
+studenten een solide fundament te bieden in R-programmering door
+concepten systematisch op te bouwen, van basisfuncties naar geavanceerde
+data-analysemethoden. Door middel van concrete voorbeelden en hands-on
+oefeningen wordt de theoretische kennis direct gekoppeld aan praktische
+vaardigheden.
+
+Deze cursus vereist geen voorafgaande programmeerervaring of diepgaande
+wiskundige achtergrond. Met consistente studie en praktijkoefening
+kunnen studenten zelfstandigheid ontwikkelen in statistische
+data-analyse en onderzoeksmethodologie.
+
+\section{Voordelen van R}\label{voordelen-van-r}
+
+R biedt verschillende significante voordelen voor academische en
+professionele data-analyse:
+
+\textbf{Open Source en Kosteloos:} R is volledig gratis beschikbaar en
+wordt ontwikkeld door een wereldwijde gemeenschap van statistici en
+programmeurs. Dit betekent dat studenten en onderzoekers toegang hebben
+tot geavanceerde statistische tools zonder licentiekosten.
+
+\textbf{Reproduceerbaarheid:} R-scripts maken onderzoek volledig
+reproduceerbaar. Anderen kunnen exact dezelfde analyses uitvoeren met
+dezelfde resultaten, wat essentieel is voor wetenschappelijke
+integriteit en peer review. Reproduceerbaarheid is een kernprincipe van
+open science. Door R-scripts bij te voegen als bijlage bij scripties of
+te delen met uitgevers, kunnen onderzoekers en reviewers precies zien
+welke stappen zijn ondernomen in de data-analyse. Deze transparantie
+versterkt de geloofwaardigheid van het onderzoek en maakt onafhendelijke
+verificatie mogelijk.
+
+\textbf{Uitgebreide Online Ondersteuning:} De R-gemeenschap is zeer
+actief, met uitgebreide documentatie, tutorials, forums (zoals Stack
+Overflow), en online cursussen. Problemen worden snel opgelost door de
+gemeenschap.
+
+\textbf{R Markdown voor Academisch Schrijven:} Met R Markdown kunnen
+onderzoekers hun analyses, tabellen, grafieken en tekst in één document
+integreren. Dit elimineert de noodzaak om handmatig tabellen en figuren
+te kopiëren naar Word-documenten, waardoor fouten worden vermeden en
+tijd wordt bespaard bij het schrijven van scripties en
+onderzoeksartikelen Bovendien genereert R Markdown automatisch
+referenties en bibliografieën, en kan output worden geëxporteerd naar
+verschillende formaten zoals Word (docx) of PDF, afhankelijk van de
+vereisten van het tijdschrift of de instelling. Een belangrijk voordeel
+is dat handmatige invoer van statistische waarden in tekst volledig
+wordt vermeden - wanneer data of analyses worden bijgewerkt, veranderen
+de waarden in de tekst automatisch mee, wat de consistentie en
+nauwkeurigheid van het document garandeert.
+
+\textbf{Uitgebreide Pakketbibliotheek:} Met meer dan 18.000 pakketten op
+CRAN dekt R vrijwel elk statistisch en analytisch domein, van basis
+statistiek tot machine learning en bioinformatica.
+
+\textbf{Krachtige Visualisatiemogelijkheden:} R's grafische
+mogelijkheden, vooral via ggplot2, stellen gebruikers in staat
+professionele, publicatie-kwaliteit visualisaties te creëren.
+
+\section{Installeren van R}\label{installeren-van-r}
+
+R is beschikbaar voor Windows, macOS en Linux. Volg deze stappen om R te
+installeren: 1. Bezoek de CRAN-website: Ga naar
+\url{https://cran.r-project.org/}. 2. Kies je besturingssysteem: Klik op
+de link voor jouw besturingssysteem (Windows, macOS, of Linux). 3.
+Download R: Volg de instructies op de pagina om de nieuwste versie van R
+te downloaden en te installeren.
+
+Zie Figuur 1.1 van de CRAN-website en kies de juiste versie voor jouw
+besturingssysteem.
+
+\pandocbounded{\includegraphics[keepaspectratio,alt={R CRAN pagina}]{screenshots and images/R CRAN page.png}}
+\textbf{Figuur 1.1:} R CRAN pagina
+
+\section{Installeren van RStudio}\label{installeren-van-rstudio}
+
+RStudio is een geïntegreerde ontwikkelomgeving (IDE) voor R die het
+schrijven van code, het beheren van projecten en het visualiseren van
+resultaten vereenvoudigt. Volg deze stappen om RStudio te installeren:
+1. Bezoek de RStudio-website: Ga naar
+\url{https://posit.co/download/rstudio} 2. Kies de gratis versie: Klik
+op de link voor RStudio Desktop Open Source License. 3. Download
+RStudio: Selecteer de juiste installer voor jouw besturingssysteem
+(Windows, macOS, of Linux) en volg de instructies om RStudio te
+installeren. 4. Optioneel: Kies ``add desktop shortcut'' wanneer daarom
+gevraagd wordt voor gemakkelijke toegang, of open RStudio later via het
+Start-menu onder geïnstalleerde programma's.
+
+\pandocbounded{\includegraphics[keepaspectratio,alt={RStudio download pagina}]{screenshots and images/Install R studio.png}}
+\textbf{Figuur 1.2:} RStudio download pagina
+
+\section{RStudio Interface}\label{rstudio-interface}
+
+Wanneer je RStudio voor het eerst opent, zie je een interface die is
+opgedeeld in vier hoofdpanelen. Deze lay-out is ontworpen om efficiënt
+werken met R mogelijk te maken.
+
+\textbf{Source (Broncode):} Dit is het linkerbovenvenster waar je
+R-scripts schrijft en bewerkt. Hier typ je je code voordat je deze
+uitvoert. Je kunt meerdere bestanden tegelijk openen in tabs.
+
+\textbf{Console:} Het linkerondervenster toont de R-console waar
+commando's direct kunnen worden uitgevoerd. Hier zie je ook de output
+van je code en eventuele foutmeldingen. De console toont ook informatie
+over de R-versie bij het opstarten.
+
+\textbf{Environment (Omgeving):} Het rechterbovenvenster toont alle
+variabelen, datasets, en objecten die momenteel in het geheugen zijn
+geladen. Dit helpt je om bij te houden welke data beschikbaar is voor
+analyse.
+
+\textbf{Output:} Het rechterondervenster bevat verschillende tabs: -
+\textbf{Files:} Bestandsbeheer en navigatie door mappen -
+\textbf{Plots:} Visualisaties en grafieken die je hebt gemaakt -
+\textbf{Packages:} Beheer van geïnstalleerde R-pakketten -
+\textbf{Help:} Documentatie en hulp voor R-functies - \textbf{Viewer:}
+Voor het bekijken van HTML-output en interactieve content
+
+\textbf{Figuur 1.3:} RStudio Interface Layout
+\pandocbounded{\includegraphics[keepaspectratio,alt={RStudio Interface}]{screenshots and images/R studio source and console.png}}
+
+\section{Mapstructuur voor
+Reproduceerbaarheid}\label{mapstructuur-voor-reproduceerbaarheid}
+
+Een georganiseerde mapstructuur is essentieel voor reproduceerbaar
+onderzoek. Het zorgt ervoor dat alle projectbestanden logisch geordend
+zijn en gemakkelijk te vinden.
+
+\subsection{Stap 1: Hoofdmap aanmaken}\label{stap-1-hoofdmap-aanmaken}
+
+Voordat je begint met je onderzoek, maak eerst een hoofdmap aan op een
+locatie naar keuze op je computer (bijvoorbeeld op je D of E schijf).
+Geef deze map een duidelijke naam zoals ``Thesis'', ``Masterscriptie'',
+``Onderzoek2024'', of de specifieke titel van je onderzoek.
+
+\subsection{Stap 2: Submappen aanmaken}\label{stap-2-submappen-aanmaken}
+
+Maak binnen deze hoofdmap de volgende submappen aan via Windows
+Verkenner:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Navigeer naar je hoofdmap
+\item
+  Rechtermuisknop \textgreater{} Nieuwe map
+\item
+  Maak de volgende mappen aan:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Data:} Bevat alle oorspronkelijke datasets, bewerkte data, en
+  databestanden die gebruikt worden in het onderzoek.
+\item
+  \textbf{Script:} Alle R-scripts die gebruikt worden voor data-analyse,
+  data-cleaning, en statistische berekeningen.
+\item
+  \textbf{Literatures:} Gerelateerde literatuur, onderzoeksartikelen, en
+  referentiemateriaal die relevant zijn voor het onderzoek.
+\item
+  \textbf{Drafts:} Verschillende versies van het manuscript, van eerste
+  concepten tot definitieve versies.
+\item
+  \textbf{Output:} Gegenereerde tabellen, figuren, grafieken, en andere
+  resultaten van de analyses.
+\end{itemize}
+
+\textbf{Georganiseerde Mapstructuur - Voorbeeld:}
+
+\begin{verbatim}
+Thesis/
+├── Data/
+├── Script/
+├── Literatures/
+├── Drafts/
+└── Output/
+\end{verbatim}
+
+\subsection{Stap 3: Werkmap (Working Directory)
+Instellen}\label{stap-3-werkmap-working-directory-instellen}
+
+\textbf{Wat is een Working Directory?} De working directory is de map
+waar R standaard naar zoekt om bestanden te lezen en op te slaan. Het is
+belangrijk om deze correct in te stellen.
+
+\textbf{Traditionele Methode - setwd():} Zonder R Projects moet je
+handmatig de werkmap instellen met de \texttt{setwd()} functie:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Handmatig werkmap instellen}
+\FunctionTok{setwd}\NormalTok{(}\StringTok{"D:/Thesis"}\NormalTok{)}
+
+\CommentTok{\# Controleer huidige werkmap}
+\FunctionTok{getwd}\NormalTok{()}
+
+\CommentTok{\# Nu kun je bestanden laden met volledige paden}
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"D:/Thesis/Data/my\_data.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Nadelen van setwd():} - Paden werken niet op andere computers
+(jouw pad bestaat niet bij anderen) - Scripts zijn niet reproduceerbaar
+zonder aanpassingen - Moeilijk om met meerdere projecten tegelijk te
+werken - Moet bij elke R sessie opnieuw ingesteld worden
+
+\textbf{Oplossing: R Projects (behandeld in volgende sectie)} R Projects
+lossen al deze problemen automatisch op! Door een R Project aan te
+maken, wordt de werkmap automatisch ingesteld op de projectmap, waardoor
+je relatieve paden kunt gebruiken die overal werken.
+
+Deze georganiseerde structuur zorgt ervoor dat: - Alle
+projectgerelateerde bestanden op één centrale locatie staan -
+Collaborateurs en supervisors gemakkelijk toegang hebben tot alle
+materialen - Het project reproduceerbaar is voor andere onderzoekers -
+Versiecontrole en backup eenvoudig te beheren zijn
+
+\section{R Project Aanmaken in Thesis
+Map}\label{r-project-aanmaken-in-thesis-map}
+
+Nu je een georganiseerde mapstructuur hebt aangemaakt, is het tijd om
+een R Project aan te maken. Een R Project lost alle problemen op die we
+zagen met \texttt{setwd()} en maakt je werk veel professioneler en
+reproduceerbaar.
+
+\textbf{Waarom R Projects?} R Projects bieden de \textbf{optimale
+oplossing} voor werkmap-beheer:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Automatische werkmap:} RStudio stelt automatisch de werkmap in
+  naar de locatie van het \texttt{.Rproj} bestand
+\item
+  \textbf{Geen setwd() nodig:} De werkmap wordt automatisch correct
+  ingesteld bij het openen van het project
+\item
+  \textbf{Relatieve paden:} Je kunt bestanden laden met
+  \texttt{"Data/my\_data.csv"} in plaats van
+  \texttt{"D:/Thesis/Data/my\_data.csv"}
+\item
+  \textbf{Portabiliteit:} Het project werkt op elke computer zonder
+  pad-aanpassingen
+\item
+  \textbf{Collaboratie:} Anderen kunnen het project openen zonder
+  pad-problemen
+\item
+  \textbf{Gescheiden omgevingen:} Elk project heeft zijn eigen workspace
+  en history
+\end{itemize}
+
+\textbf{Stappen om een R Project aan te maken:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Project Wizard openen:} Klik op het project-icoon rechtsboven
+  in RStudio of ga naar File \textgreater{} New Project.
+\item
+  \textbf{Existing Directory kiezen:} Selecteer ``Existing Directory''
+  omdat je al een thesis map hebt met de gewenste mapstructuur.
+\end{enumerate}
+
+\textbf{Figuur 1.4:} R Project Creation Wizard
+\pandocbounded{\includegraphics[keepaspectratio,alt={R Project Wizard}]{screenshots and images/R project.png}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{Thesis map selecteren:} Browse naar je thesis map die de
+  submappen (Data, Script, Literatures, Drafts, Output) bevat.
+\end{enumerate}
+
+\textbf{Figuur 1.5:} Select Project Directory
+\pandocbounded{\includegraphics[keepaspectratio,alt={Select Directory}]{screenshots and images/Select_project folder.png}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  \textbf{Project aanmaken:} Klik op ``Create Project'' om het R Project
+  te voltooien.
+\end{enumerate}
+
+Na het aanmaken van het project zie je een \texttt{.Rproj} bestand in je
+thesis map en de mapstructuur wordt automatisch zichtbaar in het Files
+panel van RStudio.
+
+\textbf{Figuur 1.6:} Project Structure after Creation
+\pandocbounded{\includegraphics[keepaspectratio,alt={Project Created}]{screenshots and images/R projected created.png}}
+
+\section{R Script Aanmaken en
+Opslaan}\label{r-script-aanmaken-en-opslaan}
+
+\textbf{Stap 4: Nieuw R Script aanmaken}
+
+Na het opzetten van je project en mapstructuur, is het tijd om je eerste
+R script aan te maken:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Nieuw script openen:} Ga naar File \textgreater{} New File
+  \textgreater{} R Script (of gebruik Ctrl+Shift+N)
+\end{enumerate}
+
+\textbf{Figuur 1.7:} New R Script Creation
+\pandocbounded{\includegraphics[keepaspectratio,alt={New R Script}]{screenshots and images/open_new_script.png}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{Script opslaan in Script map:} Sla het script ALTIJD op in de
+  ``Script'' map van je project.
+\end{enumerate}
+
+\subsection{Naamgevingsconventie voor
+Scripts}\label{naamgevingsconventie-voor-scripts}
+
+\textbf{Belangrijk:} Gebruik ALTIJD de volgende naamgevingsconventie
+voor je scripts:
+
+\textbf{Format:} \texttt{DDMMYYYY\_beschrijving.R}
+
+\textbf{Voorbeelden:} - \texttt{18112025\_hotspot\_analysis.R} -
+\texttt{25112025\_descriptive\_statistics.R} -
+\texttt{03122025\_regression\_analysis.R}
+
+\textbf{Versiecontrole:} Wanneer je significante wijzigingen maakt aan
+een bestaand script:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Bij werken op een andere datum:} Sla op met de nieuwe datum
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Origineel: \texttt{18112025\_hotspot\_analysis.R}
+  \item
+    Nieuw bestand: \texttt{25112025\_hotspot\_analysis.R}
+  \end{itemize}
+\item
+  \textbf{Bij meerdere versies op dezelfde dag:} Voeg versienummer toe
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{25112025\_hotspot\_analysis\_V1.R}
+  \item
+    \texttt{25112025\_hotspot\_analysis\_V2.R}
+  \end{itemize}
+\end{itemize}
+
+\textbf{Voordelen van deze methode:} - Je verliest nooit oude versies
+van je werk - Duidelijk overzicht van wanneer wijzigingen zijn gemaakt -
+Scripts staan automatisch op chronologische volgorde - Eenvoudig
+teruggaan naar eerdere versies indien nodig - Supervisors kunnen de
+evolutie van je werk volgen
+
+\textbf{Tip:} Sorteer bestanden in Windows Explorer op ``Date modified''
+om de meest recente versies bovenaan te zien.
+
+\section{R Keyboard Shortcuts}\label{r-keyboard-shortcuts}
+
+RStudio biedt een uitgebreide set sneltoetsen die je productiviteit
+aanzienlijk kunnen verhogen. Deze shortcuts maken het mogelijk om snel
+door je code te navigeren, code uit te voeren, en verschillende RStudio
+functies te gebruiken zonder de muis.
+
+\subsection{Toegang tot Keyboard
+Shortcuts}\label{toegang-tot-keyboard-shortcuts}
+
+\textbf{Complete shortcut lijst bekijken:} - \textbf{Methode 1:} Ga naar
+Tools \textgreater{} Keyboard Shortcuts Help - \textbf{Methode 2:}
+Gebruik de sneltoets \textbf{Alt + Shift + K}
+
+\textbf{Figuur 1.9:} Accessing Keyboard Shortcuts Help
+\pandocbounded{\includegraphics[keepaspectratio,alt={Keyboard Shortcuts Menu}]{screenshots and images/navigation_shorts.png}}
+
+het opens window met alle keyboard shortcuts
+\pandocbounded{\includegraphics[keepaspectratio,alt={Keyboard Shortcuts}]{screenshots and images/keyboard shortcuts.png}}
+
+Deze opties openen een overzichtelijk venster met alle beschikbare
+sneltoetsen, georganiseerd per categorie.
+
+\section{Eerste Stappen in R}\label{eerste-stappen-in-r}
+
+Nu je je project hebt opgezet en een R script hebt aangemaakt, kun je
+beginnen met het leren van de basis van R programmeren.
+
+\subsection{Commentaar in R}\label{commentaar-in-r}
+
+\textbf{Belangrijk:} Alles wat je typt na een \texttt{\#} (hekje) wordt
+beschouwd als commentaar en wordt NIET uitgevoerd door R.
+
+\textbf{Waarom commentaar zo belangrijk is:} - \textbf{Voor jezelf:} Je
+begrijpt je eigen code beter wanneer je er later naar terugkijkt -
+\textbf{Voor anderen:} Collega's, supervisors, en reviewers kunnen je
+code begrijpen - \textbf{Voor documentatie:} Het legt uit WAT je doet en
+WAAROM je het doet
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Dit is een commentaar {-} R voert deze regel niet uit}
+\DecValTok{2} \SpecialCharTok{+} \DecValTok{3}  \CommentTok{\# Dit is ook een commentaar na de code}
+
+\CommentTok{\# Uitleg van wat de volgende code doet}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{10}  \CommentTok{\# Ken waarde 10 toe aan variabele x}
+\NormalTok{y }\OtherTok{\textless{}{-}} \DecValTok{5}   \CommentTok{\# Ken waarde 5 toe aan variabele y}
+\NormalTok{result }\OtherTok{\textless{}{-}}\NormalTok{ x }\SpecialCharTok{*}\NormalTok{ y  }\CommentTok{\# Bereken het product van x en y}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Code Secties Organiseren}\label{code-secties-organiseren}
+
+\textbf{Tip:} Gebruik \texttt{\#\ sectienaam\ -\/-\/-\/-} (minimaal 3
+streepjes) om secties te maken in je script. Dit maakt je code
+overzichtelijker:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Data Cleaning {-}{-}{-}{-}}
+\CommentTok{\# Hier doe je alle data cleaning activiteiten}
+
+\CommentTok{\# Data Analysis {-}{-}{-}{-}  }
+\CommentTok{\# Hier voer je je statistische analyses uit}
+
+\CommentTok{\# Visualization {-}{-}{-}{-}}
+\CommentTok{\# Hier maak je grafieken en plots}
+
+\CommentTok{\# Tables {-}{-}{-}{-}}
+\CommentTok{\# Hier creëer je tabellen voor je rapport}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Hoe Code Secties Werken}\label{hoe-code-secties-werken}
+
+\textbf{Sectie Syntaxis:} - Begin altijd met \texttt{\#} gevolgd door
+een spatie - Schrijf je sectienaam - Voeg minimaal 3 streepjes toe:
+\texttt{-\/-\/-\/-} - Voorbeeld: \texttt{\#\ Data\ Cleaning\ -\/-\/-\/-}
+
+\textbf{Navigeren met Table of Contents:} 1. \textbf{Open Table of
+Contents:} Druk \textbf{Ctrl + Shift + O} 2. \textbf{Selecteer sectie:}
+Klik op de gewenste sectie in de lijst 3. \textbf{Spring naar sectie:}
+RStudio springt automatisch naar die regel 4. \textbf{Sluit overzicht:}
+Druk \textbf{Escape} of klik ergens anders
+
+\textbf{Figuur 1.10:} Code Sections Expanded with Table of Contents
+\pandocbounded{\includegraphics[keepaspectratio,alt={Code Sections Expanded}]{screenshots and images/expanded and TOC.png}}
+
+\textbf{Code Secties Inklappen/Uitklappen:} - \textbf{Alt + O:} Klap
+alle code secties in (collapse all) - \textbf{Alt + Shift + O:} Klap
+alle code secties uit (expand all) - \textbf{Alt + L:} Klap huidige
+sectie in/uit (toggle current section)
+
+\textbf{Figuur 1.11:} Code Sections Collapsed View
+\pandocbounded{\includegraphics[keepaspectratio,alt={Code Sections Collapsed}]{screenshots and images/Collapased.png}}
+
+Deze functies zijn bijzonder handig bij lange scripts waar je alleen
+specifieke secties wilt zien en de rest wilt verbergen voor een cleaner
+overzicht. Zoals je kunt zien in de afbeeldingen hierboven, geeft het
+inklappen van secties een veel overzichtelijker beeld van je script
+structuur.
+
+\textbf{Voordelen van Code Secties:} - \textbf{Overzicht:} Zie in één
+oogopslag de structuur van je script - \textbf{Snelle navigatie:} Spring
+direct naar specifieke delen van je code - \textbf{Professionele
+organisatie:} Maak je scripts leesbaar voor collega's - \textbf{Grote
+scripts beheren:} Blijf overzicht houden in scripts van honderden regels
+
+\textbf{Geavanceerde Sectie Tips:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 1. Data Cleaning {-}{-}{-}{-}  }
+\CommentTok{\# Clean en prep data voor analyse}
+
+\CommentTok{\# 2. Data Analysis {-}{-}{-}{-}}
+\CommentTok{\# Bekijk data distributie en patronen}
+
+\CommentTok{\# 3. Visualization {-}{-}{-}{-}}
+\CommentTok{\# Maak plots en grafieken}
+
+\CommentTok{\# 4. Tables {-}{-}{-}{-}}
+\CommentTok{\# Sla resultaten op voor rapport}
+\end{Highlighting}
+\end{Shaded}
+
+Deze genummerde secties maken de workflow nog duidelijker en verschijnen
+allemaal in de Table of Contents (Ctrl + Shift + O) voor gemakkelijke
+navigatie door lange scripts.
+
+\subsection{Code Uitvoeren}\label{code-uitvoeren}
+
+Er zijn twee manieren om code uit te voeren in RStudio:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Run knop:} Klik op de ``Run'' knop bovenaan in het script
+  venster
+\item
+  \textbf{Sneltoets:} Plaats je cursor op de regel en druk \textbf{Ctrl
+  + Enter}
+\end{enumerate}
+
+\textbf{Figuur 1.8:} Run Button in RStudio
+\pandocbounded{\includegraphics[keepaspectratio,alt={Run Button}]{screenshots and images/run_option.png}}
+
+\subsection{Basis Rekenen in R}\label{basis-rekenen-in-r}
+
+Laten we beginnen met enkele eenvoudige berekeningen. Typ de volgende
+code in je script of direct in de console:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Eenvoudige berekening}
+\DecValTok{2} \SpecialCharTok{+} \DecValTok{3}
+
+\CommentTok{\# Andere rekenen operaties}
+\DecValTok{10} \SpecialCharTok{{-}} \DecValTok{4}
+\DecValTok{6} \SpecialCharTok{*} \DecValTok{7}
+\DecValTok{20} \SpecialCharTok{/} \DecValTok{4}
+\DecValTok{2}\SpecialCharTok{\^{}}\DecValTok{3}  \CommentTok{\# 2 tot de macht 3}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Probeer dit uit:} Typ \texttt{2\ +\ 3} in de console en druk op
+\textbf{Enter}, of typ het in je script en druk \textbf{Ctrl + Enter}.
+Je ziet de output \texttt{{[}1{]}\ 5} in de console.
+
+\subsection{Variabelen Toewijzen}\label{variabelen-toewijzen}
+
+In R gebruiken we \texttt{\textless{}-} (pijltje naar links) om waarden
+toe te wijzen aan variabelen:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Variabelen aanmaken}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{5}
+\NormalTok{y }\OtherTok{\textless{}{-}} \DecValTok{7}
+
+\CommentTok{\# Variabelen gebruiken in berekeningen}
+\NormalTok{x }\SpecialCharTok{+}\NormalTok{ y      }\CommentTok{\# Optelling: 5 + 7 = 12}
+\NormalTok{x }\SpecialCharTok{*}\NormalTok{ y      }\CommentTok{\# Vermenigvuldiging: 5 * 7 = 35}
+\NormalTok{x }\SpecialCharTok{{-}}\NormalTok{ y      }\CommentTok{\# Aftrekking: 5 {-} 7 = {-}2}
+\NormalTok{y }\SpecialCharTok{/}\NormalTok{ x      }\CommentTok{\# Deling: 7 / 5 = 1.4}
+\NormalTok{x}\SpecialCharTok{\^{}}\DecValTok{2}        \CommentTok{\# x tot de macht 2: 5\^{}2 = 25}
+\NormalTok{y}\SpecialCharTok{\^{}}\DecValTok{3}        \CommentTok{\# y tot de macht 3: 7\^{}3 = 343}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Let op:} Variabelnamen zijn hoofdlettergevoelig. \texttt{x} en
+\texttt{X} zijn verschillende variabelen!
+
+\textbf{Oefening:} 1. Maak een nieuw R script aan 2. Voeg commentaar toe
+met je naam en datum 3. Probeer de bovenstaande voorbeelden uit 4.
+Experimenteer met verschillende getallen en bewerkingen
+
+\section{R Packages en Libraries}\label{r-packages-en-libraries}
+
+R's echte kracht komt van de duizenden beschikbare packages (pakketten)
+die extra functionaliteit bieden. Elke package is gespecialiseerd voor
+specifieke taken, van data manipulatie tot geavanceerde statistische
+analyses.
+
+\subsection{Waarom Packages Gebruiken?}\label{waarom-packages-gebruiken}
+
+\textbf{Base R vs.~Packages:} Base R bevat de basisfuncties, maar voor
+efficiënte data-analyse hebben we gespecialiseerde packages nodig:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Data manipulatie:} \texttt{dplyr}, \texttt{tidyr}
+\item
+  \textbf{Data import/export:} \texttt{readr}, \texttt{readxl},
+  \texttt{haven}
+\item
+  \textbf{Visualisatie:} \texttt{ggplot2}, \texttt{plotly}
+\item
+  \textbf{Statistische analyses:} \texttt{broom}, \texttt{car},
+  \texttt{psych}, \texttt{MASS}
+\item
+  \textbf{Strings bewerken:} \texttt{stringr}
+\item
+  \textbf{Datum/tijd:} \texttt{lubridate}
+\end{itemize}
+
+\subsection{Packages Installeren}\label{packages-installeren}
+
+\subsubsection{Methode 1: Via RStudio
+Interface}\label{methode-1-via-rstudio-interface}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Packages Panel:} Ga naar het Packages panel (rechtsonder)
+\item
+  \textbf{Install Button:} Klik op ``Install''
+\end{enumerate}
+
+\textbf{Figuur 1.12:} Package Installation Navigation
+\pandocbounded{\includegraphics[keepaspectratio,alt={Package Install Navigation}]{screenshots and images/lib instal nav.png}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{Package Name:} Typ de naam van het package
+\item
+  \textbf{Install:} Klik ``Install''
+\end{enumerate}
+
+\textbf{Figuur 1.13:} Package Installation Dialog
+\pandocbounded{\includegraphics[keepaspectratio,alt={Package Install Dialog}]{screenshots and images/lib install diologbox.png}}
+
+\subsubsection{Methode 2: Via Code
+(Aanbevolen)}\label{methode-2-via-code-aanbevolen}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Package installeren (doe dit SLECHTS ÉÉN KEER)}
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"dplyr"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"ggplot2"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"readr"}\NormalTok{)}
+
+\CommentTok{\# Meerdere packages tegelijk installeren}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"dplyr"}\NormalTok{, }\StringTok{"ggplot2"}\NormalTok{, }\StringTok{"readr"}\NormalTok{, }\StringTok{"tidyr"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Belangrijk:} Je hoeft een package maar \textbf{ÉÉN KEER} te
+installeren op je computer. Daarna is het beschikbaar voor alle R
+sessies.
+
+\subsection{Packages Laden en
+Gebruiken}\label{packages-laden-en-gebruiken}
+
+\subsubsection{Methode 1: Library()
+Functie}\label{methode-1-library-functie}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Package laden voor huidige sessie}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(readr)}
+
+\CommentTok{\# Nu kun je alle functies gebruiken}
+\FunctionTok{select}\NormalTok{(data, column1, column2)}
+\FunctionTok{ggplot}\NormalTok{(data, }\FunctionTok{aes}\NormalTok{(x, y)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{()}
+\FunctionTok{read\_csv}\NormalTok{(}\StringTok{"data.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Methode 2: Package::Function() Syntax (Aanbevolen voor
+Leren)}\label{methode-2-packagefunction-syntax-aanbevolen-voor-leren}
+
+\textbf{Voor beginners wordt deze methode sterk aanbevolen} omdat het
+duidelijk maakt welke functie uit welk package komt:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Expliciet aangeven welk package je gebruikt}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(data, column1, column2)}
+\NormalTok{readr}\SpecialCharTok{::}\FunctionTok{read\_csv}\NormalTok{(}\StringTok{"data.csv"}\NormalTok{)}
+\NormalTok{readxl}\SpecialCharTok{::}\FunctionTok{read\_excel}\NormalTok{(}\StringTok{"data.xlsx"}\NormalTok{)}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(data, ggplot2}\SpecialCharTok{::}\FunctionTok{aes}\NormalTok{(x, y)) }\SpecialCharTok{+}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_point}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Voordelen van Package::Function()
+Syntax}\label{voordelen-van-packagefunction-syntax}
+
+\textbf{Voor Leren:} - \textbf{Duidelijkheid:} Je ziet direct welk
+package elke functie gebruikt - \textbf{Geen conflicten:} Vermijdt
+problemen wanneer verschillende packages dezelfde functienaam hebben -
+\textbf{Beter begrip:} Helpt bij het leren welke packages welke
+functionaliteit bieden - \textbf{Reproduceerbarheid:} Scripts zijn
+duidelijker voor anderen om te begrijpen
+
+\textbf{Tip:} Naarmate je meer ervaring krijgt, kun je overstappen naar
+het laden van packages met \texttt{library()}, maar voor leren is de
+\texttt{package::function()} methode veel educatiever.
+
+\end{document}

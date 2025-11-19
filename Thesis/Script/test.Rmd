@@ -1,0 +1,474 @@
+---
+title: "Introductie tot R"
+output:
+  word_document:
+    keep_md: false
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# Introductie
+
+R is een programmeertaal en omgeving die veel wordt gebruikt voor statistische analyse, datawetenschap en grafische weergave. Het is open-source en biedt een breed scala aan pakketten voor verschillende toepassingen. R is populair onder statistici, data-analisten en onderzoekers vanwege zijn flexibiliteit en kracht.
+
+Misschien denk je nu: "Programmeren? Dat klinkt eng en moeilijk!" Maak je geen zorgen - dat is heel normaal. Veel mensen voelen angst wanneer ze "programmeertaal" horen. 
+
+De realiteit is dat **R leren vergelijkbaar is met het verwerven van een nieuwe taal**. Net zoals bij het leren van een vreemde taal, moet je de fundamentele structuur begrijpen: functies (vergelijkbaar met werkwoorden), operatoren (vergelijkbaar met voorzetsels), en logische verbindingen (vergelijkbaar met voegwoorden). 
+
+Het verschil is dat R een formele syntaxis heeft die consistenter is dan natuurlijke talen. Waar Nederlandse grammatica vol uitzonderingen zit, volgt R-code logische patronen die je kunt leren en toepassen.
+
+**De pedagogische aanpak van dit cursusmateriaal** is gebaseerd op progressieve complexiteit en praktische toepassing. Het primaire doel is studenten een solide fundament te bieden in R-programmering door concepten systematisch op te bouwen, van basisfuncties naar geavanceerde data-analysemethoden. Door middel van concrete voorbeelden en hands-on oefeningen wordt de theoretische kennis direct gekoppeld aan praktische vaardigheden. 
+
+Deze cursus vereist geen voorafgaande programmeerervaring of diepgaande wiskundige achtergrond. Met consistente studie en praktijkoefening kunnen studenten zelfstandigheid ontwikkelen in statistische data-analyse en onderzoeksmethodologie.  
+
+# Voordelen van R
+
+R biedt verschillende significante voordelen voor academische en professionele data-analyse:
+
+**Open Source en Kosteloos:** R is volledig gratis beschikbaar en wordt ontwikkeld door een wereldwijde gemeenschap van statistici en programmeurs. Dit betekent dat studenten en onderzoekers toegang hebben tot geavanceerde statistische tools zonder licentiekosten.
+
+**Reproduceerbaarheid:** R-scripts maken onderzoek volledig reproduceerbaar. Anderen kunnen exact dezelfde analyses uitvoeren met dezelfde resultaten, wat essentieel is voor wetenschappelijke integriteit en peer review. Reproduceerbaarheid is een kernprincipe van open science. Door R-scripts bij te voegen als bijlage bij scripties of te delen met uitgevers, kunnen onderzoekers en reviewers precies zien welke stappen zijn ondernomen in de data-analyse. Deze transparantie versterkt de geloofwaardigheid van het onderzoek en maakt onafhendelijke verificatie mogelijk.
+
+**Uitgebreide Online Ondersteuning:** De R-gemeenschap is zeer actief, met uitgebreide documentatie, tutorials, forums (zoals Stack Overflow), en online cursussen. Problemen worden snel opgelost door de gemeenschap.
+
+**R Markdown voor Academisch Schrijven:** Met R Markdown kunnen onderzoekers hun analyses, tabellen, grafieken en tekst in één document integreren. Dit elimineert de noodzaak om handmatig tabellen en figuren te kopiëren naar Word-documenten, waardoor fouten worden vermeden en tijd wordt bespaard bij het schrijven van scripties en onderzoeksartikelen Bovendien genereert R Markdown automatisch referenties en bibliografieën, en kan output worden geëxporteerd naar verschillende formaten zoals Word (docx) of PDF, afhankelijk van de vereisten van het tijdschrift of de instelling. Een belangrijk voordeel is dat handmatige invoer van statistische waarden in tekst volledig wordt vermeden - wanneer data of analyses worden bijgewerkt, veranderen de waarden in de tekst automatisch mee, wat de consistentie en nauwkeurigheid van het document garandeert.
+
+**Uitgebreide Pakketbibliotheek:** Met meer dan 18.000 pakketten op CRAN dekt R vrijwel elk statistisch en analytisch domein, van basis statistiek tot machine learning en bioinformatica.
+
+**Krachtige Visualisatiemogelijkheden:** R's grafische mogelijkheden, vooral via ggplot2, stellen gebruikers in staat professionele, publicatie-kwaliteit visualisaties te creëren.
+
+# Installeren van R 
+R is beschikbaar voor Windows, macOS en Linux. Volg deze stappen om R te installeren:
+1. Bezoek de CRAN-website: Ga naar https://cran.r-project.org/.
+2. Kies je besturingssysteem: Klik op de link voor jouw besturingssysteem (Windows, macOS, of Linux).
+3. Download R: Volg de instructies op de pagina om de nieuwste versie van R te downloaden en te installeren.
+
+Zie Figuur 1.1 van de CRAN-website en kies de juiste versie voor jouw besturingssysteem.
+
+![R CRAN pagina](screenshots and images/R CRAN page.png)
+**Figuur 1.1:** R CRAN pagina
+
+# Installeren van RStudio
+RStudio is een geïntegreerde ontwikkelomgeving (IDE) voor R die het schrijven van code, het beheren van projecten en het visualiseren van resultaten vereenvoudigt. Volg deze stappen om RStudio te installeren:
+1. Bezoek de RStudio-website: Ga naar https://posit.co/download/rstudio
+2. Kies de gratis versie: Klik op de link voor RStudio Desktop Open Source License.
+3. Download RStudio: Selecteer de juiste installer voor jouw besturingssysteem (Windows, macOS, of Linux) en volg de instructies om RStudio te installeren.
+4. Optioneel: Kies "add desktop shortcut" wanneer daarom gevraagd wordt voor gemakkelijke toegang, of open RStudio later via het Start-menu onder geïnstalleerde programma's.
+
+![RStudio download pagina](screenshots and images/Install R studio.png)
+**Figuur 1.2:** RStudio download pagina
+
+# RStudio Interface
+
+Wanneer je RStudio voor het eerst opent, zie je een interface die is opgedeeld in vier hoofdpanelen. Deze lay-out is ontworpen om efficiënt werken met R mogelijk te maken.
+
+**Source (Broncode):** Dit is het linkerbovenvenster waar je R-scripts schrijft en bewerkt. Hier typ je je code voordat je deze uitvoert. Je kunt meerdere bestanden tegelijk openen in tabs.
+
+**Console:** Het linkerondervenster toont de R-console waar commando's direct kunnen worden uitgevoerd. Hier zie je ook de output van je code en eventuele foutmeldingen. De console toont ook informatie over de R-versie bij het opstarten.
+
+**Environment (Omgeving):** Het rechterbovenvenster toont alle variabelen, datasets, en objecten die momenteel in het geheugen zijn geladen. Dit helpt je om bij te houden welke data beschikbaar is voor analyse.
+
+**Output:** Het rechterondervenster bevat verschillende tabs:
+- **Files:** Bestandsbeheer en navigatie door mappen
+- **Plots:** Visualisaties en grafieken die je hebt gemaakt
+- **Packages:** Beheer van geïnstalleerde R-pakketten
+- **Help:** Documentatie en hulp voor R-functies
+- **Viewer:** Voor het bekijken van HTML-output en interactieve content
+
+**Figuur 1.3:** RStudio Interface Layout
+![RStudio Interface](screenshots and images/R studio source and console.png)
+
+# Mapstructuur voor Reproduceerbaarheid
+
+Een georganiseerde mapstructuur is essentieel voor reproduceerbaar onderzoek. Het zorgt ervoor dat alle projectbestanden logisch geordend zijn en gemakkelijk te vinden.
+
+## Stap 1: Hoofdmap aanmaken
+
+Voordat je begint met je onderzoek, maak eerst een hoofdmap aan op een locatie naar keuze op je computer (bijvoorbeeld op je D of E schijf). Geef deze map een duidelijke naam zoals "Thesis", "Masterscriptie", "Onderzoek2024", of de specifieke titel van je onderzoek.
+
+## Stap 2: Submappen aanmaken
+
+Maak binnen deze hoofdmap de volgende submappen aan via Windows Verkenner:
+
+1. Navigeer naar je hoofdmap
+2. Rechtermuisknop > Nieuwe map
+3. Maak de volgende mappen aan:
+
+- **Data:** Bevat alle oorspronkelijke datasets, bewerkte data, en databestanden die gebruikt worden in het onderzoek.
+- **Script:** Alle R-scripts die gebruikt worden voor data-analyse, data-cleaning, en statistische berekeningen.
+- **Literatures:** Gerelateerde literatuur, onderzoeksartikelen, en referentiemateriaal die relevant zijn voor het onderzoek.
+- **Drafts:** Verschillende versies van het manuscript, van eerste concepten tot definitieve versies.
+- **Output:** Gegenereerde tabellen, figuren, grafieken, en andere resultaten van de analyses.
+
+**Georganiseerde Mapstructuur - Voorbeeld:**
+```
+Thesis/
+├── Data/
+├── Script/
+├── Literatures/
+├── Drafts/
+└── Output/
+```
+
+## Stap 3: Werkmap (Working Directory) Instellen
+
+**Wat is een Working Directory?**
+De working directory is de map waar R standaard naar zoekt om bestanden te lezen en op te slaan. Het is belangrijk om deze correct in te stellen.
+
+**Traditionele Methode - setwd():**
+Zonder R Projects moet je handmatig de werkmap instellen met de `setwd()` functie:
+
+```r
+# Handmatig werkmap instellen
+setwd("D:/Thesis")
+
+# Controleer huidige werkmap
+getwd()
+
+# Nu kun je bestanden laden met volledige paden
+data <- read.csv("D:/Thesis/Data/my_data.csv")
+```
+
+**Nadelen van setwd():**
+- Paden werken niet op andere computers (jouw pad bestaat niet bij anderen)
+- Scripts zijn niet reproduceerbaar zonder aanpassingen
+- Moeilijk om met meerdere projecten tegelijk te werken
+- Moet bij elke R sessie opnieuw ingesteld worden
+
+**Oplossing: R Projects (behandeld in volgende sectie)**
+R Projects lossen al deze problemen automatisch op! Door een R Project aan te maken, wordt de werkmap automatisch ingesteld op de projectmap, waardoor je relatieve paden kunt gebruiken die overal werken.
+
+Deze georganiseerde structuur zorgt ervoor dat:
+- Alle projectgerelateerde bestanden op één centrale locatie staan
+- Collaborateurs en supervisors gemakkelijk toegang hebben tot alle materialen
+- Het project reproduceerbaar is voor andere onderzoekers
+- Versiecontrole en backup eenvoudig te beheren zijn
+
+# R Project Aanmaken in Thesis Map
+
+Nu je een georganiseerde mapstructuur hebt aangemaakt, is het tijd om een R Project aan te maken. Een R Project lost alle problemen op die we zagen met `setwd()` en maakt je werk veel professioneler en reproduceerbaar.
+
+**Waarom R Projects?**
+R Projects bieden de **optimale oplossing** voor werkmap-beheer:
+
+- **Automatische werkmap:** RStudio stelt automatisch de werkmap in naar de locatie van het `.Rproj` bestand
+- **Geen setwd() nodig:** De werkmap wordt automatisch correct ingesteld bij het openen van het project
+- **Relatieve paden:** Je kunt bestanden laden met `"Data/my_data.csv"` in plaats van `"D:/Thesis/Data/my_data.csv"`
+- **Portabiliteit:** Het project werkt op elke computer zonder pad-aanpassingen
+- **Collaboratie:** Anderen kunnen het project openen zonder pad-problemen
+- **Gescheiden omgevingen:** Elk project heeft zijn eigen workspace en history
+
+**Stappen om een R Project aan te maken:**
+
+1. **Project Wizard openen:** Klik op het project-icoon rechtsboven in RStudio of ga naar File > New Project.
+
+2. **Existing Directory kiezen:** Selecteer "Existing Directory" omdat je al een thesis map hebt met de gewenste mapstructuur.
+
+**Figuur 1.4:** R Project Creation Wizard
+![R Project Wizard](screenshots and images/R project.png) 
+
+3. **Thesis map selecteren:** Browse naar je thesis map die de submappen (Data, Script, Literatures, Drafts, Output) bevat.
+
+**Figuur 1.5:** Select Project Directory
+![Select Directory](screenshots and images/Select_project folder.png)
+
+4. **Project aanmaken:** Klik op "Create Project" om het R Project te voltooien.
+
+Na het aanmaken van het project zie je een `.Rproj` bestand in je thesis map en de mapstructuur wordt automatisch zichtbaar in het Files panel van RStudio.
+
+**Figuur 1.6:** Project Structure after Creation
+![Project Created](screenshots and images/R projected created.png)
+
+# R Script Aanmaken en Opslaan
+
+**Stap 4: Nieuw R Script aanmaken**
+
+Na het opzetten van je project en mapstructuur, is het tijd om je eerste R script aan te maken:
+
+1. **Nieuw script openen:** Ga naar File > New File > R Script (of gebruik Ctrl+Shift+N)
+
+**Figuur 1.7:** New R Script Creation
+![New R Script](screenshots and images/open_new_script.png)
+
+2. **Script opslaan in Script map:** Sla het script ALTIJD op in de "Script" map van je project.
+
+## Naamgevingsconventie voor Scripts
+
+**Belangrijk:** Gebruik ALTIJD de volgende naamgevingsconventie voor je scripts:
+
+**Format:** `DDMMYYYY_beschrijving.R`
+
+**Voorbeelden:**
+- `18112025_hotspot_analysis.R`
+- `25112025_descriptive_statistics.R`
+- `03122025_regression_analysis.R`
+
+**Versiecontrole:**
+Wanneer je significante wijzigingen maakt aan een bestaand script:
+
+- **Bij werken op een andere datum:** Sla op met de nieuwe datum
+  - Origineel: `18112025_hotspot_analysis.R`
+  - Nieuw bestand: `25112025_hotspot_analysis.R`
+
+- **Bij meerdere versies op dezelfde dag:** Voeg versienummer toe
+  - `25112025_hotspot_analysis_V1.R`
+  - `25112025_hotspot_analysis_V2.R`
+
+**Voordelen van deze methode:**
+- Je verliest nooit oude versies van je werk
+- Duidelijk overzicht van wanneer wijzigingen zijn gemaakt
+- Scripts staan automatisch op chronologische volgorde
+- Eenvoudig teruggaan naar eerdere versies indien nodig
+- Supervisors kunnen de evolutie van je werk volgen
+
+**Tip:** Sorteer bestanden in Windows Explorer op "Date modified" om de meest recente versies bovenaan te zien.
+
+# R Keyboard Shortcuts
+
+RStudio biedt een uitgebreide set sneltoetsen die je productiviteit aanzienlijk kunnen verhogen. Deze shortcuts maken het mogelijk om snel door je code te navigeren, code uit te voeren, en verschillende RStudio functies te gebruiken zonder de muis.
+
+## Toegang tot Keyboard Shortcuts
+
+**Complete shortcut lijst bekijken:**
+- **Methode 1:** Ga naar Tools > Keyboard Shortcuts Help
+- **Methode 2:** Gebruik de sneltoets **Alt + Shift + K**
+
+**Figuur 1.9:** Accessing Keyboard Shortcuts Help
+![Keyboard Shortcuts Menu](screenshots and images/navigation_shorts.png)
+
+het opens window met alle keyboard shortcuts
+![Keyboard Shortcuts](screenshots and images/keyboard shortcuts.png)
+
+Deze opties openen een overzichtelijk venster met alle beschikbare sneltoetsen, georganiseerd per categorie.
+
+# Eerste Stappen in R
+
+Nu je je project hebt opgezet en een R script hebt aangemaakt, kun je beginnen met het leren van de basis van R programmeren.
+
+## Commentaar in R
+
+**Belangrijk:** Alles wat je typt na een `#` (hekje) wordt beschouwd als commentaar en wordt NIET uitgevoerd door R. 
+
+**Waarom commentaar zo belangrijk is:**
+- **Voor jezelf:** Je begrijpt je eigen code beter wanneer je er later naar terugkijkt
+- **Voor anderen:** Collega's, supervisors, en reviewers kunnen je code begrijpen
+- **Voor documentatie:** Het legt uit WAT je doet en WAAROM je het doet
+
+```r
+# Dit is een commentaar - R voert deze regel niet uit
+2 + 3  # Dit is ook een commentaar na de code
+
+# Uitleg van wat de volgende code doet
+x <- 10  # Ken waarde 10 toe aan variabele x
+y <- 5   # Ken waarde 5 toe aan variabele y
+result <- x * y  # Bereken het product van x en y
+```
+
+## Code Secties Organiseren
+
+**Tip:** Gebruik `# sectienaam ----` (minimaal 3 streepjes) om secties te maken in je script. Dit maakt je code overzichtelijker:
+
+```r
+# Data Cleaning ----
+# Hier doe je alle data cleaning activiteiten
+
+# Data Analysis ----  
+# Hier voer je je statistische analyses uit
+
+# Visualization ----
+# Hier maak je grafieken en plots
+
+# Tables ----
+# Hier creëer je tabellen voor je rapport
+```
+
+### Hoe Code Secties Werken
+
+**Sectie Syntaxis:**
+- Begin altijd met `#` gevolgd door een spatie
+- Schrijf je sectienaam
+- Voeg minimaal 3 streepjes toe: `----`
+- Voorbeeld: `# Data Cleaning ----`
+
+
+**Navigeren met Table of Contents:**
+1. **Open Table of Contents:** Druk **Ctrl + Shift + O**
+2. **Selecteer sectie:** Klik op de gewenste sectie in de lijst
+3. **Spring naar sectie:** RStudio springt automatisch naar die regel
+4. **Sluit overzicht:** Druk **Escape** of klik ergens anders
+
+**Figuur 1.10:** Code Sections Expanded with Table of Contents
+![Code Sections Expanded](screenshots and images/expanded and TOC.png)
+
+**Code Secties Inklappen/Uitklappen:**
+- **Alt + O:** Klap alle code secties in (collapse all)
+- **Alt + Shift + O:** Klap alle code secties uit (expand all)
+- **Alt + L:** Klap huidige sectie in/uit (toggle current section)
+
+**Figuur 1.11:** Code Sections Collapsed View
+![Code Sections Collapsed](screenshots and images/Collapased.png)
+
+Deze functies zijn bijzonder handig bij lange scripts waar je alleen specifieke secties wilt zien en de rest wilt verbergen voor een cleaner overzicht. Zoals je kunt zien in de afbeeldingen hierboven, geeft het inklappen van secties een veel overzichtelijker beeld van je script structuur.
+
+**Voordelen van Code Secties:**
+- **Overzicht:** Zie in één oogopslag de structuur van je script
+- **Snelle navigatie:** Spring direct naar specifieke delen van je code
+- **Professionele organisatie:** Maak je scripts leesbaar voor collega's
+- **Grote scripts beheren:** Blijf overzicht houden in scripts van honderden regels
+
+**Geavanceerde Sectie Tips:**
+```r
+# 1. Data Cleaning ----  
+# Clean en prep data voor analyse
+
+# 2. Data Analysis ----
+# Bekijk data distributie en patronen
+
+# 3. Visualization ----
+# Maak plots en grafieken
+
+# 4. Tables ----
+# Sla resultaten op voor rapport
+```
+
+Deze genummerde secties maken de workflow nog duidelijker en verschijnen allemaal in de Table of Contents (Ctrl + Shift + O) voor gemakkelijke navigatie door lange scripts.
+
+## Code Uitvoeren
+
+Er zijn twee manieren om code uit te voeren in RStudio:
+
+1. **Run knop:** Klik op de "Run" knop bovenaan in het script venster
+2. **Sneltoets:** Plaats je cursor op de regel en druk **Ctrl + Enter**
+
+**Figuur 1.8:** Run Button in RStudio
+![Run Button](screenshots and images/run_option.png)
+
+## Basis Rekenen in R
+
+Laten we beginnen met enkele eenvoudige berekeningen. Typ de volgende code in je script of direct in de console:
+
+```r
+# Eenvoudige berekening
+2 + 3
+
+# Andere rekenen operaties
+10 - 4
+6 * 7
+20 / 4
+2^3  # 2 tot de macht 3
+```
+
+**Probeer dit uit:** Typ `2 + 3` in de console en druk op **Enter**, of typ het in je script en druk **Ctrl + Enter**. Je ziet de output `[1] 5` in de console.
+
+## Variabelen Toewijzen
+
+In R gebruiken we `<-` (pijltje naar links) om waarden toe te wijzen aan variabelen:
+
+```r
+# Variabelen aanmaken
+x <- 5
+y <- 7
+
+# Variabelen gebruiken in berekeningen
+x + y      # Optelling: 5 + 7 = 12
+x * y      # Vermenigvuldiging: 5 * 7 = 35
+x - y      # Aftrekking: 5 - 7 = -2
+y / x      # Deling: 7 / 5 = 1.4
+x^2        # x tot de macht 2: 5^2 = 25
+y^3        # y tot de macht 3: 7^3 = 343
+```
+
+**Let op:** Variabelnamen zijn hoofdlettergevoelig. `x` en `X` zijn verschillende variabelen!
+
+**Oefening:** 
+1. Maak een nieuw R script aan
+2. Voeg commentaar toe met je naam en datum
+3. Probeer de bovenstaande voorbeelden uit
+4. Experimenteer met verschillende getallen en bewerkingen
+
+# R Packages en Libraries
+
+R's echte kracht komt van de duizenden beschikbare packages (pakketten) die extra functionaliteit bieden. Elke package is gespecialiseerd voor specifieke taken, van data manipulatie tot geavanceerde statistische analyses.
+
+## Waarom Packages Gebruiken?
+
+**Base R vs. Packages:**
+Base R bevat de basisfuncties, maar voor efficiënte data-analyse hebben we gespecialiseerde packages nodig:
+
+- **Data manipulatie:** `dplyr`, `tidyr`
+- **Data import/export:** `readr`, `readxl`, `haven`
+- **Visualisatie:** `ggplot2`, `plotly`
+- **Statistische analyses:** `broom`, `car`, `psych`, `MASS`
+- **Strings bewerken:** `stringr`
+- **Datum/tijd:** `lubridate`
+
+## Packages Installeren
+
+### Methode 1: Via RStudio Interface
+
+1. **Packages Panel:** Ga naar het Packages panel (rechtsonder)
+2. **Install Button:** Klik op "Install"
+
+**Figuur 1.12:** Package Installation Navigation
+![Package Install Navigation](screenshots and images/lib instal nav.png)
+
+3. **Package Name:** Typ de naam van het package
+4. **Install:** Klik "Install"
+
+**Figuur 1.13:** Package Installation Dialog
+![Package Install Dialog](screenshots and images/lib install diologbox.png)
+
+### Methode 2: Via Code (Aanbevolen)
+
+```r
+# Package installeren (doe dit SLECHTS ÉÉN KEER)
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("readr")
+
+# Meerdere packages tegelijk installeren
+install.packages(c("dplyr", "ggplot2", "readr", "tidyr"))
+```
+
+**Belangrijk:** Je hoeft een package maar **ÉÉN KEER** te installeren op je computer. Daarna is het beschikbaar voor alle R sessies.
+
+## Packages Laden en Gebruiken
+
+### Methode 1: Library() Functie
+
+```r
+# Package laden voor huidige sessie
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Nu kun je alle functies gebruiken
+select(data, column1, column2)
+ggplot(data, aes(x, y)) + geom_point()
+read_csv("data.csv")
+```
+
+### Methode 2: Package::Function() Syntax (Aanbevolen voor Leren)
+
+**Voor beginners wordt deze methode sterk aanbevolen** omdat het duidelijk maakt welke functie uit welk package komt:
+
+```r
+# Expliciet aangeven welk package je gebruikt
+dplyr::select(data, column1, column2)
+readr::read_csv("data.csv")
+readxl::read_excel("data.xlsx")
+ggplot2::ggplot(data, ggplot2::aes(x, y)) + ggplot2::geom_point()
+```
+
+## Voordelen van Package::Function() Syntax
+
+**Voor Leren:**
+- **Duidelijkheid:** Je ziet direct welk package elke functie gebruikt
+- **Geen conflicten:** Vermijdt problemen wanneer verschillende packages dezelfde functienaam hebben
+- **Beter begrip:** Helpt bij het leren welke packages welke functionaliteit bieden
+- **Reproduceerbarheid:** Scripts zijn duidelijker voor anderen om te begrijpen
+
+**Tip:** Naarmate je meer ervaring krijgt, kun je overstappen naar het laden van packages met `library()`, maar voor leren is de `package::function()` methode veel educatiever.

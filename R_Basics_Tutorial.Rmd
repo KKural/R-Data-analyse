@@ -1,0 +1,610 @@
+---
+title: "R Basics Tutorial - Data Analysis for Criminology"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# 1. Getting Started with R
+
+## 1.1 Creating and Working with Text Files
+
+### Create a simple text file
+```{r create-text-file}
+# Create a text file with some content
+text_content <- c("This is line 1",
+                  "This is line 2",
+                  "This is line 3")
+
+# Write to a text file
+writeLines(text_content, "sample_text.txt")
+
+# Read the text file
+read_content <- readLines("sample_text.txt")
+print(read_content)
+```
+
+### Create a CSV file manually
+```{r create-csv}
+# Create sample criminology data
+crime_data <- data.frame(
+  ID = 1:5,
+  Age = c(25, 32, 19, 45, 28),
+  Gender = c("Male", "Female", "Male", "Male", "Female"),
+  Crime_Type = c("Theft", "Assault", "Vandalism", "Fraud", "Theft"),
+  Sentence_Months = c(12, 24, 6, 36, 18)
+)
+
+# Save as CSV
+write.csv(crime_data, "crime_data.csv", row.names = FALSE)
+```
+
+---
+
+# 2. Loading and Reading Data
+
+## 2.1 Loading CSV Files
+
+### Method 1: Using base R
+```{r load-csv-base}
+# Read CSV file
+data_base <- read.csv("crime_data.csv")
+print(data_base)
+```
+
+### Method 2: Using readr package (better for large files)
+```{r load-csv-readr}
+# Install readr if needed (uncomment below)
+# install.packages("readr")
+
+library(readr)
+data_readr <- read_csv("crime_data.csv")
+print(data_readr)
+```
+
+### Method 3: Using file.choose() for interactive selection
+```{r load-csv-interactive, eval=FALSE}
+# This opens a file browser window
+my_data <- read.csv(file.choose())
+```
+
+---
+
+# 3. Understanding and Using Libraries (Packages)
+
+## 3.1 What is a Library?
+
+A library (or package) is a collection of pre-written functions and datasets that extend R's capabilities.
+
+## 3.2 Installing Packages
+
+```{r install-packages, eval=FALSE}
+# Install a single package
+install.packages("dplyr")
+
+# Install multiple packages
+install.packages(c("ggplot2", "tidyverse", "haven"))
+
+# Install from CRAN
+install.packages("psych")
+```
+
+## 3.3 Loading Packages
+
+```{r load-packages}
+# Load a package for use in your session
+library(dplyr)
+library(ggplot2)
+
+# Alternative way (less common)
+require(tidyverse)
+```
+
+## 3.4 Checking Installed Packages
+
+```{r check-packages, eval=FALSE}
+# See all installed packages
+installed.packages()
+
+# Check if a specific package is installed
+"dplyr" %in% rownames(installed.packages())
+```
+
+---
+
+# 4. Examining Datasets
+
+## 4.1 Using view() Function
+
+```{r view-data, eval=FALSE}
+# Open data in a spreadsheet-like viewer (RStudio only)
+View(crime_data)
+
+# Alternative lowercase version
+view(crime_data)
+```
+
+## 4.2 Using str() - Structure of Data
+
+```{r str-function}
+# Show structure: variable types, number of observations
+str(crime_data)
+```
+
+**Output explains:**
+- `data.frame`: Type of object
+- `5 obs. of 5 variables`: 5 rows and 5 columns
+- Variable types: `int` (integer), `chr` (character), `num` (numeric)
+
+## 4.3 Using names() - Column Names
+
+```{r names-function}
+# Get column names
+names(crime_data)
+
+# Alternative
+colnames(crime_data)
+```
+
+## 4.4 Using dim() - Dimensions
+
+```{r dim-function}
+# Get dimensions (rows, columns)
+dim(crime_data)
+
+# Number of rows
+nrow(crime_data)
+
+# Number of columns
+ncol(crime_data)
+```
+
+## 4.5 Using glimpse() - Quick Overview
+
+```{r glimpse-function}
+library(dplyr)
+
+# Transposed view of data
+glimpse(crime_data)
+```
+
+## 4.6 Other Useful Functions for Examining Data
+
+```{r other-examine}
+# First 6 rows
+head(crime_data)
+
+# Last 6 rows
+tail(crime_data)
+
+# First n rows
+head(crime_data, n = 3)
+
+# Summary statistics
+summary(crime_data)
+```
+
+---
+
+# 5. Working with Missing Values
+
+## 5.1 Creating Data with Missing Values
+
+```{r create-missing}
+# Create data with missing values (NA)
+crime_data_missing <- data.frame(
+  ID = 1:6,
+  Age = c(25, NA, 19, 45, 28, NA),
+  Gender = c("Male", "Female", NA, "Male", "Female", "Male"),
+  Sentence_Months = c(12, 24, NA, 36, 18, 6)
+)
+
+print(crime_data_missing)
+```
+
+## 5.2 Detecting Missing Values
+
+```{r detect-missing}
+# Check for NA values
+is.na(crime_data_missing)
+
+# Count NA values per column
+colSums(is.na(crime_data_missing))
+
+# Total number of NA values
+sum(is.na(crime_data_missing))
+
+# Which rows have NA values?
+complete.cases(crime_data_missing)
+
+# Show only complete cases
+crime_data_missing[complete.cases(crime_data_missing), ]
+```
+
+## 5.3 Handling Missing Values
+
+```{r handle-missing}
+# Remove rows with any NA values
+clean_data <- na.omit(crime_data_missing)
+print(clean_data)
+
+# Replace NA with a specific value
+crime_data_missing$Age[is.na(crime_data_missing$Age)] <- mean(crime_data_missing$Age, na.rm = TRUE)
+
+# Using tidyverse to drop NA
+library(tidyr)
+crime_data_clean <- crime_data_missing %>% drop_na()
+```
+
+---
+
+# 6. Coding and Recoding Variables
+
+## 6.1 Creating New Variables
+
+```{r create-variables}
+# Create a new variable based on existing ones
+crime_data$Age_Group <- ifelse(crime_data$Age < 30, "Young", "Adult")
+print(crime_data)
+
+# Create categorical variable
+crime_data$Severity <- ifelse(crime_data$Sentence_Months > 20, "High", "Low")
+print(crime_data)
+```
+
+## 6.2 Recoding Variables - Multiple Categories
+
+```{r recode-multiple}
+# Using nested ifelse
+crime_data$Age_Category <- ifelse(crime_data$Age < 25, "Youth",
+                                   ifelse(crime_data$Age < 35, "Young Adult",
+                                          "Adult"))
+
+# Using cut() for numeric to categorical
+crime_data$Age_Bins <- cut(crime_data$Age, 
+                            breaks = c(0, 25, 35, 100),
+                            labels = c("Youth", "Young Adult", "Adult"))
+
+print(crime_data)
+```
+
+## 6.3 Recoding with dplyr
+
+```{r recode-dplyr}
+library(dplyr)
+
+crime_data <- crime_data %>%
+  mutate(
+    # Recode using case_when (more flexible)
+    Crime_Severity = case_when(
+      Crime_Type %in% c("Theft", "Vandalism") ~ "Minor",
+      Crime_Type == "Assault" ~ "Moderate",
+      Crime_Type == "Fraud" ~ "Serious",
+      TRUE ~ "Other"
+    )
+  )
+
+print(crime_data)
+```
+
+## 6.4 Recoding Factor Levels
+
+```{r recode-factors}
+# Original factor
+crime_data$Gender <- factor(crime_data$Gender)
+levels(crime_data$Gender)
+
+# Recode factor levels
+crime_data$Gender_Coded <- recode(crime_data$Gender, 
+                                   "Male" = "M", 
+                                   "Female" = "F")
+print(crime_data)
+```
+
+---
+
+# 7. Creating Vectors
+
+## 7.1 Numeric Vectors
+
+```{r create-numeric-vectors}
+# Create numeric vector
+ages <- c(25, 32, 19, 45, 28)
+print(ages)
+
+# Sequence
+id_sequence <- 1:10
+print(id_sequence)
+
+# Using seq()
+custom_seq <- seq(from = 0, to = 100, by = 10)
+print(custom_seq)
+
+# Repeat values
+repeated <- rep(5, times = 6)
+print(repeated)
+```
+
+## 7.2 Character Vectors
+
+```{r create-character-vectors}
+# Create character vector
+names_vector <- c("John", "Jane", "Bob", "Alice", "Eve")
+print(names_vector)
+
+# Cities
+cities <- c("Brussels", "Ghent", "Antwerp", "Bruges")
+print(cities)
+```
+
+## 7.3 Logical Vectors
+
+```{r create-logical-vectors}
+# Logical vector
+convicted <- c(TRUE, FALSE, TRUE, TRUE, FALSE)
+print(convicted)
+
+# Created from conditions
+high_risk <- ages > 30
+print(high_risk)
+```
+
+---
+
+# 8. Working with Factors
+
+## 8.1 What is a Factor?
+
+Factors are used to represent categorical data with fixed levels.
+
+## 8.2 Creating Factors
+
+```{r create-factors}
+# Create a factor from character vector
+gender <- c("Male", "Female", "Male", "Male", "Female")
+gender_factor <- factor(gender)
+print(gender_factor)
+
+# Check levels
+levels(gender_factor)
+
+# Create ordered factor
+education <- c("High School", "Bachelor", "Master", "High School", "PhD")
+education_factor <- factor(education, 
+                           levels = c("High School", "Bachelor", "Master", "PhD"),
+                           ordered = TRUE)
+print(education_factor)
+```
+
+## 8.3 Converting Between Types
+
+```{r convert-factors}
+# Character to factor
+crime_types <- c("Theft", "Assault", "Fraud", "Theft")
+crime_factor <- as.factor(crime_types)
+
+# Factor to character
+crime_char <- as.character(crime_factor)
+
+# Factor to numeric (be careful!)
+levels_numeric <- as.numeric(crime_factor)
+print(levels_numeric)  # Returns level numbers, not original values
+```
+
+## 8.4 Modifying Factor Levels
+
+```{r modify-factors}
+# Rename levels
+crime_factor_renamed <- factor(crime_types)
+levels(crime_factor_renamed) <- c("Physical Violence", "Financial Crime", "Property Crime")
+print(crime_factor_renamed)
+
+# Add new levels
+crime_factor_expanded <- factor(crime_types, levels = c("Theft", "Assault", "Fraud", "Vandalism"))
+print(crime_factor_expanded)
+```
+
+---
+
+# 9. Creating Frequency and Percentage Tables
+
+## 9.1 Frequency Tables
+
+```{r frequency-tables}
+# Simple frequency table
+freq_crime <- table(crime_data$Crime_Type)
+print(freq_crime)
+
+# Two-way frequency table (cross-tabulation)
+freq_cross <- table(crime_data$Gender, crime_data$Crime_Type)
+print(freq_cross)
+```
+
+## 9.2 Percentage Tables
+
+```{r percentage-tables}
+# Percentage table
+percent_crime <- prop.table(table(crime_data$Crime_Type)) * 100
+print(percent_crime)
+
+# Round percentages
+percent_crime_rounded <- round(percent_crime, 2)
+print(percent_crime_rounded)
+```
+
+## 9.3 Combined Frequency and Percentage Tables
+
+```{r combined-tables}
+# Create a combined table
+crime_freq <- table(crime_data$Crime_Type)
+crime_prop <- prop.table(crime_freq) * 100
+
+combined_table <- data.frame(
+  Frequency = as.vector(crime_freq),
+  Percentage = round(as.vector(crime_prop), 2)
+)
+rownames(combined_table) <- names(crime_freq)
+print(combined_table)
+```
+
+## 9.4 Using dplyr for Tables
+
+```{r dplyr-tables}
+library(dplyr)
+
+# Frequency and percentage with dplyr
+crime_summary <- crime_data %>%
+  group_by(Crime_Type) %>%
+  summarise(
+    Frequency = n(),
+    Percentage = round(n() / nrow(crime_data) * 100, 2)
+  ) %>%
+  arrange(desc(Frequency))
+
+print(crime_summary)
+```
+
+## 9.5 Advanced Tables with janitor Package
+
+```{r janitor-tables}
+# Install janitor if needed
+# install.packages("janitor")
+
+library(janitor)
+
+# Create a nice frequency table
+crime_data %>%
+  tabyl(Crime_Type) %>%
+  adorn_pct_formatting(digits = 1) %>%
+  adorn_totals("row")
+
+# Cross-tabulation with percentages
+crime_data %>%
+  tabyl(Gender, Crime_Type) %>%
+  adorn_percentages("row") %>%
+  adorn_pct_formatting(digits = 1) %>%
+  adorn_ns()
+```
+
+---
+
+# 10. Practical Example: Complete Workflow
+
+```{r complete-example}
+# 1. Create a larger criminology dataset
+set.seed(123)  # For reproducibility
+
+offender_data <- data.frame(
+  ID = 1:50,
+  Age = sample(18:65, 50, replace = TRUE),
+  Gender = sample(c("Male", "Female"), 50, replace = TRUE),
+  Education = sample(c("Elementary", "High School", "Bachelor", "Master"), 
+                     50, replace = TRUE, prob = c(0.1, 0.5, 0.3, 0.1)),
+  Prior_Convictions = sample(0:5, 50, replace = TRUE),
+  Crime_Type = sample(c("Theft", "Assault", "Fraud", "Vandalism", "Drug Offense"), 
+                      50, replace = TRUE),
+  Sentence_Days = sample(30:1095, 50, replace = TRUE)
+)
+
+# 2. Save the dataset
+write.csv(offender_data, "offender_data.csv", row.names = FALSE)
+
+# 3. Load the dataset
+offender_data <- read.csv("offender_data.csv")
+
+# 4. Examine the data
+str(offender_data)
+summary(offender_data)
+head(offender_data)
+
+# 5. Create new variables
+offender_data <- offender_data %>%
+  mutate(
+    Age_Group = cut(Age, breaks = c(0, 25, 40, 100), 
+                    labels = c("Young", "Middle-Aged", "Older")),
+    High_Risk = ifelse(Prior_Convictions > 2, "Yes", "No"),
+    Sentence_Category = case_when(
+      Sentence_Days < 180 ~ "Short",
+      Sentence_Days < 730 ~ "Medium",
+      TRUE ~ "Long"
+    )
+  )
+
+# 6. Create frequency tables
+print("Crime Type Frequency:")
+table(offender_data$Crime_Type)
+
+print("\nAge Group by Crime Type:")
+table(offender_data$Age_Group, offender_data$Crime_Type)
+
+# 7. Create summary table
+offender_summary <- offender_data %>%
+  group_by(Crime_Type, Gender) %>%
+  summarise(
+    Count = n(),
+    Avg_Age = round(mean(Age), 1),
+    Avg_Sentence = round(mean(Sentence_Days), 0),
+    .groups = "drop"
+  )
+
+print(offender_summary)
+```
+
+---
+
+# 11. Quick Reference Cheat Sheet
+
+## Common Functions
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `read.csv()` | Load CSV file | `data <- read.csv("file.csv")` |
+| `write.csv()` | Save CSV file | `write.csv(data, "file.csv")` |
+| `View()` | Open data viewer | `View(data)` |
+| `str()` | Show structure | `str(data)` |
+| `names()` | Column names | `names(data)` |
+| `dim()` | Dimensions | `dim(data)` |
+| `head()` | First rows | `head(data)` |
+| `summary()` | Summary stats | `summary(data)` |
+| `table()` | Frequency table | `table(data$column)` |
+| `is.na()` | Check missing | `is.na(data)` |
+| `na.omit()` | Remove missing | `na.omit(data)` |
+| `factor()` | Create factor | `factor(vector)` |
+| `c()` | Create vector | `c(1, 2, 3)` |
+| `ifelse()` | Conditional | `ifelse(condition, yes, no)` |
+
+## Useful Packages
+
+- **tidyverse**: Data manipulation and visualization
+- **dplyr**: Data manipulation
+- **ggplot2**: Data visualization
+- **haven**: Import SPSS/Stata files
+- **readr**: Fast CSV reading
+- **janitor**: Clean data and tables
+- **psych**: Psychological/statistical functions
+
+---
+
+# 12. Exercises
+
+Try these exercises to practice:
+
+1. Create a CSV file with 10 fictional offenders including age, gender, and crime type
+2. Load the file and examine it using `str()`, `summary()`, and `glimpse()`
+3. Create a new variable categorizing ages into "Young" (<30) and "Adult" (≥30)
+4. Convert gender to a factor
+5. Create a frequency table showing crime types
+6. Calculate the percentage of each crime type
+7. Create a cross-tabulation of gender and crime type
+
+---
+
+**End of Tutorial**

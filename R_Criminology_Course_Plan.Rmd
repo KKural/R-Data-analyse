@@ -1,0 +1,616 @@
+---
+title: "R for Criminology Students: Complete Course Plan"
+author: "Course Guide"
+date: "`r Sys.Date()`"
+output: 
+  word_document:
+    toc: true
+    toc_depth: 3
+  pdf_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# Introduction
+
+This document outlines a **10-session track** (±2h each) plus a final project for teaching R to criminology bachelors with zero coding experience. The goal is to move **from installation → analysis → APA tables → full thesis/paper in RMarkdown with Word/PDF output**.
+
+---
+
+# Phase 0 – Installation & Setup (before first class)
+
+**Goal:** Every student has a working R/RStudio setup and can open RStudio.
+
+## 0.1. Software
+
+Give students a 1-page PDF with screenshots:
+
+1. **Install R**
+   * Go to CRAN (cloud.r-project.org)
+   * Download R for Windows/Mac and install with defaults.
+
+2. **Install RStudio Desktop**
+   * Download RStudio Desktop (free) and install.
+
+3. **(Optional for PDF output)** Install tinytex
+   * Later, you'll run in R:
+
+```{r install-tinytex}
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+4. **Create one folder for the course**
+   * E.g. `Documents/R_criminology_course/`
+   * All datasets + R scripts + Rmd files go here.
+
+## 0.2. First startup checklist in class
+
+In the **first 15 minutes of session 1**, have them verify:
+
+* RStudio opens.
+* They can create:
+  * A new **R Script** (`File → New File → R Script`).
+  * A new **R Markdown** document (`File → New File → R Markdown…`).
+
+---
+
+# Phase 1 – Basic R & RStudio (Sessions 1–2)
+
+## Session 1 – R as a tool for criminology
+
+### Goals
+
+* Lower anxiety, show use cases.
+* Basic syntax: objects, functions, vectors.
+
+### Core content
+
+* Very short intro: *Why R for criminology?* (reproducibility, transparency, free).
+* RStudio tour: Console, Script, Environment, Plots, Files.
+* R as a calculator:
+
+```{r calculator}
+2 + 2
+10 / 2
+3^2
+```
+
+* Objects:
+
+```{r objects} git
+x <- 10
+y <- 5
+x + y
+```
+
+* Vectors (use crime-related examples):
+
+```{r vectors}
+burglary_counts <- c(12, 8, 15, 9, 11)
+mean(burglary_counts)
+sd(burglary_counts)
+```
+
+* Commenting:
+
+```{r commenting}
+# This is the number of burglaries in 5 neighbourhoods
+```
+
+### Product
+
+Saved script `session1_intro.R` with comments + simple calculations.
+
+---
+
+## Session 2 – Data frames & criminology datasets
+
+### Goals
+
+* Understand data frames (rows = cases, columns = variables).
+* Load and inspect a CSV.
+
+### Core content
+
+* Introduce packages:
+
+```{r tidyverse-install}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+* Import survey data (you provide something like `fear_of_crime.csv`):
+
+```{r import-data}
+survey <- read_csv("fear_of_crime.csv")
+```
+
+* Inspect:
+
+```{r inspect-data}
+View(survey)
+names(survey)
+dim(survey)
+head(survey)
+summary(survey)
+str(survey)
+```
+
+* Access variables:
+
+```{r access-variables}
+survey$fear
+mean(survey$fear, na.rm = TRUE)
+```
+
+### Homework idea
+
+* Students answer simple questions with R:
+  * How many respondents?
+  * What is the mean fear?
+  * What variables are in the dataset?
+
+---
+
+# Phase 2 – Data Wrangling & Descriptives (Sessions 3–4)
+
+## Session 3 – Selecting & filtering data
+
+### Goals
+
+* Teach them to subset and create variables with `dplyr`.
+
+### Core content
+
+* `select()`, `filter()`, `mutate()`, logical operators.
+* Example:
+
+```{r dplyr-basics}
+library(dplyr)
+
+small <- survey %>%
+  select(gender, age, fear, victim, trust_police)
+
+victims <- small %>%
+  filter(victim == 1)
+
+small <- small %>%
+  mutate(
+    high_fear = ifelse(fear >= 4, 1, 0),
+    older_30  = ifelse(age > 30, 1, 0)
+  )
+```
+
+### Homework idea
+
+* Create a new variable (e.g. `low_trust`) and filter a subgroup (e.g. victims with low trust).
+* Answer 2–3 short questions about this subgroup.
+
+---
+
+## Session 4 – Descriptive statistics & simple tables
+
+### Goals
+
+* Move from "data" to "results" (summary stats).
+
+### Core content
+
+* Frequency tables:
+
+```{r freq-tables}
+table(small$gender)
+prop.table(table(small$gender))
+```
+
+* With `dplyr`:
+
+```{r dplyr-freq}
+small %>% count(gender) %>%
+  mutate(prop = n / sum(n))
+```
+
+* Grouped means:
+
+```{r grouped-means}
+small %>%
+  group_by(gender) %>%
+  summarise(
+    mean_fear = mean(fear, na.rm = TRUE),
+    sd_fear   = sd(fear, na.rm = TRUE),
+    n         = n()
+  )
+```
+
+* Interpret results in simple criminological language.
+
+### Homework
+
+* 3–4 questions like:
+  * Is mean fear higher among victims?
+  * Which neighbourhood has highest fear?
+
+---
+
+# Phase 3 – Inferential Analysis (Sessions 5–6)
+
+## Session 5 – T-tests & chi-square with R
+
+### Goals
+
+* Bridge stats course and R: simple tests in R + interpretation.
+
+### Core content
+
+Use same survey dataset.
+
+* T-test (fear by gender):
+
+```{r t-test}
+t.test(fear ~ gender, data = small)
+```
+
+  * Focus on: group means, t value, df, p-value.
+
+* Chi-square (victim × gender):
+
+```{r chi-square}
+tab <- table(small$gender, small$victim)
+chisq.test(tab)
+```
+
+  * Point out: observed counts, expected counts, p-value.
+
+* Always force interpretive sentences, e.g.:
+  "Women reported significantly higher fear than men, *t*(198) = 2.45, *p* = .015."
+
+---
+
+## Session 6 – Correlation & simple regression
+
+### Goals
+
+* Introduce `cor()` and `lm()` for very simple models.
+
+### Core content
+
+* City-level dataset, e.g. `crime_cities` with `unemployment`, `burglary_rate`, `police_per_1000`.
+* Correlation:
+
+```{r correlation}
+cor(crime_cities$unemployment, crime_cities$burglary_rate, use = "complete.obs")
+```
+
+* Scatterplot:
+
+```{r scatterplot}
+ggplot(crime_cities, aes(x = unemployment, y = burglary_rate)) +
+  geom_point()
+```
+
+* Linear regression:
+
+```{r linear-regression}
+model1 <- lm(burglary_rate ~ unemployment, data = crime_cities)
+summary(model1)
+```
+
+* Focus on **interpretation**: direction, strength, practical meaning, not formulas.
+
+---
+
+# Phase 4 – Visualization & APA-style Tables (Sessions 7–8)
+
+## Session 7 – Visualizing criminology data with ggplot2
+
+### Goals
+
+* Equip them to make publication-quality graphs.
+
+### Core content
+
+* Histograms, bar plots, boxplots, scatterplots:
+
+```{r ggplot-examples}
+ggplot(small, aes(x = fear)) +
+  geom_histogram(binwidth = 1)
+
+ggplot(small, aes(x = gender, y = fear)) +
+  geom_boxplot()
+
+ggplot(crime_cities, aes(x = police_per_1000, y = burglary_rate)) +
+  geom_point()
+```
+
+* Titles & labels:
+
+```{r ggplot-labels}
+ggplot(small, aes(x = gender, y = fear)) +
+  geom_boxplot() +
+  labs(
+    title = "Fear of crime by gender",
+    x = "Gender",
+    y = "Fear of crime (1–5)"
+  )
+```
+
+### Homework
+
+* Each student produces 2–3 plots + short captions.
+
+---
+
+## Session 8 – APA tables directly from R
+
+### Goals
+
+* Show how to generate APA-style tables from R (no manual Word formatting).
+
+### Suggested packages
+
+* `sjPlot` (simple, friendly), and optionally `apaTables` or `gtsummary`.
+
+```{r install-sjplot}
+install.packages("sjPlot")
+library(sjPlot)
+```
+
+### Examples
+
+* Correlation table:
+
+```{r corr-table}
+library(sjPlot)
+tab_corr(small %>% select(fear, trust_police, age),
+         triangle = "lower",
+         digits = 2)
+```
+
+* T-test / group means:
+  * Use `dplyr` for grouped means (from Session 4) and format with `knitr::kable()`:
+
+```{r means-table}
+library(knitr)
+
+table_means <- small %>%
+  group_by(gender) %>%
+  summarise(
+    mean_fear = mean(fear, na.rm = TRUE),
+    sd_fear   = sd(fear, na.rm = TRUE),
+    n         = n()
+  )
+
+kable(table_means, digits = 2, caption = "Fear of crime by gender")
+```
+
+* Regression table:
+
+```{r regression-table}
+model1 <- lm(fear ~ victim + gender + age, data = small)
+tab_model(model1, show.ci = FALSE)
+```
+
+These tables will appear nicely in RMarkdown and can be exported to Word/PDF.
+
+---
+
+# Phase 5 – RMarkdown & Reproducible Thesis Writing (Sessions 9–10)
+
+## Session 9 – Introduction to RMarkdown (RMD → Word/PDF)
+
+### Goals
+
+* Get students comfortable with RMarkdown documents and knitting.
+
+### Core content
+
+1. **Create new RMarkdown file**
+   * `File → New File → R Markdown…`
+   * Choose "Word" or "PDF" as default output.
+
+2. **Explain structure**
+   * YAML header:
+
+```yaml
+---
+title: "Fear of Crime in Ghent"
+author: "Student Name"
+date: "`r Sys.Date()`"
+output: word_document
+---
+```
+
+   * Text sections using `# Introduction`, `## Methods`, etc.
+   * Code chunks:
+
+````markdown
+```{r load-packages}
+library(tidyverse)
+library(sjPlot)
+survey <- read_csv("fear_of_crime.csv")
+```
+````
+
+3. **Inline R results**
+   * E.g. in the text:
+     "The sample contained `` `r
+nrow(survey)` `` respondents."
+
+4. **Knit to Word**
+   * Click **Knit** → generates `.docx`.
+   * They can share this Word file with supervisor.
+
+### Homework
+
+* Small Rmd report: Intro + Methods + basic Descriptives section with one table + one plot, knitted to Word.
+
+---
+
+## Session 10 – Building an APA-style thesis/paper with RMarkdown
+
+### Goals
+
+* Show them the full pipeline: analysis + APA table + text + references → Word/PDF.
+
+### Core content
+
+1. **Thesis/paper structure in Rmd**
+
+   Use a template you provide with sections:
+
+```markdown
+# Introduction
+
+# Methods
+## Sample
+## Measures
+## Procedure
+
+# Results
+
+# Discussion
+
+# References
+```
+
+2. **Add analysis in chunks**
+
+````markdown
+```{r analysis, echo=FALSE}
+model1 <- lm(fear ~ victim + gender + age, data = small)
+tab_model(model1, show.ci = FALSE)
+```
+````
+
+3. **Inline stats in APA style**
+
+   Example in text:
+
+```markdown
+Victims reported significantly higher fear of crime than non-victims,
+*t*(`r round(model_ttest$parameter, 2)`) = `r round(model_ttest$statistic, 2)`,
+*p* = `r signif(model_ttest$p.value, 2)`.
+```
+
+   (You can pre-compute `model_ttest <- t.test(fear ~ victim, data = small)` in a chunk.)
+
+4. **References & citations**
+
+   * Provide a `references.bib` file with some example sources.
+   * In YAML:
+
+```yaml
+---
+title: "Fear of Crime in Ghent"
+author: "Student Name"
+output: word_document
+bibliography: references.bib
+csl: apa.csl    # APA 7 style file
+---
+```
+
+   * In text: `@AuthorYear` for citations, e.g.
+     "Fear of crime is strongly related to perceived disorder @Skogan1990."
+
+5. **Output to Word or PDF**
+
+   * For **Word**:
+
+```yaml
+output: word_document
+```
+
+   * For **PDF**:
+
+```yaml
+output: pdf_document
+```
+
+   * Show both once in class so they see the flexibility.
+
+---
+
+# Phase 6 – Final Mini-Thesis / Paper Project
+
+**Goal:** Students do a **small, reproducible R-based research project** from start to finish.
+
+## What they must deliver
+
+1. **Data file** (given by you or collected in class).
+2. **R script** (optional, for data cleaning).
+3. **RMarkdown file (.Rmd)** containing:
+   * Clear sections (Intro, Methods, Results, Discussion).
+   * At least:
+     * 2 APA-style tables (e.g., descriptives + regression or t-test).
+     * 2 figures (e.g., histogram, boxplot, scatterplot).
+   * Inline reporting of key statistics in APA format.
+   * At least 5 references in `references.bib`.
+4. **Final output**: knitted **Word document** (`.docx`) or **PDF**.
+
+## Example criminology questions
+
+* Is fear of crime higher among women than men?
+* How is trust in police related to fear of crime?
+* Does victimization predict fear of crime after controlling for age and gender?
+
+---
+
+# Package Checklist (for instructors)
+
+Install once and reuse in all examples:
+
+```{r package-install}
+install.packages(c(
+  "tidyverse",   # dplyr, ggplot2, readr, etc.
+  "sjPlot",      # APA-ish tables for models
+  "knitr",       # kable()
+  "kableExtra",  # prettier tables (optional)
+  "tinytex"      # for PDF if needed
+))
+```
+
+Load in RMarkdown:
+
+```{r package-load}
+library(tidyverse)
+library(sjPlot)
+library(knitr)
+library(kableExtra)
+```
+
+---
+
+# Next Steps
+
+If you want, the next steps could be:
+
+* Draft a **template RMarkdown file** for your students (with placeholders for each section + example chunks), and
+* Give you **one complete worked example** (tiny criminology study) that you can show in class from raw CSV → final APA-style Word document.
+
+---
+
+# Summary Table: Course Overview
+
+| Session | Topic | Key Skills | Deliverable |
+|---------|-------|------------|-------------|
+| 0 | Installation & Setup | R/RStudio installation | Working environment |
+| 1 | R as a tool | Basic syntax, objects, vectors | Script with calculations |
+| 2 | Data frames & datasets | Import data, inspect data | Data loading script |
+| 3 | Data wrangling | select(), filter(), mutate() | Subset analysis |
+| 4 | Descriptive statistics | Frequency tables, grouped means | Descriptive tables |
+| 5 | T-tests & chi-square | Hypothesis testing in R | Statistical tests |
+| 6 | Correlation & regression | cor(), lm() | Simple regression model |
+| 7 | Data visualization | ggplot2 graphs | Publication-quality plots |
+| 8 | APA tables | sjPlot, kable() | Formatted tables |
+| 9 | RMarkdown basics | Create Rmd, knit to Word | Simple Rmd report |
+| 10 | Full APA paper | Complete workflow | APA-style document |
+| Final | Mini-thesis project | Full research pipeline | Complete thesis/paper |
+
+---
+
+*This course plan is designed to be flexible and adaptable to your specific needs and student backgrounds.*
