@@ -1,12 +1,8 @@
 ﻿---
 title: "Introductie tot R"
 output: 
-  word_document:
-    toc: true
-    toc_depth: 3
-  pdf_document:
-    toc: true
-    toc_depth: 3
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -177,9 +173,128 @@ Wanneer je significante wijzigingen maakt aan een bestaand script:
 
 **Tip:** Sorteer bestanden in Windows Explorer op "Date modified" om de meest recente versies bovenaan te zien.
 
+# Packages Installeren en Laden
+
+Voordat je begint met programmeren in R, is het belangrijk om te begrijpen hoe packages (paketten) werken. R heeft een basis functionaliteit, maar de echte kracht ligt in de duizenden beschikbare packages.
+
+## Wat zijn R Packages?
+
+**Packages** zijn verzamelingen van functies, data, en documentatie die door de R-gemeenschap zijn ontwikkeld. Denk aan packages als "uitbreidingen" die specifieke functionaliteiten toevoegen aan R, zoals:
+
+- **readr:** Voor het lezen van CSV bestanden
+- **dplyr:** Voor data manipulatie
+- **ggplot2:** Voor het maken van grafieken
+- **haven:** Voor het lezen van SPSS/Stata bestanden
+
+## Packages Installeren
+
+**Methode 1: Via RStudio Interface (Makkelijkst voor beginners)**
+
+1. **Tools Menu:** Klik op "Tools" in de menubalk bovenaan RStudio
+2. **Install Packages:** Selecteer "Install Packages..." uit het Tools menu (zie Figuur 1.8)
+3. **Package naam invoeren:** Typ de naam van het package in het dialoogvenster (zie Figuur 1.9)
+4. **Install klikken:** Klik op "Install" om de installatie te starten
+
+**Figuur 1.8:** Tools Menu - Install Packages Optie
+![Tools Menu Install](<screenshots_and_images/lib_instal_nav.png>)
+
+**Figuur 1.9:** Install Packages Dialoogvenster
+![Package Install Dialog](<screenshots_and_images/lib_install_diologbox.png>)
+
+**Methode 2: Via Code (Professionele methode)**
+
+```r
+# Installeer één package
+install.packages("dplyr")
+
+# Installeer meerdere packages tegelijk
+install.packages(c("dplyr", "readr", "ggplot2", "haven"))
+```
+
+**Belangrijk:** Je hoeft packages maar **één keer** te installeren per computer, maar je moet ze **elke keer** laden wanneer je ze wilt gebruiken.
+
+## Packages Laden
+
+Na installatie moet je packages laden in je R sessie:
+
+```r
+# Laad een package
+library(dplyr)
+
+# Of gebruik de package::functie notatie (AANBEVOLEN!)
+dplyr::select()
+```
+
+## Waarom package::functie() Gebruiken? (ZEER BELANGRIJK!)
+
+**Voor beginners is het STERK aanbevolen om altijd `package::functie()` notatie te gebruiken:**
+
+```r
+# Slecht (kan verwarring geven):
+select(data, kolom1, kolom2)
+
+# Goed (duidelijk welke functie je gebruikt):
+dplyr::select(data, kolom1, kolom2)
+```
+
+**Waarom is dit zo belangrijk?**
+
+1. **Functie Conflicten:** Verschillende packages kunnen functies met dezelfde naam hebben
+   - `select()` bestaat in zowel **dplyr** als **MASS** package
+   - `filter()` bestaat in zowel **dplyr** als **stats** package
+
+2. **Duidelijkheid:** Je (en anderen) zien meteen welke functie uit welk package komt
+
+3. **Reproducibiliteit:** Je code werkt altijd, onafhankelijk van welke packages geladen zijn
+
+4. **Leren:** Je leert welke functies bij welke packages horen
+
+**Voorbeeld van het probleem:**
+```r
+# Als je beide packages laadt:
+library(dplyr)
+library(MASS)
+
+# Dan is onduidelijk welke select() functie wordt gebruikt!
+select(data, kolom1)  # Welke select? dplyr of MASS?
+
+# Met package::functie is het duidelijk:
+dplyr::select(data, kolom1)  # Duidelijk: dplyr's select functie
+```
+
+## Packages Checken
+
+Controleer welke packages geïnstalleerd zijn:
+
+```r
+# Bekijk alle geïnstalleerde packages
+installed.packages()
+
+# Controleer of een specifiek package geïnstalleerd is
+"dplyr" %in% rownames(installed.packages())
+```
+
+## Veel Gebruikte Packages voor Criminologie
+
+Voor criminologisch onderzoek zijn deze packages essentieel:
+
+```r
+# Data laden en manipulatie
+install.packages(c("readr", "readxl", "haven", "dplyr", "tidyr"))
+
+# Statistiek en analyse  
+install.packages(c("psych", "car", "broom", "apaTables"))
+
+# Visualisatie
+install.packages(c("ggplot2", "corrplot", "gridExtra"))
+
+# Rapportage en tabellen
+install.packages(c("knitr", "rmarkdown", "flextable", "writexl"))
+```
+
 # Eerste Stappen in R
 
-Nu je je project hebt opgezet en een R script hebt aangemaakt, kun je beginnen met het leren van de basis van R programmeren.
+Nu je weet hoe packages werken, kun je beginnen met het leren van de basis van R programmeren.
 
 ## Commentaar in R
 
@@ -287,7 +402,7 @@ y^3        # y tot de macht 3: 7^3 = 343
 # Dit is een eenvoudig R script voorbeeld
 # type 2 + 3 
 
-`
+```
 
 Het complete voorbeeldscript demonstreert een goed georganiseerde R workflow met vier hoofdsecties: Data Cleaning, Data Analysis, Visualization, en Tables.
 
@@ -352,8 +467,8 @@ Er zijn twee manieren om de complete lijst van keyboard shortcuts te bekijken:
 - Dit toont alle headers die je hebt gemaakt met # Sectienaam ----
 - Klik op een sectie om er direct naartoe te springen
 
-**Effici�nt commenteren:**
-- Selecteer meerdere regels en druk **Ctrl + Shift + C** om ze allemaal tegelijk te (de)commentari�ren
+**Efficiënt commenteren:**
+- Selecteer meerdere regels en druk **Ctrl + Shift + C** om ze allemaal tegelijk te (de)commentariëren
 - Handig voor het tijdelijk uitschakelen van code blokken
 
 **Code opruimen:**
