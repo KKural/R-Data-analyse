@@ -490,3 +490,28 @@ Het leren van keyboard shortcuts heeft verschillende voordelen:
 - **Focus:** Blijf gefocust op je code zonder naar menu's te zoeken
 
 **Tip:** Begin met het leren van 3-5 shortcuts die je het meest gebruikt, en voeg geleidelijk meer toe naarmate je comfortabeler wordt.
+
+## Hoe R te Leren
+
+Voor het leren van R zijn verschillende uitstekende resources beschikbaar:
+
+**Interactieve Leertools:**
+- **Swirl package:** Leer R direct in R met `install.packages("swirl")` - biedt hands-on tutorials
+- **DataCamp & Codecademy:** Online platforms met gestructureerde cursussen
+- **RStudio Education:** Gratis primers en tutorials ([education.rstudio.com](https://education.rstudio.com))
+
+**Aanbevolen Boeken:**
+- **"R for Data Science"** (Wickham et al.) - De standaardgids, gratis online: [r4ds.hadley.nz](https://r4ds.hadley.nz)
+- **"A Beginner's Guide to Statistics for Criminology and Criminal Justice Using R"** - Springer: [link.springer.com](https://link.springer.com/book/10.1007/978-3-030-50625-4)
+- **"Learning Statistics with R"** (Navarro) - Gratis statistiek met R: [learningstatisticswithr.com](https://learningstatisticswithr.com)
+
+**Criminologie Websites:**
+- **Crime by the Numbers:** Een criminoloog's gids voor R - [crimebythenumbers.com](https://crimebythenumbers.com/)
+
+**Online Cursussen:**
+- **Flames Courses:** Gratis voor Vlaamse universiteitsstudenten - biedt R en statistiek cursussen
+- Johns Hopkins Data Science Specialization (Coursera)
+- Harvard's Data Science courses (edX)
+- YouTube: MarinStatsLectures en StatQuest voor statistische concepten
+
+**Leeradvies:** Begin met het Swirl package voor hands-on ervaring, lees parallel "R for Data Science" hoofdstukken 1-8, en pas geleerde technieken toe op eigen onderzoeksvragen. Sluit aan bij R-communities voor ondersteuning.

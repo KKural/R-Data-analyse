@@ -1,18 +1,7 @@
 ---
 title: "Data Manipulatie en Cleaning in R"
-subtitle: "Een Uitgebreide Gids voor Data Verwerking"
-author: "R Tutorial Reeks"
-date: "`r Sys.Date()`"
 output: 
-  word_document:
-    reference_docx: reference_clean.docx
-    toc: true
-    toc_depth: 3
-  html_document:
-    toc: true
-    toc_float: true
-    theme: flatly
-    highlight: tango
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -34,37 +23,21 @@ Deze tutorial behandelt essentiële data manipulatie en cleaning technieken in R
 
 Eerst laden we de packages die we nodig hebben:
 
+**Benodigde Packages**
+
+Voor deze tutorial zijn verschillende R packages nodig. Je kunt kiezen tussen twee benaderingen:
+
+1. **Package::functie() notatie (AANBEVOLEN):** Gebruik `readr::read_csv()` - dit is duidelijker en voorkomt conflicten
+2. **Library() laden:** Laad packages met `library(readr)` en gebruik dan `read_csv()`
+
+De package::functie() methode is vooral handig voor beginners omdat het duidelijk maakt welke functie uit welk package komt.
+
 ```{r load-packages}
 # Installeer packages indien nodig (uncomment om uit te voeren)
 # install.packages(c("readr", "readxl", "haven", "dplyr", "tidyr", 
 #                    "forcats", "janitor", "psych", "apaTables", "knitr", "flextable"))
 
-# Libraries Laden ----
-# BELANGRIJK: Voor beginners is het aanbevolen om package::functie() te gebruiken
-# Dit voorkomt verwarring en maakt duidelijk welke functie uit welk package komt
-
-# Je kunt packages laden met library(), maar dat is niet altijd nodig
-# library(readr)      # Voor het lezen van CSV bestanden
-# library(readxl)     # Voor het lezen van Excel bestanden (.xlsx, .xls)
-# library(haven)      # Voor het lezen van SPSS (.sav) en Stata (.dta) bestanden
-# library(dplyr)      # Voor data manipulatie en filtering
-# library(tidyr)      # Voor data herstructureren (wide/long format)
-# library(forcats)    # Voor het werken met categorische variabelen (factors)
-# library(janitor)    # Voor data cleaning en het maken van mooie tabellen
-# library(psych)      # Voor beschrijvende statistieken en correlatieanalyses
-# library(apaTables)  # Voor APA geformatteerde tabellen in je scriptie
-# library(knitr)      # Voor het formatteren van tabellen in rapporten
-
-# ALTERNATIEF (AANBEVOLEN): Gebruik package::functie() notatie
-# Dit is duidelijker en voorkomt conflicten tussen packages
-# Voorbeelden:
-# readr::read_csv()     # Lees CSV bestand
-# dplyr::select()       # Selecteer kolommen  
-# dplyr::filter()       # Filter rijen
-# ggplot2::ggplot()     # Maak grafiek
-# flextable::flextable() # Maak professionele tabel
-
-# Voor deze tutorial laden we de packages wel, maar onthoud de package::functie() methode!
+# Libraries Laden voor deze tutorial ----
 library(readr)      # Voor het lezen van CSV bestanden
 library(readxl)     # Voor het lezen van Excel bestanden (.xlsx, .xls)
 library(haven)      # Voor het lezen van SPSS (.sav) en Stata (.dta) bestanden
@@ -94,70 +67,345 @@ data_csv2 <- read_csv("data/mijn_data.csv")
 
 # Methode 3: Base R functie (altijd beschikbaar, geen package nodig)
 data_csv3 <- read.csv("data/mijn_data.csv")
-
-# Voordeel van readr::read_csv(): 
-# - Sneller dan read.csv()
-# - Betere automatische detectie van datatypes
-# - Meer consistente output
 ```
 
-### Excel Bestanden
-```{r load-excel, eval=FALSE}
-# Met package::functie (AANBEVOLEN)
-data_excel <- readxl::read_excel("data/mijn_data.xlsx")
+**Waarom readr::read_csv() gebruiken?**
 
-# Laad specifieke sheet
-data_excel_sheet2 <- readxl::read_excel("data/mijn_data.xlsx", sheet = "Sheet2")
+- **Sneller:** Prestaties zijn beter dan base R `read.csv()`
+- **Betere detectie:** Automatische herkenning van data types
+- **Consistente output:** Voorspelbare resultaten in verschillende situaties
 
-# Laad specifiek bereik
-data_range <- readxl::read_excel("data/mijn_data.xlsx", range = "A1:E100")
+### Excel Bestanden (Uitgebreid)
 
-# Tip: readxl::excel_sheets() toont alle sheet namen
-readxl::excel_sheets("data/mijn_data.xlsx")
+**Excel en Criminologische Data**
+
+Excel is zeer populair voor criminologische data, maar kan complex zijn door meerdere sheets, verschillende formaten en encoding problemen.
+
+```{r load-excel-extended, eval=FALSE}
+# Basis Excel bestand laden (.xlsx of .xls)
+data_excel <- readxl::read_excel("data/criminologie_survey.xlsx")
+
+# Bekijk alle sheet namen eerst (ALTIJD doen!)
+sheet_names <- readxl::excel_sheets("data/criminologie_survey.xlsx")
+base::print(sheet_names)
+
+# Laad specifieke sheet met naam
+data_demographics <- readxl::read_excel("data/criminologie_survey.xlsx", 
+                                       sheet = "Demographics")
+
+# Laad specifieke sheet met nummer
+data_sheet2 <- readxl::read_excel("data/criminologie_survey.xlsx", sheet = 2)
+
+# Laad specifiek bereik (handig voor tabellen in Excel)
+data_range <- readxl::read_excel("data/criminologie_survey.xlsx", 
+                                range = "A1:J200",     # Van A1 tot J200
+                                sheet = "MainData")
+
+# Sla rijen over (als Excel headers heeft die je niet wilt)
+data_skip <- readxl::read_excel("data/criminologie_survey.xlsx",
+                               skip = 2)              # Eerste 2 rijen overslaan
+
+# Specificeer kolomnamen (als Excel headers onduidelijk zijn)
+data_custom_names <- readxl::read_excel("data/criminologie_survey.xlsx",
+                                       col_names = c("id", "age", "gender", 
+                                                    "fear_score", "victim_exp"))
+
+# Specificeer kolomtypes (voorkom automatische detectie problemen)
+data_typed <- readxl::read_excel("data/criminologie_survey.xlsx",
+                                col_types = c("numeric", "numeric", "text", 
+                                             "numeric", "logical"))
+
+# Voor zeer grote Excel bestanden: laad alleen benodigde kolommen
+data_subset <- readxl::read_excel("data/grote_dataset.xlsx",
+                                 range = readxl::cell_cols("A:E"))  # Alleen kolommen A-E
+
+# Tip: Excel kan numerieke codes als tekst opslaan
+# Gebruik col_types om dit te corrigeren!
 ```
 
 ### SPSS Bestanden
 ```{r load-spss, eval=FALSE}
-# Met package::functie (AANBEVOLEN)
-data_spss <- haven::read_sav("data/mijn_data.sav")
+# Data Laden uit SPSS Bestanden ----
+# Voor deze tutorial gebruiken we echte criminologische data uit de Thesis map
 
-# haven behoudt SPSS labels en value labels automatisch!
-# Dit is handig voor gecodeerde variabelen
+# Laad SPSS bestand met package::functie (AANBEVOLEN)
+data_spss <- haven::read_sav("Thesis/Data/DATA_WAVE1_WAVE2_CenW.sav")
+
+# haven::read_sav() behoudt SPSS labels en value labels automatisch!
+# Dit is zeer handig voor gecodeerde variabelen in criminologisch onderzoek
+
+# Bekijk de structuur van SPSS data
+str(data_spss)
+
+# Bekijk SPSS variable labels (zeer nuttig!)
+attributes(data_spss$variabele_naam)$label
+
+# Haven functies voor SPSS:
+# haven::read_sav()     # Lees SPSS .sav bestanden
+# haven::read_por()     # Lees SPSS .por bestanden 
+# haven::write_sav()    # Schrijf naar SPSS formaat
 ```
 
-### Stata Bestanden
-```{r load-stata, eval=FALSE}
-# Met package::functie (AANBEVOLEN)
-data_stata <- haven::read_dta("data/mijn_data.dta")
+### CSV Bestanden (Uitgebreid)
+```{r load-csv-extended, eval=FALSE}
+# CSV Bestanden - Geavanceerde Opties ----
+# CSV is het meest universele data formaat, maar kan encoding problemen geven
 
-# haven werkt ook goed met Stata labels
+# Basis CSV laden met UTF-8 encoding (BELANGRIJK!)
+data_csv_utf8 <- readr::read_csv("data/survey_data.csv", 
+                                locale = readr::locale(encoding = "UTF-8"))
+
+# Voor Nederlandse data met speciale karakters (à, é, ü, etc.)
+data_csv_dutch <- readr::read_csv("data/nederlandse_survey.csv",
+                                  locale = readr::locale(encoding = "UTF-8"))
+
+# CSV met puntkomma als scheiding (veel Nederlandse Excel bestanden)
+data_csv_semicolon <- readr::read_csv2("data/excel_export.csv",
+                                       locale = readr::locale(encoding = "UTF-8"))
+
+# CSV met aangepaste scheiding en decimaal teken
+data_csv_custom <- readr::read_delim("data/custom_format.csv",
+                                     delim = ";",           # Puntkomma scheiding
+                                     locale = readr::locale(
+                                       decimal_mark = ",",   # Komma voor decimalen
+                                       encoding = "UTF-8"
+                                     ))
+
+# Base R alternatief (als readr niet werkt)
+data_csv_base <- utils::read.csv("data/mijn_data.csv",
+                                 encoding = "UTF-8",
+                                 stringsAsFactors = FALSE)  # Voorkomt automatische factor conversie
 ```
 
-## Voorbeeld: Voorbeelddata Laden
+### Andere Veelgebruikte Formaten
 
-Voor deze tutorial maken we wat voorbeelddata:
+#### TSV Bestanden (Tab Separated Values)
+```{r load-tsv, eval=FALSE}
+# TSV bestanden (tabs als scheiding)
+data_tsv <- readr::read_tsv("data/survey_data.tsv",
+                           locale = readr::locale(encoding = "UTF-8"))
 
-```{r create-sample-data}
-# Voorbeelddata Aanmaken ----
-# Voor deze tutorial maken we synthetische criminologische data
-# set.seed() zorgt ervoor dat iedereen dezelfde "random" data krijgt
-set.seed(123)
-crime_data <- data.frame(
-  participant_id = 1:200,                              # Unieke ID voor elke deelnemer
-  age = sample(18:65, 200, replace = TRUE),            # Leeftijd tussen 18 en 65
-  gender = sample(c(1, 2), 200, replace = TRUE),       # Geslacht: 1=man, 2=vrouw
-  education = sample(1:4, 200, replace = TRUE),        # Opleidingsniveau: 1-4
-  income = sample(c(1, 2, 3, 4, 5), 200, replace = TRUE), # Inkomen: 1=zeer laag tot 5=zeer hoog
-  fear_crime = sample(1:7, 200, replace = TRUE),       # Criminaliteitsvrees: 1-7 schaal
-  victimization = sample(c(0, 1), 200, replace = TRUE), # Slachtofferschap: 0=nee, 1=ja
-  neighborhood_safety = sample(1:5, 200, replace = TRUE), # Buurtveiligheid: 1-5 schaal
-  police_trust = sample(1:10, 200, replace = TRUE),    # Vertrouwen politie: 1-10 schaal
-  crime_reporting = sample(c(0, 1), 200, replace = TRUE) # Bereid tot melden: 0=nee, 1=ja
-)
-
-# Display first few rows
-head(crime_data)
+# TSV is handig wanneer je data komma's bevat in tekstvelden
 ```
+
+
+### Ruimtelijke Data (Spatial Data)
+```{r load-spatial, eval=FALSE}
+# Ruimtelijke Data Laden ----
+# Voor criminologisch onderzoek met geografische componenten
+# Zeer belangrijk voor hotspot analyses, buurteffecten, etc.
+
+# Shapefile laden (meest voorkomend formaat)
+wijken_data <- sf::st_read("data/wijken_gent.shp")
+
+# GeoJSON bestanden (modern formaat)
+crime_locations <- sf::st_read("data/crime_hotspots.geojson")
+
+# KML bestanden (van Google Earth)
+patrols_data <- sf::st_read("data/police_patrols.kml")
+
+# Geografische databases
+gdb_data <- sf::st_read("data/crime_database.gdb")
+
+# CSV met lat/lon coordinaten omzetten naar spatial data
+csv_coords <- readr::read_csv("data/crime_coordinates.csv")
+spatial_crime <- sf::st_as_sf(csv_coords, 
+                             coords = c("longitude", "latitude"),
+                             crs = 4326)  # WGS84 coordinatensysteem
+
+```
+
+**Waarom Ruimtelijke Data Belangrijk Is voor Criminologie**
+
+- **Hotspot analyse:** Identificeer geografische clusters van criminaliteit
+- **Buurteffecten:** Onderzoek de invloed van omgeving op gedrag  
+- **Ruimtelijke autocorrelatie:** Meet geografische samenhang in data
+- **Geografische regressie:** Modelleer ruimtelijke verbanden
+- **Kaartvisualisatie:** Toon patronen geografisch
+
+## Voorbeeld: Echte SPSS Data Laden
+
+Voor deze tutorial gebruiken we echte COVID-19 longitudinale data uit de Thesis folder. Er zijn **drie methoden** om SPSS data in R te gebruiken:
+
+**Methode 1 (haven):** Laadt SPSS direct met alle labels behouden - ideaal voor complexe bestanden
+**Methode 2 (Excel):** Export via Excel met value labels als tekst - goed voor delen  
+**Methode 3 (CSV):** Export via CSV - universeel formaat, snelst, meest gebruikt
+
+### Alternatieve Data Verzameling
+
+Je hoeft niet altijd te beginnen met SPSS! Moderne alternatieven:
+
+- **Handmatige Excel entry:** Maak kolommen voor elke variabele, voer data in per respondent
+- **Google Forms:** Gratis online formulieren, automatische CSV export, ideaal voor surveys
+- **Microsoft Forms:** Geïntegreerd met Office 365, directe Excel export
+- **Mobiele data entry:** Gebruik formulieren ter plekke tijdens interviews
+
+Voor criminologisch onderzoek is R essentieel omdat het geavanceerde analyses, volledige controle en reproduceerbare resultaten biedt die online platforms niet kunnen leveren.
+
+```{r load-real-spss-data}
+# METHODE 1: Direct SPSS bestand laden met haven::read_sav() ----
+covid_data_spss <- haven::read_sav("Thesis/Data/DATA_WAVE1_WAVE2_CenW.sav")
+
+# Bekijk variabele labels en value labels
+attr(covid_data_spss$W1_Gebjaar, "label")         # Variabele beschrijving
+attr(covid_data_spss$W1_Geslacht, "labels")       # 1 = "Man", 2 = "Vrouw"
+# Voordeel: Behoudt alle SPSS metadata automatisch
+
+
+# METHODE 2: Export naar Excel en dan laden ----
+# In SPSS: File → Save As → Excel, vink "Save value labels" aan
+covid_data_excel <- readxl::read_excel("Thesis/Data/DATA_WAVE1_WAVE2_CenW.xlsx")
+# Voordeel: Value labels zijn al tekst, makkelijk te delen
+
+
+# METHODE 3: Export naar CSV en dan laden ----
+# In SPSS: File → Save As → CSV, vink "Save value labels" aan
+covid_data_csv <- readr::read_csv("Thesis/Data/DATA_WAVE1_WAVE2_CenW.csv", 
+                                  locale = readr::locale(encoding = "UTF-8"))
+# Voordeel: Universeel formaat, snel, werkt overal
+
+
+# KEUZE: WE GEBRUIKEN CSV (METHODE 3) VOOR DEZE TUTORIAL ----
+# CSV is universeel, snel, en werkt in alle programma's
+
+# Laad de data met CSV methode:
+covid_data <- readr::read_csv("Thesis/Data/DATA_WAVE1_WAVE2_CenW.csv", 
+                             locale = readr::locale(encoding = "UTF-8"))
+
+# BELANGRIJK: Missing Values Cleaning voor CSV Data ----
+# CSV export uit SPSS heeft vaak nog 999, 888, 777 codes voor missing values
+# Deze moeten we handmatig naar NA converteren
+
+# Converteer SPSS missing value codes naar echte NA's
+covid_data <- covid_data %>%
+  dplyr::mutate_all(~dplyr::na_if(., 999)) %>%      # 999 -> NA
+  dplyr::mutate_all(~dplyr::na_if(., 888)) %>%      # 888 -> NA  
+  dplyr::mutate_all(~dplyr::na_if(., 777)) %>%      # 777 -> NA
+  dplyr::mutate_all(~dplyr::na_if(., -999)) %>%     # -999 -> NA
+  dplyr::mutate_all(~dplyr::na_if(., -888)) %>%     # -888 -> NA
+  dplyr::mutate_all(~dplyr::na_if(., -777))         # -777 -> NA
+
+# Verificatie dat de data correct is geladen:
+
+# Bekijk de eerste paar rijen
+head(covid_data)
+
+# Bekijk de variabelennamen (dit zijn echte onderzoeksvariabelen!)
+names(covid_data)
+
+# Bekijk de structuur van de echte data
+utils::str(covid_data)
+```
+
+**BELANGRIJK: Begrijpen van R Data Types**
+
+Wanneer je `utils::str()` uitvoert, zie je verschillende afkortingen die het data type aangeven. Het is essentieel om deze te begrijpen omdat elk type andere analyses mogelijk maakt:
+
+- **num (numeric):** Getallen met decimalen (2002, 6.5)
+  - Voor continue variabelen zoals leeftijden en scores
+  - Je kunt berekeningen uitvoeren: gemiddelde, standaarddeviatie
+  - Gebruikt voor histogram grafieken
+
+- **chr (character):** Tekst en labels ("Vrouw", "Hoger onderwijs")  
+  - Voor categorische variabelen met tekstlabels
+  - Je kunt frequentietabellen maken, maar geen berekeningen
+  - Gebruikt voor barplot grafieken
+
+- **logi (logical):** TRUE/FALSE waarden
+  - Voor ja/nee vragen en condities
+  - Ontstaat meestal bij filtering en vergelijken
+
+- **factor:** Categorische variabelen met vaste levels
+  - Voor statistische analyses van categorieën
+  - Geordende factors voor rangorde (laag, midden, hoog)
+
+- **NA:** Ontbrekende waarden (Not Available)
+  - Kunnen voorkomen in alle data types
+  - Let op: soms staan nog "999" codes in character variabelen
+
+**Waarom is dit belangrijk?** Verschillende data types vereisen verschillende analyses - `mean()` werkt niet op character variabelen, en je moet vaak converteren tussen types voor specifieke analyses.
+
+```{r continue-inspection}
+# BELANGRIJK: CSV specifieke eigenschappen begrijpen ----
+
+# 1. Geen SPSS labels in CSV
+# CSV bestanden bevatten ALLEEN de data, geen metadata zoals:
+# - Variabele beschrijvingen (variable labels)  
+# - Waarde betekenissen (value labels)
+# - Missing value definities
+
+# 2. Value labels zijn al geconverteerd (als export optie was gebruikt)
+# Als je "Save value labels" hebt aangevinkt in SPSS:
+# - Codes zijn vervangen door tekst: "Man"/"Vrouw" in plaats van 1/2
+# - Dit is GOED - het maakt je data zelf-verklarend
+
+# 3. Controleer je variabelen na CSV import
+# Verwijder eventuele lege kolomnamen die problemen kunnen veroorzaken
+valid_names <- names(covid_data)[names(covid_data) != "" & !is.na(names(covid_data))]
+covid_data <- covid_data[valid_names]
+
+if(length(names(covid_data)) > 0) {
+  
+  # Eerste 5 variabelennamen uit CSV bestand:
+  first_vars <- names(covid_data)[1:min(5, length(names(covid_data)))]
+  
+  # Controleer hoeveel missing values er nu zijn na conversie
+  total_missing <- sum(is.na(covid_data))
+  
+  # Controleer ook of value labels zijn geconverteerd
+  if("W1_Geslacht" %in% names(covid_data)) {
+    unique_geslacht <- unique(covid_data$W1_Geslacht)
+    geslacht_na_count <- sum(is.na(covid_data$W1_Geslacht))
+  }
+  
+  # Vergelijk beschikbare methoden voor referentie
+  if(exists("covid_data_spss") && length(names(covid_data_spss)) > 0) {
+    for(i in 1:min(5, length(names(covid_data_spss)))) {
+      var_name <- names(covid_data_spss)[i]
+      var_label <- attributes(covid_data_spss[[var_name]])$label
+      if(!is.null(var_label)) {
+        # Variable labels beschikbaar voor referentie
+      }
+    }
+  }
+}
+
+# Controleer missing values na conversie:
+missing_summary <- covid_data %>%
+  dplyr::summarise_all(~sum(is.na(.))) %>%
+  tidyr::gather(key = "variable", value = "missing_count") %>%
+  dplyr::arrange(desc(missing_count))
+
+# Toon variabelen met meeste missing values
+head(missing_summary, 10)
+```
+
+**Verschillen tussen SPSS en CSV Import**
+
+Bij het vergelijken van de drie import methoden is het belangrijk om te begrijpen:
+
+- **SPSS directe import (haven):** Behoudt alle variable labels en beschrijvingen automatisch
+- **CSV export:** Alleen variabelennamen, geen metadata over betekenis van variabelen
+- **Excel export:** Tussenoplossing met value labels als tekst
+
+**Missing Values Behandeling**
+
+**Voordelen van handmatige conversie:**
+- Volledige controle over welke codes als missing worden beschouwd
+- Verschillende codes kunnen verschillende betekenissen hebben (999 = "niet van toepassing", 888 = "weet niet")
+- Specifieke variabelen kunnen anders worden behandeld
+
+**Nadelen:**
+- Je moet alle mogelijke missing codes kennen
+- Risico dat codes over het hoofd worden gezien
+- `haven::read_sav()` doet dit automatisch
+
+**Waarom Echte Data Gebruiken?**
+
+- **Realistische omvang:** Werkelijke steekproefgroottes en variabele aantallen
+- **Authentieke distributies:** Echte data patronen en uitbijters  
+- **Praktische missing values:** Realistische patronen van ontbrekende data
+- **Praktijkervaring:** Leren omgaan met echte onderzoeksdata
 
 # Data Inspectie en Overzicht
 
@@ -168,28 +416,31 @@ Voor het schoonmaken, inspecteer altijd je data. Dit is een cruciale eerste stap
 # ALTIJD eerst je data bekijken voor je begint met cleaning!
 
 # Bekijk de structuur van je data (welke variabelen, welk type)
-str(crime_data)
+utils::str(covid_data)
 
 # Hoeveel rijen en kolommen heeft je dataset?
-dim(crime_data)
+base::dim(covid_data)
 
 # Wat zijn de namen van je variabelen?
-names(crime_data)
+base::names(covid_data)
 
 # Eerste 6 rijen bekijken om een indruk te krijgen
-head(crime_data)
+utils::head(covid_data)
 
 # Laatste 6 rijen bekijken
-tail(crime_data)
+utils::tail(covid_data)
 
 # Samenvattende statistieken voor alle variabelen
-summary(crime_data)
+base::summary(covid_data)
 
 # Controleer op ontbrekende waarden (NA's)
-sum(is.na(crime_data))
+base::sum(base::is.na(covid_data))
 
 # Alternatief: bekijk ontbrekende waarden per variabele
-sapply(crime_data, function(x) sum(is.na(x)))
+base::sapply(covid_data, function(x) base::sum(base::is.na(x)))
+
+# Voor SPSS data: bekijk value labels
+# attributes(covid_data$variabele_naam)$labels
 ```
 
 # Variabelen Hernoemen
@@ -203,22 +454,24 @@ Duidelijke variabelennamen maken je analyses veel makkelijker te begrijpen en te
 
 # Methode 1: Met package::functie (AANBEVOLEN)
 # De structuur is: dplyr::rename(nieuwe_naam = oude_naam)
-crime_data <- crime_data %>%
+covid_data <- covid_data %>%
   dplyr::rename(
-    id = participant_id,                    # Korte, duidelijke ID
-    leeftijd_jaren = age,                    # Nederlandse naam + eenheid
-    geslacht_gecodeerd = gender,             # Duidelijk dat het gecodeerd is
-    opleidingsniveau = education,            # Nederlandse term
-    inkomenscategorie = income,              # Nederlandse term
-    criminaliteitsvrees = fear_crime,        # Volledige Nederlandse term
-    slachtoffer_ervaring = victimization,    # Nederlandse beschrijving
-    buurt_veiligheid_score = neighborhood_safety, # Duidelijk dat het een score is
-    vertrouwen_politie = police_trust,       # Nederlandse term
-    bereid_tot_melden = crime_reporting      # Beschrijvende Nederlandse naam
+    nummer = Nummer,                         # Respondent nummer
+    geboortejaar = W1_Gebjaar,              # Geboortejaar
+    geslacht = W1_Geslacht,                 # Geslacht
+    nationaliteit = W1_Nationaliteit,       # Nationaliteit
+    diploma = W1_Diploma,                   # Opleidingsniveau
+    burgerlijke_staat = W1_Burg_staat,      # Burgerlijke staat
+    inkomen = W1_Inkomen,                   # Inkomen
+    gezondheid = W1_Gezondheid,             # Gezondheid
+    angst_score = W1_Angst1,                # Angst meting 1
+    depressie_score = W1_Depressie1,        # Depressie meting 1
+    stress_werk = W1_W_STRESS1,             # Werkgerelateerde stress
+    eenzaamheid = W1_Eenz1                  # Eenzaamheid meting 1
   )
 
 # Methode 2: Zonder pipe operator (ook goed)
-crime_data <- dplyr::rename(crime_data,
+covid_data <- dplyr::rename(covid_data,
                            id = participant_id,
                            leeftijd_jaren = age)
 
@@ -228,10 +481,18 @@ crime_data <- dplyr::rename(crime_data,
 # - Maakt je code reproduceerbaar
 
 # Controleer de nieuwe variabelennamen
-names(crime_data)
+names(covid_data)
+```
 
-# Tip: Je kunt ook individuele variabelen hernoemen:
-# names(crime_data)[names(crime_data) == "oude_naam"] <- "nieuwe_naam"
+**Waarom dplyr::rename() gebruiken?**
+
+- Het is expliciet welke functie van welk package wordt gebruikt
+- Voorkomt verwarring met andere rename functies  
+- Maakt code reproduceerbaar en duidelijk
+
+**Tip:** Je kunt ook individuele variabelen hernoemen met base R:
+```r
+names(covid_data)[names(covid_data) == "oude_naam"] <- "nieuwe_naam"
 ```
 
 # Werken met Factor Variabelen
@@ -239,45 +500,49 @@ names(crime_data)
 Categorische variabelen omzetten naar factors met betekenisvolle labels:
 
 ```{r create-factors}
-# Factor() is een base R functie, geen package nodig
-# Maar je kunt ook forcats:: functies gebruiken voor meer controle
+# Factors Maken ----
+# base::factor() is een base R functie, geen package nodig
+# Maar forcats:: functies geven meer controle en zijn consistenter
 
-# Methode 1: Base R factor() functie
-crime_data$geslacht_gecodeerd <- factor(crime_data$geslacht_gecodeerd,
-                                        levels = c(1, 2),
-                                        labels = c("Man", "Vrouw"))
+# Methode 1: Base R base::factor() functie
+covid_data$geslacht <- base::factor(covid_data$geslacht,
+                                   levels = c(1, 2),
+                                   labels = c("Man", "Vrouw"))
 
-# Methode 2: Met forcats package (meer opties)
-crime_data$geslacht_gecodeerd <- forcats::fct_recode(factor(crime_data$geslacht_gecodeerd),
-                                                     "Man" = "1",
-                                                     "Vrouw" = "2")
+# Methode 2: Met forcats package (AANBEVOLEN - meer opties)
+covid_data$geslacht <- forcats::fct_recode(base::factor(covid_data$geslacht),
+                                          "Man" = "1",
+                                          "Vrouw" = "2")
 
-# Converteer opleiding naar geordende factor
-crime_data$opleidingsniveau <- factor(crime_data$opleidingsniveau,
-                                      levels = c(1, 2, 3, 4),
-                                      labels = c("Basis", "Secundair", 
-                                                "Universiteit", "Postgraduaat"),
-                                      ordered = TRUE)
+# Converteer diploma naar geordende factor
+covid_data$diploma <- base::factor(covid_data$diploma,
+                                   levels = c(1, 2, 3, 4, 5),
+                                   labels = c("Lager onderwijs", "Secundair onderwijs", 
+                                             "Hoger onderwijs", "Universitair", "Postgraduaat"),
+                                   ordered = TRUE)
 
-# Converteer inkomen naar geordende factor
-crime_data$inkomenscategorie <- factor(crime_data$inkomenscategorie,
+# Converteer inkomen naar geordende factor  
+covid_data$inkomenscategorie <- base::factor(covid_data$inkomenscategorie,
                                        levels = c(1, 2, 3, 4, 5),
                                        labels = c("Zeer Laag", "Laag", "Gemiddeld", 
                                                  "Hoog", "Zeer Hoog"),
                                        ordered = TRUE)
 
 # Converteer binaire variabelen naar factors
-crime_data$slachtoffer_ervaring <- factor(crime_data$slachtoffer_ervaring,
+covid_data$slachtoffer_ervaring <- base::factor(covid_data$slachtoffer_ervaring,
                                           levels = c(0, 1),
                                           labels = c("Nee", "Ja"))
 
-crime_data$bereid_tot_melden <- factor(crime_data$bereid_tot_melden,
+covid_data$bereid_tot_melden <- base::factor(covid_data$bereid_tot_melden,
                                        levels = c(0, 1),
                                        labels = c("Nee", "Ja"))
 
-# Controleer factor levels
-levels(crime_data$geslacht_gecodeerd)
-levels(crime_data$opleidingsniveau)
+# Controleer factor levels met base R functies
+base::levels(covid_data$geslacht_gecodeerd)
+base::levels(covid_data$opleidingsniveau)
+
+# Bekijk factor structuur
+utils::str(covid_data$geslacht_gecodeerd)
 ```
 
 # Factor Levels Wijzigen
@@ -287,10 +552,10 @@ Soms moet je factor levels wijzigen na aanmaak:
 ```{r modify-factors}
 # Herorder factors (verander referentiecategorie)
 # Met package::functie (AANBEVOLEN)
-crime_data$geslacht_gecodeerd <- forcats::fct_relevel(crime_data$geslacht_gecodeerd, "Vrouw")
+covid_data$geslacht_gecodeerd <- forcats::fct_relevel(covid_data$geslacht_gecodeerd, "Vrouw")
 
 # Hercodeer factor levels
-crime_data$opleiding_eenvoudig <- forcats::fct_recode(crime_data$opleidingsniveau,
+covid_data$opleiding_eenvoudig <- forcats::fct_recode(covid_data$opleidingsniveau,
                                                       "Basis" = "Basis",
                                                       "Basis" = "Secundair",
                                                       "Gevorderd" = "Universiteit",
@@ -299,14 +564,15 @@ crime_data$opleiding_eenvoudig <- forcats::fct_recode(crime_data$opleidingsnivea
 # Alternatief met base R (ook goed):
 # levels(crime_data$geslacht_gecodeerd) <- c("Vrouw", "Man")
 
-# Waarom forcats:: gebruiken?
-# - Meer controle over factor manipulatie
-# - Consistente syntax
-# - Beter geïntegreerd met tidyverse
-
 # Controleer nieuwe levels
-table(crime_data$opleiding_eenvoudig)
+table(covid_data$opleiding_eenvoudig)
 ```
+
+**Waarom forcats:: gebruiken?**
+
+- **Meer controle:** Geavanceerde factor manipulatie mogelijkheden
+- **Consistente syntax:** Voorspelbare functienamen en gedrag
+- **Tidyverse integratie:** Werkt naadloos met dplyr en ggplot2
 
 # Nieuwe Variabelen Toevoegen
 
@@ -317,30 +583,34 @@ Maak nieuwe variabelen gebaseerd op bestaande:
 # In criminologisch onderzoek heb je vaak nieuwe variabelen nodig
 # gebaseerd op bestaande variabelen (zoals leeftijdsgroepen, indexscores, etc.)
 
-# Leeftijdsgroepen maken (categoriseren van continue variabele)
-crime_data$leeftijdsgroep <- cut(crime_data$leeftijd_jaren,
-                                breaks = c(0, 25, 35, 50, 100),
-                                labels = c("18-25", "26-35", "36-50", "50+"),
-                                right = FALSE)  # right=FALSE betekent [18,25)
+# Leeftijdsgroepen maken (geboortejaar omrekenen naar leeftijd en categoriseren)
+# Eerst leeftijd berekenen uit geboortejaar
+covid_data$leeftijd <- 2024 - covid_data$geboortejaar
+
+# Dan leeftijdsgroepen maken
+covid_data$leeftijdsgroep <- base::cut(covid_data$leeftijd,
+                                      breaks = c(0, 25, 35, 50, 100),
+                                      labels = c("18-25", "26-35", "36-50", "50+"),
+                                      right = FALSE)  # right=FALSE betekent [18,25)
 
 # Samengestelde score maken (veiligheidsindex)
 # Combineer buurtveiligheid en vertrouwen in politie
-crime_data$veiligheids_index <- (crime_data$buurt_veiligheid_score + 
-                                crime_data$vertrouwen_politie) / 2
+covid_data$veiligheids_index <- (covid_data$buurt_veiligheid_score + 
+                                covid_data$vertrouwen_politie) / 2
 
 # Binaire variabele maken op basis van voorwaarde
 # Hoge versus lage criminaliteitsvrees (cutoff bij 6)
-crime_data$hoge_vrees <- ifelse(crime_data$criminaliteitsvrees >= 6, 
+covid_data$hoge_vrees <- base::ifelse(covid_data$criminaliteitsvrees >= 6, 
                                "Hoog", "Laag")
-crime_data$hoge_vrees <- factor(crime_data$hoge_vrees)  # Maak er een factor van
+covid_data$hoge_vrees <- base::factor(covid_data$hoge_vrees)  # Maak er een factor van
 
 # Interactie variabele maken (voor later gebruik in analyses)
 # Combinatie van geslacht en opleidingsniveau
-crime_data$geslacht_opleiding <- interaction(crime_data$geslacht_gecodeerd, 
-                                            crime_data$opleidingsniveau)
+covid_data$geslacht_opleiding <- base::interaction(covid_data$geslacht_gecodeerd, 
+                                            covid_data$opleidingsniveau)
 
 # Controleer de nieuwe variabelen
-head(crime_data[, c("leeftijd_jaren", "leeftijdsgroep", "veiligheids_index", "hoge_vrees")])
+head(covid_data[, c("leeftijd_jaren", "leeftijdsgroep", "veiligheids_index", "hoge_vrees")])
 ```
 
 # Variabelen Verwijderen
@@ -353,33 +623,36 @@ Soms heb je variabelen die je niet nodig hebt voor je analyses. Hier leer je ze 
 # Verwijder variabelen die je niet meer nodig hebt
 
 # Methode 1: Specifieke variabelen verwijderen met dplyr::select()
-crime_data_clean <- crime_data %>%
+covid_data_clean <- covid_data %>%
   dplyr::select(-geslacht_opleiding)  # Verwijder de interactie variabele (voorlopig niet nodig)
 
 # Zonder pipe operator:
-# crime_data_clean <- dplyr::select(crime_data, -geslacht_opleiding)
+# covid_data_clean <- dplyr::select(covid_data, -geslacht_opleiding)
 
 # Methode 2: Variabelen op NULL zetten (alternatieve methode)
-# crime_data$ongewenste_variabele <- NULL
+# covid_data$ongewenste_variabele <- NULL
 
 # Methode 3: Alleen gewenste variabelen selecteren met dplyr::select()
 # Dit is handig wanneer je een subset wilt voor specifieke analyses
-essentiele_vars <- crime_data %>%
+essentiele_vars <- covid_data %>%
   dplyr::select(id, leeftijd_jaren, leeftijdsgroep, geslacht_gecodeerd, 
                opleidingsniveau, criminaliteitsvrees, slachtoffer_ervaring, 
                veiligheids_index, hoge_vrees)
 
 # Alternatief zonder pipe:
-# essentiele_vars <- dplyr::select(crime_data, id, leeftijd_jaren, leeftijdsgroep)
-
-# Waarom dplyr::select()? 
-# select() bestaat ook in MASS package - zonder dplyr:: kan R verward raken!
+# essentiele_vars <- dplyr::select(covid_data, id, leeftijd_jaren, leeftijdsgroep)
 
 # Controleer welke variabelen er nog zijn
 names(essentiele_vars)
+```
 
-# Tip: Bewaar altijd een backup van je originele data!
-# originele_data <- crime_data  # Maak een kopie voordat je variabelen verwijdert
+**Waarom dplyr::select() specificeren?**
+
+De `select()` functie bestaat ook in het MASS package. Zonder `dplyr::` kan R verward raken over welke functie je bedoelt, vooral als beide packages geladen zijn.
+
+**BELANGRIJK:** Bewaar altijd een backup van je originele data voordat je variabelen verwijdert:
+```r
+originele_data <- covid_data  # Maak kopie voor veiligheid
 ```
 
 # Data Cleaning
@@ -392,51 +665,70 @@ names(essentiele_vars)
 # Hier simuleren we dat door enkele waarden op NA te zetten
 
 # Voeg wat ontbrekende waarden toe voor demonstratie
-crime_data$criminaliteitsvrees[sample(1:200, 10)] <- NA  # 10 missing values
-crime_data$vertrouwen_politie[sample(1:200, 15)] <- NA   # 15 missing values
+covid_data$criminaliteitsvrees[sample(1:200, 10)] <- NA  # 10 missing values
+covid_data$vertrouwen_politie[sample(1:200, 15)] <- NA   # 15 missing values
 
 # Bekijk het patroon van ontbrekende waarden
-missing_summary <- crime_data %>%
+missing_summary <- covid_data %>%
   dplyr::summarise_all(~sum(is.na(.)))  # Tel NA's per variabele
-print(missing_summary)
 
 # Alternatief met package::functie:
-# missing_summary <- dplyr::summarise_all(crime_data, ~sum(is.na(.)))
+# missing_summary <- dplyr::summarise_all(covid_data, ~sum(is.na(.)))
 
 # Methode 1: Verwijder rijen met enige ontbrekende waarden (listwise deletion)
-complete_data <- crime_data %>%
+complete_data <- covid_data %>%
   tidyr::drop_na()  # Behoud alleen complete cases
 
-# Zonder pipe: complete_data <- tidyr::drop_na(crime_data)
-cat("Rijen na verwijdering alle NA's:", nrow(complete_data), "\n")
+# Zonder pipe: complete_data <- tidyr::drop_na(covid_data)
 
 # Methode 2: Verwijder rijen met ontbrekende waarden in specifieke kolommen
-vrees_compleet <- crime_data %>%
-  drop_na(criminaliteitsvrees)  # Behoud alleen cases met geldige vrees scores
-cat("Rijen na verwijdering NA's in vrees:", nrow(vrees_compleet), "\n")
+vrees_compleet <- covid_data %>%
+  tidyr::drop_na(criminaliteitsvrees)  # Behoud alleen cases met geldige vrees scores
 
-# Methode 3: Vervang ontbrekende waarden met gemiddelde (alleen voor numerieke variabelen!)
-# Let op: dit is niet altijd de beste methode, maar wel eenvoudig
-crime_data$vertrouwen_politie[is.na(crime_data$vertrouwen_politie)] <- 
-  mean(crime_data$vertrouwen_politie, na.rm = TRUE)
+# Methode 3: Vervang ontbrekende waarden met gemiddelde (alleen numeriek!)
+covid_data$vertrouwen_politie[base::is.na(covid_data$vertrouwen_politie)] <- 
+  base::mean(covid_data$vertrouwen_politie, na.rm = TRUE)
 
-# Controleer of er nog NA's zijn in deze variabele
-sum(is.na(crime_data$vertrouwen_politie))
+# Controleer of conversie succesvol was
+base::sum(base::is.na(covid_data$vertrouwen_politie))
 ```
 
-## Removing Duplicates
+**Let op:** Gemiddelde imputatie is eenvoudig maar niet altijd de beste methode. Het kan variabiliteit verminderen en correlaties verstoren. Voor betere resultaten overweeg meer geavanceerde imputatie technieken.
+
+```{r continue-missing-handling
+
+# Alternatief: gebruik dplyr::case_when voor complexere imputatie
+# crime_data <- crime_data %>%
+#   dplyr::mutate(
+#     vertrouwen_politie = dplyr::case_when(
+#       base::is.na(vertrouwen_politie) & geslacht_gecodeerd == "Man" ~ base::mean(vertrouwen_politie[geslacht_gecodeerd == "Man"], na.rm = TRUE),
+#       base::is.na(vertrouwen_politie) & geslacht_gecodeerd == "Vrouw" ~ base::mean(vertrouwen_politie[geslacht_gecodeerd == "Vrouw"], na.rm = TRUE),
+#       TRUE ~ vertrouwen_politie
+#     )
+#   )
+```
+
+## Duplicaten Verwijderen
 
 ```{r remove-duplicates}
-# Check for duplicates
-sum(duplicated(crime_data$id))
+# Duplicaten Controleren ----
+# Controleer op duplicate cases op basis van ID
+base::sum(base::duplicated(covid_data$id))
 
-# Remove duplicates based on all variables
-crime_data_unique <- crime_data %>%
-  distinct()
+# Verwijder duplicaten gebaseerd op alle variabelen
+covid_data_unique <- covid_data %>%
+  dplyr::distinct()
 
-# Remove duplicates based on specific variable (keep first occurrence)
-crime_data_unique_id <- crime_data %>%
-  distinct(id, .keep_all = TRUE)
+# Verwijder duplicaten gebaseerd op specifieke variabele (behoud eerste voorkomen)
+covid_data_unique_id <- covid_data %>%
+  dplyr::distinct(id, .keep_all = TRUE)
+
+# Alternatief zonder pipe operator:
+# covid_data_unique <- dplyr::distinct(covid_data)
+# covid_data_unique_id <- dplyr::distinct(covid_data, id, .keep_all = TRUE)
+
+# Base R alternatief voor duplicaten verwijderen:
+# covid_data_unique_base <- covid_data[!base::duplicated(covid_data), ]
 ```
 
 ## Data Validatie
@@ -447,12 +739,12 @@ crime_data_unique_id <- crime_data %>%
 # Dit is cruciaal voor data kwaliteit!
 
 # Bekijk de verdeling van numerieke variabelen
-summary(crime_data$leeftijd_jaren)
-summary(crime_data$criminaliteitsvrees)
-summary(crime_data$vertrouwen_politie)
+summary(covid_data$leeftijd_jaren)
+summary(covid_data$criminaliteitsvrees)
+summary(covid_data$vertrouwen_politie)
 
 # Controleer op onmogelijke waarden en filter ze eruit
-crime_data_valid <- crime_data %>%
+covid_data_valid <- covid_data %>%
   filter(
     leeftijd_jaren >= 18 & leeftijd_jaren <= 100,  # Realistische leeftijd
     criminaliteitsvrees >= 1 & criminaliteitsvrees <= 7 | is.na(criminaliteitsvrees),  # Schaal 1-7
@@ -461,9 +753,7 @@ crime_data_valid <- crime_data %>%
   )
 
 # Hoeveel cases zijn er over na filtering?
-cat("Originele dataset:", nrow(crime_data), "cases\n")
-cat("Na validatie:", nrow(crime_data_valid), "cases\n")
-cat("Verwijderde cases:", nrow(crime_data) - nrow(crime_data_valid), "cases\n")
+# Validation results available in objects
 ```
 
 # Creating Frequency Tables
@@ -476,13 +766,13 @@ cat("Verwijderde cases:", nrow(crime_data) - nrow(crime_data_valid), "cases\n")
 # Ze tonen hoe vaak elke waarde voorkomt
 
 # Basis frequentietabel voor geslacht
-table(crime_data$geslacht_gecodeerd)
+base::table(covid_data$geslacht_gecodeerd)
 
 # Frequentietabel met proporties (percentages)
-prop.table(table(crime_data$geslacht_gecodeerd))
+base::prop.table(base::table(covid_data$geslacht_gecodeerd))
 
 # Gebruik dplyr voor mooiere output met percentages (met package::functie)
-crime_data %>%
+covid_data %>%
   dplyr::count(geslacht_gecodeerd) %>%
   dplyr::mutate(percentage = round(n/sum(n)*100, 1)) %>%
   dplyr::rename(geslacht = geslacht_gecodeerd, 
@@ -490,11 +780,11 @@ crime_data %>%
                 procent = percentage)
 
 # Zonder pipe operator (ook goed):
-# freq_table <- dplyr::count(crime_data, geslacht_gecodeerd)
+# freq_table <- dplyr::count(covid_data, geslacht_gecodeerd)
 # freq_table <- dplyr::mutate(freq_table, percentage = round(n/sum(n)*100, 1))
 
 # Frequentietabel voor opleidingsniveau
-crime_data %>%
+covid_data %>%
   dplyr::count(opleidingsniveau) %>%
   dplyr::mutate(percentage = round(n/sum(n)*100, 1)) %>%
   dplyr::rename(opleiding = opleidingsniveau,
@@ -502,7 +792,7 @@ crime_data %>%
                 procent = percentage)
 
 # Frequentietabel voor meerdere variabelen (kruistabel)
-crime_data %>%
+covid_data %>%
   dplyr::count(geslacht_gecodeerd, slachtoffer_ervaring) %>%
   dplyr::mutate(percentage = round(n/sum(n)*100, 1))
 ```
@@ -515,23 +805,23 @@ crime_data %>%
 # Zeer belangrijk voor criminologisch onderzoek!
 
 # Basis kruistabel: geslacht x slachtofferervaring
-xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = crime_data)
+stats::xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = covid_data)
 
 # Kruistabel met proporties (percentage van totaal)
-prop.table(xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = crime_data))
+base::prop.table(stats::xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = covid_data))
 
 # Rijpercentages (percentage binnen elke rij = binnen elk geslacht)
 # Dit toont: van alle mannen, hoeveel procent is slachtoffer geworden?
-row_pct <- prop.table(xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = crime_data), margin = 1)
-round(row_pct * 100, 1)  # Vermenigvuldig met 100 voor percentages
+row_pct <- base::prop.table(stats::xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = covid_data), margin = 1)
+base::round(row_pct * 100, 1)  # Vermenigvuldig met 100 voor percentages
 
 # Kolompercentages (percentage binnen elke kolom = binnen slachtofferervaring)
 # Dit toont: van alle slachtoffers, hoeveel procent is man/vrouw?
-col_pct <- prop.table(xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = crime_data), margin = 2)
-round(col_pct * 100, 1)
+col_pct <- base::prop.table(stats::xtabs(~ geslacht_gecodeerd + slachtoffer_ervaring, data = covid_data), margin = 2)
+base::round(col_pct * 100, 1)
 
 # Kruistabel voor geslacht x opleidingsniveau
-xtabs(~ geslacht_gecodeerd + opleidingsniveau, data = crime_data)
+stats::xtabs(~ geslacht_gecodeerd + opleidingsniveau, data = covid_data)
 ```
 
 ## Professionele Frequentietabellen
@@ -542,7 +832,7 @@ xtabs(~ geslacht_gecodeerd + opleidingsniveau, data = crime_data)
 # Deze tabellen zijn klaar voor publicatie!
 
 # Mooie kruistabel voor geslacht x slachtofferervaring (met package::functie)
-tabel_geslacht_slachtoffer <- crime_data %>%
+tabel_geslacht_slachtoffer <- covid_data %>%
   janitor::tabyl(geslacht_gecodeerd, slachtoffer_ervaring) %>%     # Maak basis kruistabel
   janitor::adorn_totals(c("row", "col")) %>%                      # Voeg totalen toe
   janitor::adorn_percentages("row") %>%                            # Bereken rijpercentages
@@ -550,24 +840,25 @@ tabel_geslacht_slachtoffer <- crime_data %>%
   janitor::adorn_ns()                                              # Voeg aantallen toe tussen haakjes
 
 # Alternatief zonder pipe:
-# tabel <- janitor::tabyl(crime_data, geslacht_gecodeerd, slachtoffer_ervaring)
+# tabel <- janitor::tabyl(covid_data, geslacht_gecodeerd, slachtoffer_ervaring)
 # tabel <- janitor::adorn_totals(tabel, c("row", "col"))
 
-print(tabel_geslacht_slachtoffer)
+# Tabel is beschikbaar
 
 # Mooie kruistabel voor opleidingsniveau x hoge vrees
-tabel_opleiding_vrees <- crime_data %>%
+tabel_opleiding_vrees <- covid_data %>%
   janitor::tabyl(opleidingsniveau, hoge_vrees) %>%
   janitor::adorn_totals(c("row", "col")) %>%
   janitor::adorn_percentages("row") %>%
   janitor::adorn_pct_formatting(digits = 1) %>%
   janitor::adorn_ns()
 
-# Tip: janitor package is speciaal gemaakt voor data cleaning en mooie tabellen
-# Het werkt perfect voor criminologische kruistabellen!
-
-print(tabel_opleiding_vrees)
+# Tabellen zijn beschikbaar voor gebruik
 ```
+
+**Waarom janitor package gebruiken?**
+
+Het `janitor` package is speciaal ontworpen voor data cleaning en mooie tabellen. Het werkt perfect voor criminologische kruistabellen omdat het automatisch percentages, totalen en professionele formatting toevoegt.
 
 # Descriptive Statistics
 
@@ -579,25 +870,30 @@ print(tabel_opleiding_vrees)
 # Je hebt altijd gemiddelden, standaarddeviaties, etc. nodig
 
 # Samenvattende statistieken voor numerieke variabelen
-numerieke_variabelen <- crime_data %>%
+numerieke_variabelen <- covid_data %>%
   dplyr::select(leeftijd_jaren, criminaliteitsvrees, vertrouwen_politie, veiligheids_index)
 
-# Zonder pipe: numerieke_variabelen <- dplyr::select(crime_data, leeftijd_jaren, criminaliteitsvrees)
+# Zonder pipe: numerieke_variabelen <- dplyr::select(covid_data, leeftijd_jaren, criminaliteitsvrees)
 
-# Basis summary statistieken
-summary(numerieke_variabelen)
+# Basis summary statistieken met base R
+base::summary(numerieke_variabelen)
 
 # Gebruik psych package voor gedetailleerde statistieken (met package::functie)
 # Dit geeft je alles wat je nodig hebt voor een tabel in je scriptie
 descriptive_stats <- psych::describe(numerieke_variabelen)
 
-# Waarom psych::describe()? 
-# - describe() bestaat ook in andere packages
-# - psych::describe() geeft specifieke output voor psychologisch/criminologisch onderzoek
-print(descriptive_stats)
+# Gedetailleerde statistieken met psych package
+descriptive_stats <- psych::describe(numerieke_variabelen)
+```
+
+**Waarom psych::describe() gebruiken?**
+
+De `describe()` functie bestaat in meerdere packages, maar `psych::describe()` is specifiek ontworpen voor psychologisch en criminologisch onderzoek en geeft uitgebreide statistieken die je nodig hebt voor academische rapporten.
+
+```{r group-statistics
 
 # Groepsstatistieken (bijvoorbeeld: verschillen tussen mannen en vrouwen)
-groep_statistieken <- crime_data %>%
+groep_statistieken <- covid_data %>%
   dplyr::group_by(geslacht_gecodeerd) %>%
   dplyr::summarise(
     n = dplyr::n(),                                                    # Aantal per groep
@@ -609,14 +905,8 @@ groep_statistieken <- crime_data %>%
   )
 
 # Zonder pipe operator:
-# groep_statistieken <- dplyr::group_by(crime_data, geslacht_gecodeerd)
-# groep_statistieken <- dplyr::summarise(groep_statistieken, n = dplyr::n())
-
-print(groep_statistieken)
-    sd_vertrouwen = round(sd(vertrouwen_politie, na.rm = TRUE), 2)        # SD vertrouwen
-  )
-
-print(groep_statistieken)
+# groep_statistieken <- dplyr::group_by(covid_data, geslacht_gecodeerd)
+# groep_statistieken <- dplyr::summarise(groep_statistieken, n = dplyr::n())hikbaar in object groep_statistieken
 ```
 
 ## Correlatiematrix
@@ -627,31 +917,34 @@ print(groep_statistieken)
 # Belangrijk voor het begrijpen van relaties in je data
 
 # Selecteer numerieke variabelen voor correlatie-analyse
-numerieke_vars <- crime_data %>%
+numerieke_vars <- covid_data %>%
   dplyr::select(leeftijd_jaren, criminaliteitsvrees, vertrouwen_politie, 
                 buurt_veiligheid_score, veiligheids_index)
 
-# Zonder pipe: numerieke_vars <- dplyr::select(crime_data, leeftijd_jaren, criminaliteitsvrees)
+# Zonder pipe: numerieke_vars <- dplyr::select(covid_data, leeftijd_jaren, criminaliteitsvrees)
 
 # Maak correlatiematrix (Pearson correlaties)
-cor_matrix <- cor(numerieke_vars, use = "complete.obs")  # complete.obs = negeer NA's
-print(round(cor_matrix, 3))  # Rond af op 3 decimalen voor leesbaarheid
+cor_matrix <- stats::cor(numerieke_vars, use = "complete.obs")  # complete.obs = negeer NA's
+base::print(base::round(cor_matrix, 3))  # Rond af op 3 decimalen voor leesbaarheid
 
 # Correlatie met significantietoetsen (belangrijk voor interpretatie!)
 corr_results <- psych::corr.test(numerieke_vars, use = "complete.obs")
 
-# Waarom psych::corr.test()? 
-# - corr.test() is specifiek van psych package
-# - Geeft zowel correlaties als p-waarden
-# - Speciaal ontworpen voor psychologisch onderzoek
+# Correlaties met significantietoetsen
+corr_results <- psych::corr.test(numerieke_vars, use = "complete.obs")
+```
 
-# Toon correlaties
-print("Correlatiematrix:")
-print(round(corr_results$r, 3))
+**Waarom psych::corr.test() gebruiken?**
 
-# Toon p-waarden
-print("P-waarden:")
-print(round(corr_results$p, 3))
+- **Specifiek voor onderzoek:** `corr.test()` is uniek aan het psych package
+- **Volledige output:** Geeft zowel correlaties als p-waarden
+- **Onderzoeksgerichte features:** Speciaal ontworpen voor psychologische analyses
+
+```{r correlation-results
+
+# Correlaties en p-waarden
+corr_matrix_rounded <- base::round(corr_results$r, 3)
+p_values_rounded <- base::round(corr_results$p, 3)
 
 # Interpretatie hulp:
 # r = 0.10-0.29: zwakke correlatie
@@ -670,7 +963,7 @@ print(round(corr_results$p, 3))
 # Dit bespaart veel tijd met het handmatig formatteren!
 
 # APA geformatteerde beschrijvende statistieken tabel
-apa_beschrijvende <- crime_data %>%
+apa_beschrijvende <- covid_data %>%
   dplyr::select(leeftijd_jaren, criminaliteitsvrees, vertrouwen_politie, veiligheids_index) %>%
   apaTables::apa.descriptives.table(
     filename = "beschrijvende_statistieken.doc",  # Bestandsnaam voor export
@@ -679,11 +972,11 @@ apa_beschrijvende <- crime_data %>%
   )
 
 # Zonder pipe:
-# data_subset <- dplyr::select(crime_data, leeftijd_jaren, criminaliteitsvrees)
+# data_subset <- dplyr::select(covid_data, leeftijd_jaren, criminaliteitsvrees)
 # apa_tabel <- apaTables::apa.descriptives.table(data_subset)
 
 # APA geformatteerde correlatie tabel
-apa_correlaties <- crime_data %>%
+apa_correlaties <- covid_data %>%
   dplyr::select(leeftijd_jaren, criminaliteitsvrees, vertrouwen_politie, veiligheids_index) %>%
   apaTables::apa.cor.table(
     filename = "correlatie_tabel.doc",            # Bestandsnaam voor export
@@ -691,16 +984,12 @@ apa_correlaties <- crime_data %>%
     save = FALSE  # Zet op TRUE om daadwerkelijk te bewaren in Output map
   )
 
-# Tip: apaTables package maakt perfecte APA-style tabellen
-# Deze kun je direct copy-pasten in je Word document!
-
-# Toon de tabellen (klaar voor copy-paste in Word!)
-print(apa_beschrijvende)
-print(apa_correlaties)
-
-# Tip: Zet save = TRUE en run de code om de tabellen op te slaan
-# Ze worden automatisch in APA formaat geëxporteerd naar Word bestanden
+# Tabellen zijn beschikbaar voor gebruik
 ```
+
+**Voordelen van apaTables**
+
+Het `apaTables` package maakt perfecte APA-style tabellen die je direct kunt copy-pasten in je Word document. Zet `save = TRUE` om tabellen automatisch te exporteren naar Word bestanden in APA formaat.
 
 ## Handmatig APA Tabellen Maken
 
@@ -710,21 +999,21 @@ print(apa_correlaties)
 # Dan kun je handmatig een APA-style tabel maken
 
 # Maak een publicatie-klare tabel handmatig
-beschrijvende_tabel <- crime_data %>%
-  select(leeftijd_jaren, criminaliteitsvrees, vertrouwen_politie, veiligheids_index) %>%
-  summarise_all(list(
-    M = ~round(mean(., na.rm = TRUE), 2),      # Gemiddelde (M)
-    SD = ~round(sd(., na.rm = TRUE), 2),       # Standaarddeviatie (SD)
-    Min = ~min(., na.rm = TRUE),               # Minimum waarde
-    Max = ~max(., na.rm = TRUE)                # Maximum waarde
+beschrijvende_tabel <- covid_data %>%
+  dplyr::select(leeftijd_jaren, criminaliteitsvrees, vertrouwen_politie, veiligheids_index) %>%
+  dplyr::summarise_all(base::list(
+    M = ~base::round(base::mean(., na.rm = TRUE), 2),      # Gemiddelde (M)
+    SD = ~base::round(stats::sd(., na.rm = TRUE), 2),       # Standaarddeviatie (SD)
+    Min = ~base::min(., na.rm = TRUE),               # Minimum waarde
+    Max = ~base::max(., na.rm = TRUE)                # Maximum waarde
   )) %>%
   # Herstructureer data voor mooie tabel
-  gather(key = "stat", value = "value") %>%
-  separate(stat, into = c("variabele", "statistiek"), sep = "_") %>%
-  spread(key = statistiek, value = value) %>%
+  tidyr::gather(key = "stat", value = "value") %>%
+  tidyr::separate(stat, into = c("variabele", "statistiek"), sep = "_") %>%
+  tidyr::spread(key = statistiek, value = value) %>%
   # Nederlandse variabelennamen voor de tabel
-  mutate(
-    Variabele = case_when(
+  dplyr::mutate(
+    Variabele = dplyr::case_when(
       variabele == "leeftijd" ~ "Leeftijd (jaren)",
       variabele == "criminaliteitsvrees" ~ "Criminaliteitsvrees",
       variabele == "vertrouwen" ~ "Vertrouwen in politie", 
@@ -732,13 +1021,25 @@ beschrijvende_tabel <- crime_data %>%
       TRUE ~ variabele
     )
   ) %>%
-  select(Variabele, M, SD, Min, Max)
+  dplyr::select(Variabele, M, SD, Min, Max)
 
-# Maak mooie tabel met kable
-kable(beschrijvende_tabel, 
+# Maak mooie tabel met knitr::kable (basic) of beter nog: flextable
+knitr::kable(beschrijvende_tabel, 
       caption = "Tabel 1. Beschrijvende Statistieken voor Onderzoeksvariabelen",
       digits = 2,
       col.names = c("Variabele", "M", "SD", "Min", "Max"))
+
+# Alternatief met flextable (AANBEVOLEN voor professionele output):
+beschrijvende_flex <- beschrijvende_tabel %>%
+  flextable::flextable() %>%
+  flextable::theme_booktabs() %>%
+  flextable::align(align = "center", part = "header") %>%
+  flextable::bold(part = "header") %>%
+  flextable::add_header_lines("Tabel 1. Beschrijvende Statistieken voor Onderzoeksvariabelen") %>%
+  flextable::autofit()
+
+# Toon de flextable
+beschrijvende_flex
 ```
 
 # Data Export
@@ -746,29 +1047,54 @@ kable(beschrijvende_tabel,
 ## Saving Cleaned Data
 
 ```{r save-data, eval=FALSE}
-# Save as CSV
-write_csv(crime_data, "cleaned_crime_data.csv")
+# Data Opslaan ----
+# Verschillende formaten voor verschillende doeleinden
 
-# Save as Excel
-library(writexl)
-write_xlsx(crime_data, "cleaned_crime_data.xlsx")
+# Opslaan als CSV met UTF-8 encoding (AANBEVOLEN)
+readr::write_csv(covid_data, "Output/cleaned_covid_data.csv")
 
-# Save as SPSS file
-write_sav(crime_data, "cleaned_crime_data.sav")
+# Voor Nederlandse Excel (puntkomma gescheiden)
+readr::write_csv2(covid_data, "Output/cleaned_covid_data_nl.csv")
 
-# Save as R data file
-save(crime_data, file = "cleaned_crime_data.RData")
+# Opslaan als Excel (makkelijk te delen, meerdere sheets mogelijk)
+writexl::write_xlsx(covid_data, "Output/cleaned_covid_data.xlsx")
 
-# Save multiple objects
-save(crime_data, descriptive_table, cor_matrix, 
-     file = "complete_analysis.RData")
+# Excel met meerdere sheets
+data_list <- base::list(
+  "Ruwe_Data" = covid_data,
+  "Beschrijvende_Stats" = beschrijvende_tabel,
+  "Correlaties" = cor_matrix
+)
+writexl::write_xlsx(data_list, "Output/complete_analysis.xlsx")
+
+# Opslaan als SPSS bestand (voor SPSS gebruikers)
+haven::write_sav(covid_data, "Output/cleaned_covid_data.sav")
+
+# CSV met aangepaste opties voor compatibiliteit
+readr::write_delim(covid_data, 
+                   "Output/covid_data_custom.csv",
+                   delim = ";",                    # Puntkomma voor Nederlandse Excel
+                   locale = readr::locale(encoding = "UTF-8"))
+
+# Opslaan als R data bestand (behoudt alle R attributen)
+base::save(covid_data, file = "Output/cleaned_covid_data.RData")
+
+# Meerdere objecten opslaan in één RData bestand
+base::save(covid_data, beschrijvende_tabel, cor_matrix, 
+     file = "Output/complete_analysis.RData")
+
+# RDS formaat (voor enkele objecten, behoudt alle attributen)
+base::saveRDS(covid_data, "Output/covid_data.rds")
+
+# Laden van RDS bestand:
+# loaded_data <- base::readRDS("Output/covid_data.rds")
 ```
 
 ## Exporting Tables
 
 ```{r export-tables, eval=FALSE}
 # Export frequency table to Word
-freq_table <- crime_data %>%
+freq_table <- covid_data %>%
   tabyl(gender_coded, victim_experience) %>%
   adorn_totals(c("row", "col")) %>%
   adorn_percentages("row") %>%
@@ -816,48 +1142,54 @@ freq_table %>%
 # VOORBEELD VAN GOEDE PRAKTIJK:
 
 # Stap 1: Data Laden ----
-originele_data <- read_csv("Data/ruwe_survey_data.csv")
-cat("Originele data geladen:", nrow(originele_data), "cases\n")
+originele_data <- readr::read_csv("Data/ruwe_survey_data.csv")
+
+# Alternatief: SPSS data laden
+# originele_data <- haven::read_sav("Data/survey_data.sav")
 
 # Stap 2: Data Cleaning ----
 schone_data <- originele_data %>%
   # Hernoem variabelen naar Nederlandse namen
-  rename(
+  dplyr::rename(
     leeftijd = participant_age,
     geslacht = gender_coded,
     criminaliteitsvrees = fear_crime_scale
   ) %>%
   # Filter op geldige leeftijd
-  filter(leeftijd >= 18 & leeftijd <= 100) %>%
+  dplyr::filter(leeftijd >= 18 & leeftijd <= 100) %>%
   # Maak leeftijdsgroepen
-  mutate(
-    leeftijdsgroep = cut(leeftijd, 
+  dplyr::mutate(
+    leeftijdsgroep = base::cut(leeftijd, 
                         breaks = c(18, 35, 50, 65, 100),
                         labels = c("18-34", "35-49", "50-64", "65+"))
   )
 
-cat("Na cleaning:", nrow(schone_data), "cases\n")
+# Data cleaning voltooid
 
 # Stap 3: Analyse Variabelen Maken ----
 analyse_data <- schone_data %>%
-  mutate(
+  dplyr::mutate(
     # Maak binaire variabele voor hoge vrees
-    hoge_vrees = ifelse(criminaliteitsvrees >= 6, "Hoog", "Laag"),
-    hoge_vrees = factor(hoge_vrees, levels = c("Laag", "Hoog")),
+    hoge_vrees = base::ifelse(criminaliteitsvrees >= 6, "Hoog", "Laag"),
+    hoge_vrees = base::factor(hoge_vrees, levels = c("Laag", "Hoog")),
     
     # Maak samengestelde index
     veiligheids_index = (buurt_veiligheid_score + vertrouwen_politie) / 2,
     
     # Maak categorische variabele
-    veiligheids_categorie = cut(veiligheids_index,
+    veiligheids_categorie = base::cut(veiligheids_index,
                                breaks = c(0, 3, 6, 10),
                                labels = c("Laag", "Gemiddeld", "Hoog"))
   )
 
 # Stap 4: Data Validatie ----
 # Controleer altijd je nieuwe variabelen!
-summary(analyse_data$veiligheids_index)
-table(analyse_data$hoge_vrees, useNA = "always")
+base::summary(analyse_data$veiligheids_index)
+base::table(analyse_data$hoge_vrees, useNA = "always")
+
+# Extra validatie checks:
+base::range(analyse_data$veiligheids_index, na.rm = TRUE)
+base::sum(base::is.na(analyse_data$hoge_vrees))
 ```
 
 # Werken met Flextable voor Professionele Tabellen
@@ -926,9 +1258,9 @@ flextable::save_as_docx(
   path = "Output/alle_tabellen.docx"
 )
 
-# Tip: Dit laatste commando maakt één Word bestand met alle tabellen!
-# Perfect voor je scriptie - elke tabel op een aparte pagina
 ```
+
+**Pro Tip:** Het laatste commando maakt één Word bestand met alle tabellen, perfect voor je scriptie - elke tabel krijgt een aparte pagina met professionele opmaak.
 
 # Conclusie
 
