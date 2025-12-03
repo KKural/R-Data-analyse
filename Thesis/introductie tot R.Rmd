@@ -144,7 +144,7 @@ Na het opzetten van je project en mapstructuur, is het tijd om je eerste R scrip
 
 ## Naamgevingsconventie voor Scripts
 
-**Belangrijk:** Gebruik ALTIJD de volgende naamgevingsconventie voor je scripts:
+Gebruik ALTIJD de volgende naamgevingsconventie voor je scripts:
 
 **Format:** `DDMMYYYY_beschrijving.R`
 
@@ -171,7 +171,7 @@ Wanneer je significante wijzigingen maakt aan een bestaand script:
 - Eenvoudig teruggaan naar eerdere versies indien nodig
 - Supervisors kunnen de evolutie van je werk volgen
 
-**Tip:** Sorteer bestanden in Windows Explorer op "Date modified" om de meest recente versies bovenaan te zien.
+Sorteer bestanden in Windows Explorer op "Date modified" om de meest recente versies bovenaan te zien.
 
 # Packages Installeren en Laden
 
@@ -211,7 +211,7 @@ install.packages("dplyr")
 install.packages(c("dplyr", "readr", "ggplot2", "haven"))
 ```
 
-**Belangrijk:** Je hoeft packages maar **één keer** te installeren per computer, maar je moet ze **elke keer** laden wanneer je ze wilt gebruiken.
+Je hoeft packages maar **één keer** te installeren per computer, maar je moet ze **elke keer** laden wanneer je ze wilt gebruiken.
 
 ## Packages Laden
 
@@ -294,116 +294,278 @@ install.packages(c("knitr", "rmarkdown", "flextable", "writexl"))
 
 # R Symbolen en Operators (Essentiële Basis)
 
-Voordat je begint met programmeren in R, is het cruciaal om de belangrijkste symbolen en operators te begrijpen. Deze symbolen vormen de bouwstenen van elke R code die je zult schrijven.
+Voordat je begint met programmeren in R, moet je de belangrijkste symbolen begrijpen. Deze vormen de bouwstenen van elke R code.
 
-## Belangrijke R Symbolen Uitleg
+Dit zijn alleen de **4 fundamentele symbolen** voor beginners. R heeft veel meer operators en functies die je in latere hoofdstukken leert tijdens data-analyse, statistiek, en visualisatie.
+
+## De 4 Basis Symbolen
+
+### 1. `<-` - Assignment Operator (Toekenning)
+
+**Wat doet het?** Bewaar waarden in variabelen ("ken toe aan" / "opslaan in")
 
 ```r
-# R SYMBOLEN UITLEG (voor beginners):
-# $ = haal kolom uit dataset (covid_data$geslacht = kolom 'geslacht' uit covid_data)
-# <- = assignment operator ("ken toe aan" / "bewaar in")
-# |> = pipe operator (nieuw, R 4.1+) - stuurt resultaat door naar volgende functie
-# %>% = pipe operator (magrittr package) - doet hetzelfde als |>
-# 
-# VOORBEELDEN van deze symbolen:
-# covid_data$nieuwe_kolom <- waarde        # Maak nieuwe kolom met $, ken waarde toe met <-
-# data |> filter() |> mutate()           # Pipe |> stuurt data door
-# data %>% filter() %>% mutate()          # Pipe %>% doet hetzelfde (oudere versie)
-```
-
-## Gedetailleerde Uitleg van Elk Symbool
-
-### 1. `$` - Kolom Selector
-```r
-# $ gebruik je om een specifieke kolom uit een dataset te halen
-dataset$kolomnaam
-
-# Praktische voorbeelden:
-studenten_data$leeftijd        # Haal de leeftijd kolom
-crime_data$misdrijf_type       # Haal de misdrijf type kolom
-survey_data$antwoord_5         # Haal vraag 5 antwoorden
-```
-
-### 2. `<-` - Assignment Operator (Toekenning)
-```r
-# <- gebruik je om waarden op te slaan in variabelen
+# Basis gebruik
 variabele_naam <- waarde
 
-# Praktische voorbeelden:
-leeftijd <- 25                          # Bewaar getal 25 in variabele 'leeftijd'
-naam <- "Jan"                           # Bewaar tekst "Jan" in variabele 'naam'
-data$nieuwe_kolom <- data$oude_kolom * 2 # Maak nieuwe kolom gebaseerd op berekening
+# Voorbeelden:
+leeftijd <- 25                          # Bewaar getal 25
+naam <- "Jan"                           # Bewaar tekst "Jan"
 ```
 
-### 3. `|>` - Native Pipe Operator (R 4.1+)
-```r
-# |> stuurt het resultaat van links door naar de functie rechts
-data |> functie1() |> functie2() |> functie3()
+### 2. `$` - Kolom Selector
 
-# Dit is hetzelfde als:
-functie3(functie2(functie1(data)))
+**Wat doet het?** Haal een specifieke kolom uit een dataset
+
+```r
+# Basis gebruik
+dataset$kolomnaam
+
+# Voorbeelden:
+studenten_data$leeftijd        # Haal leeftijd kolom
+crime_data$misdrijf_type       # Haal misdrijf type kolom
+
+# Combinatie met <-
+data$nieuwe_kolom <- data$oude_kolom * 2  # Maak nieuwe kolom
+```
+
+### 3. `|>` - Native Pipe Operator (Modern, R 4.1+)
+
+**Wat doet het?** Stuur resultaat door van links naar rechts ("en dan...")
+
+```r
+# Basis concept
+data |> functie1() |> functie2()
+
+# Is hetzelfde als:
+functie2(functie1(data))
 
 # Praktisch voorbeeld:
 studenten_data |> 
-  filter(leeftijd > 18) |>           # Filter alleen volwassenen
-  select(naam, leeftijd, cijfer) |>  # Selecteer specifieke kolommen
-  arrange(cijfer)                    # Sorteer op cijfer
+  filter(leeftijd > 18) |>           # Stap 1: Filter volwassenen
+  select(naam, cijfer) |>            # Stap 2: Selecteer kolommen
+  arrange(cijfer)                    # Stap 3: Sorteer op cijfer
 ```
 
-### 4. `%>%` - Magrittr Pipe Operator
-```r
-# %>% doet precies hetzelfde als |> maar komt uit het dplyr/tidyverse pakket
-data %>% functie1() %>% functie2() %>% functie3()
+### 4. `%>%` - Magrittr Pipe (Ouder, dplyr/tidyverse)
 
-# Voorbeeld:
+**Wat doet het?** Precies hetzelfde als `|>` maar voor oudere R versies
+
+```r
+# Gebruik alleen als je R versie < 4.1 hebt
 studenten_data %>% 
-  filter(leeftijd > 18) %>%           # Filter alleen volwassenen
-  select(naam, leeftijd, cijfer) %>%  # Selecteer specifieke kolommen
-  arrange(cijfer)                     # Sorteer op cijfer
+  filter(leeftijd > 18) %>%          # Stap 1: Filter
+  select(naam, cijfer)               # Stap 2: Selecteer
 ```
 
-## Wanneer Welke Pipe Gebruiken?
+## Belangrijke R Operators - Overzicht
 
-**Voor beginners - AANBEVELING:**
-- **Gebruik `|>`** als je R versie 4.1 of hoger hebt (meeste moderne installaties)
-- **Gebruik `%>%`** als je oudere R versie hebt of werkt met bestaande tidyverse code
+### 1. Assignment Operators (Toewijzing)
 
-## Volgorde van Leren
-
-**Stap 1:** Begin met `$` en `<-` - deze gebruik je het meest
-**Stap 2:** Leer pipes (`|>` of `%>%`) wanneer je data manipulatie gaat doen
-**Stap 3:** Combineer alles in je analyses
-
-## Praktijkvoorbeeld: Alles Samen
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `<-` | Waarde toewijzen aan variabele (standaard) | `x <- 10` |
+| `=` | Waarde toewijzen (vooral in functies) | `mean(x = c(1,2,3))` |
+| `->` | Rechts toewijzen (zeldzaam) | `10 -> x` |
 
 ```r
-# Voorbeeld dat alle symbolen combineert:
+# Voorbeelden
+leeftijd <- 25
+naam <- "Jan"
+data <- read.csv("file.csv")
+```
 
-# Stap 1: Data laden en opslaan
+### 2. Access Operators (Toegang tot data)
+
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `$` | Kolom uit dataframe halen | `data$leeftijd` |
+| `[]` | Selectie via index | `data[1, 2]` (rij 1, kolom 2) |
+| `[[]]` | Enkel element uit lijst | `lijst[[1]]` |
+
+```r
+# Voorbeelden
+leeftijden <- personen$leeftijd          # Hele kolom
+eerste_persoon <- personen[1, ]          # Eerste rij
+naam_kolom <- personen[, "naam"]         # Kolom via naam
+specifiek <- personen[5, 3]              # Rij 5, kolom 3
+```
+
+### 3. Pipe Operators (Workflow)
+
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `|>` | Native pipe (R 4.1+) - **aanbevolen** | `data |> filter() |> select()` |
+| `%>%` | Magrittr pipe (tidyverse) | `data %>% filter() %>% select()` |
+
+```r
+# Voorbeeld zonder pipe (moeilijk leesbaar)
+resultaat <- select(filter(data, leeftijd > 18), naam, leeftijd)
+
+# Voorbeeld met pipe (duidelijk)
+resultaat <- data |>
+  filter(leeftijd > 18) |>
+  select(naam, leeftijd)
+```
+
+### 4. Comparison Operators (Vergelijking)
+
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `==` | Gelijk aan | `x == 5` |
+| `!=` | Niet gelijk aan | `x != 5` |
+| `>` | Groter dan | `x > 10` |
+| `<` | Kleiner dan | `x < 10` |
+| `>=` | Groter of gelijk | `x >= 10` |
+| `<=` | Kleiner of gelijk | `x <= 10` |
+| `%in%` | In een set | `x %in% c(1,2,3)` |
+
+```r
+# Voorbeelden
+data |> filter(leeftijd >= 18)           # Volwassenen
+data |> filter(stad == "Gent")           # Alleen Gent
+data |> filter(score != 0)               # Geen nullen
+data |> filter(land %in% c("BE", "NL"))  # België of Nederland
+```
+
+### 5. Logical Operators (Logische combinaties)
+
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `&` | EN (vectorized) | `x > 5 & x < 10` |
+| `|` | OF (vectorized) | `x < 5 | x > 10` |
+| `!` | NIET | `!(x == 5)` |
+| `&&` | EN (single value) | Alleen in if-statements |
+| `||` | OF (single value) | Alleen in if-statements |
+
+```r
+# Voorbeelden
+data |> filter(leeftijd > 18 & stad == "Gent")     # EN conditie
+data |> filter(leeftijd < 18 | leeftijd > 65)     # OF conditie
+data |> filter(!is.na(score))                      # Geen missing values
+```
+
+### 6. Arithmetic Operators (Rekenen)
+
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `+` | Optellen | `5 + 3` = 8 |
+| `-` | Aftrekken | `5 - 3` = 2 |
+| `*` | Vermenigvuldigen | `5 * 3` = 15 |
+| `/` | Delen | `10 / 2` = 5 |
+| `^` of `**` | Machtsverheffen | `2^3` = 8 |
+| `%%` | Modulo (rest) | `10 %% 3` = 1 |
+| `%/%` | Integer deling | `10 %/% 3` = 3 |
+
+```r
+# Voorbeelden
+data |> mutate(
+  totaal = prijs * aantal,
+  gemiddelde = som / aantal,
+  percentage = (waarde / totaal) * 100
+)
+```
+
+### 7. Special Operators (Speciaal)
+
+| Operator | Gebruik | Voorbeeld |
+|----------|---------|-----------|
+| `:` | Sequence maken | `1:10` (getallen 1 tot 10) |
+| `::` | Pakket functie gebruiken | `dplyr::filter()` |
+| `~` | Formula | `y ~ x` (in modellen) |
+
+```r
+# Voorbeelden
+jaren <- 2020:2024                      # Sequence
+dplyr::select(data, naam)               # Expliciete pakket functie
+model <- lm(gewicht ~ lengte, data)     # Linear model
+```
+
+## Praktische Toepassingen
+
+### Voorbeeld 1: Data Inladen en Verkennen
+```r
+# Assignment en access operators
+studenten <- read.csv("studenten.csv")
+leeftijden <- studenten$leeftijd
+eerste_rij <- studenten[1, ]
+```
+
+### Voorbeeld 2: Data Filteren
+```r
+# Pipe + comparison + logical operators
+volwassen_studenten <- studenten |>
+  filter(leeftijd >= 18 & stad %in% c("Gent", "Brussel")) |>
+  select(naam, leeftijd, stad)
+```
+
+### Voorbeeld 3: Nieuwe Kolommen Maken
+```r
+# Pipe + arithmetic operators
+studenten_verrijkt <- studenten |>
+  mutate(
+    leeftijd_maanden = leeftijd * 12,
+    categorie = ifelse(leeftijd >= 18, "Volwassen", "Minderjarig"),
+    groep = leeftijd %/% 10  # Leeftijdsgroep (0-9, 10-19, etc.)
+  )
+```
+
+### Voorbeeld 4: Combinatie van Alles
+```r
+# Complete workflow
+analyse <- data |>
+  filter(jaar >= 2020 & !is.na(score)) |>
+  mutate(
+    status = ifelse(score > 50, "Pass", "Fail"),
+    percentage = (score / 100) * 100
+  ) |>
+  group_by(status) |>
+  summarise(
+    aantal = n(),
+    gem_score = mean(score)
+  )
+
+# Extra kolom toevoegen
+analyse$datum <- Sys.Date()
+```
+
+## Praktijkvoorbeeld: Complete Workflow
+
+```r
+# Stap 1: Laden en opslaan (← operator)
 mijn_data <- read.csv("data/onderzoek.csv")
 
-# Stap 2: Specifieke kolom bekijken
+# Stap 2: Kolom bekijken ($ operator)
 mijn_data$leeftijd
 
-# Stap 3: Data manipulatie met pipes
+# Stap 3: Data bewerken (|> pipe)
 schone_data <- mijn_data |>
-  filter(leeftijd > 18) |>                    # Alleen volwassenen
-  mutate(leeftijd_groep = leeftijd / 10) |>   # Nieuwe kolom maken
-  select(id, leeftijd, leeftijd_groep)        # Specifieke kolommen selecteren
+  filter(leeftijd > 18) |>
+  select(id, leeftijd)
 
-# Stap 4: Nieuwe kolom toevoegen
-schone_data$volwassen <- "Ja"  # Alle rijen krijgen waarde "Ja"
+# Stap 4: Nieuwe kolom ($ en <-)
+schone_data$volwassen <- "Ja"
 ```
 
-**Tip:** Print dit overzicht uit en houd het bij de hand tijdens je eerste R sessies!
+## Meer Symbolen in Latere Hoofdstukken
+
+Je leert later ook:
+- **Vergelijken:** `==`, `!=`, `>`, `<` (gelijk aan, niet gelijk aan)
+- **Logica:** `&` (en), `|` (of)
+- **Checken:** `%in%` (zit waarde in lijst?)
+- **Subsetten:** `[]` (selecteer specifieke rijen/kolommen)
+- **Packages:** `::` (gebruik functie uit package)
+- **Modellen:** `~` (formules voor statistiek)
+
+**Focus nu op de 4 basis symbolen** - de rest komt wanneer je ze nodig hebt!
 
 # Eerste Stappen in R
 
-Nu je weet hoe packages werken, kun je beginnen met het leren van de basis van R programmeren.
+Nu je weet hoe packages werken en de belangrijkste R symbolen begrijpt, kun je beginnen met het leren van de basis van R programmeren.
 
 ## Commentaar in R
 
-**Belangrijk:** Alles wat je typt na een `#` (hekje) wordt beschouwd als commentaar en wordt NIET uitgevoerd door R. 
+Alles wat je typt na een `#` (hekje) wordt beschouwd als commentaar en wordt NIET uitgevoerd door R. 
 
 **Waarom commentaar zo belangrijk is:**
 - **Voor jezelf:** Je begrijpt je eigen code beter wanneer je er later naar terugkijkt
@@ -422,7 +584,7 @@ result <- x * y  # Bereken het product van x en y
 
 ## Code Secties Organiseren
 
-**Tip:** Gebruik `# sectienaam ----` (minimaal 3 streepjes) om secties te maken in je script. Dit maakt je code overzichtelijker:
+Gebruik `# sectienaam ----` (minimaal 3 streepjes) om secties te maken in je script. Dit maakt je code overzichtelijker:
 
 ```r
 # Data Cleaning ----
@@ -485,7 +647,7 @@ x^2        # x tot de macht 2: 5^2 = 25
 y^3        # y tot de macht 3: 7^3 = 343
 ```
 
-**Let op:** Variabelnamen zijn hoofdlettergevoelig. `x` en `X` zijn verschillende variabelen!
+Variabelnamen zijn hoofdlettergevoelig. `x` en `X` zijn verschillende variabelen!
 
 **Oefening:** 
 1. Maak een nieuw R script aan
@@ -594,7 +756,7 @@ Het leren van keyboard shortcuts heeft verschillende voordelen:
 - **Productiviteit:** Meer tijd voor analyse, minder tijd voor navigatie
 - **Focus:** Blijf gefocust op je code zonder naar menu's te zoeken
 
-**Tip:** Begin met het leren van 3-5 shortcuts die je het meest gebruikt, en voeg geleidelijk meer toe naarmate je comfortabeler wordt.
+Begin met het leren van 3-5 shortcuts die je het meest gebruikt, en voeg geleidelijk meer toe naarmate je comfortabeler wordt.
 
 ## Hoe R te Leren
 
