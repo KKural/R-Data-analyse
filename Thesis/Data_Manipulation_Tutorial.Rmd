@@ -333,6 +333,9 @@ Nominale variabelen hebben categorieën die niet geordend kunnen worden. Bijvoor
 # NOMINALE VARIABELE VOORBEELD 1: Geslacht ----
 
 # Controleer eerst de unieke waarden
+# base::table() maakt een frequentietabel - telt hoeveel van elke waarde er zijn
+# useNA = "always" zorgt ervoor dat ook ontbrekende waarden (NA) worden geteld
+# Dit is belangrijk! Je wilt weten hoeveel data je mist voordat je gaat coderen
 base::table(covid_data$W1_Geslacht, useNA = "always")
 
 # Codeer als factor ZONDER ordering
@@ -340,21 +343,17 @@ base::table(covid_data$W1_Geslacht, useNA = "always")
 # levels = c(0, 1) betekent: in de data staan 0'en en 1'en
 # labels = c("Man", "Vrouw") betekent: 0 wordt "Man", 1 wordt "Vrouw"
 #
-# R SYMBOLEN UITLEG (voor beginners):
+# R SYMBOLEN:
 # $ = haal kolom uit dataset (covid_data$geslacht = kolom 'geslacht' uit covid_data)
 # <- = assignment operator ("ken toe aan" / "bewaar in")
 # |> = pipe operator (nieuw, R 4.1+) - stuurt resultaat door naar volgende functie
 # %>% = pipe operator (magrittr package) - doet hetzelfde als |>
-# 
-# VOORBEELDEN van deze symbolen:
-# covid_data$nieuwe_kolom <- waarde        # Maak nieuwe kolom met $, ken waarde toe met <-
-# data |> filter() |> mutate()           # Pipe |> stuurt data door
-# data %>% filter() %>% mutate()          # Pipe %>% doet hetzelfde (oudere versie)
 covid_data$geslacht <- base::factor(covid_data$W1_Geslacht,
                                    levels = c(0, 1),
                                    labels = c("Man", "Vrouw"))
 
-# Controleer het resultaat
+# Controleer het resultaat - kijk naar frequenties EN ontbrekende waarden
+# Als base::table() geen NA rij toont, betekent dat: geen missing values!
 base::table(covid_data$geslacht, useNA = "always")
 
 # NOMINALE VARIABELE VOORBEELD 2: Deelname aan waves ----  
@@ -406,7 +405,7 @@ Ratio en interval variabelen zijn numeriek met betekenisvolle afstanden tussen w
 # RATIO VARIABELE VOORBEELD: Leeftijd ----
 # W1_Gebjaar bevat geboortejaren, we berekenen leeftijd (ratio variabele)
 
-# Controleer de geboortejaren
+# Bekijk de geboortejaren - minimum en maximum
 base::summary(covid_data$W1_Gebjaar)
 base::range(covid_data$W1_Gebjaar, na.rm = TRUE)
 
@@ -414,36 +413,9 @@ base::range(covid_data$W1_Gebjaar, na.rm = TRUE)
 # Dit blijft numeriek - geen factor() omdat we er berekeningen mee doen
 covid_data$leeftijd <- 2024 - covid_data$W1_Gebjaar
 
-# Controleer de berekening
+# Toon de leeftijd verdeling
 base::summary(covid_data$leeftijd)
 graphics::hist(covid_data$leeftijd, main = "Verdeling Leeftijd", xlab = "Leeftijd (jaren)")
-
-# DECIMALE WAARDEN AFKAPPEN OF AFRONDEN ----
-# Soms hebben numerieke variabelen te veel decimalen (bijv. 23.456789)
-# Dit is ongewenst voor analyses. Hier zijn de oplossingen:
-
-# Optie 1: Afronden tot X decimalen met round()
-# round(getal, digits=2) rondt af tot 2 decimalen
-covid_data$leeftijd_afgerond <- base::round(covid_data$leeftijd, digits = 2)
-
-# Optie 2: Afkappen (truncaten) tot X decimalen - GEEN afronding
-# Voorbeeld: 23.789 → 23.78 (niet 23.79)
-covid_data$leeftijd_truncated <- base::trunc(covid_data$leeftijd * 100) / 100
-
-# Optie 3: Alleen gehele getallen (geen decimalen)
-covid_data$leeftijd_geheel <- base::round(covid_data$leeftijd, digits = 0)
-
-# Vergelijk resultaten:
-comparison_decimals <- data.frame(
-  origineel = covid_data$leeftijd[1:5],
-  afgerond_2dec = covid_data$leeftijd_afgerond[1:5],
-  geheel = covid_data$leeftijd_geheel[1:5]
-)
-print(comparison_decimals)
-
-# Onnodig veel decimalen maken je output onoverzichtelijk
-# APA rapportage gebruikt meestal 2 decimalen
-# Rond ALTIJD af aan het einde, niet halverwege (dit verliest nauwkeurigheid)
 ```
 
 ### Type 4: LIKERT SCHAAL Variabelen 
@@ -504,115 +476,30 @@ covid_data$partner_geslacht <- factor(covid_data$W1_Gesl_Partner_clean,
                                levels = c(0, 1),
                                labels = c("Man", "Vrouw"))
 
-# Controleer het resultaat
+# Bekijk de frequenties - inclusief ontbrekende waarden
 table(covid_data$partner_geslacht, useNA = "always")
 
-# ALGEMENE REGEL: Altijd eerst missing codes opschonen, dan pas coderen!
+# Regel: Altijd eerst missing codes opschonen, dan pas coderen!
 ```
 
-## Stap 3: Controle en Validatie
+### Type 6: Gecodeerde Data Opslaan in Verschillende Formaten
 
-**CRUCIALE STAP:** Controleer altijd je gecodeerde variabelen!
+Na het coderen van alle variabelen wil je je schone data opslaan voor verdere analyses. R biedt mogelijkheden om in veel formaten op te slaan.
 
-```{r validation-coding}
-# VALIDATIE VAN GECODEERDE VARIABELEN ----
-# Deze stap is essentieel - fouten hier beïnvloeden al je analyses!
+```{r saving-coded-data}
+# GECODEERDE DATA OPSLAAN ----
+# Bewaar je gecodeerde data in meerdere formaten voor flexibiliteit
 
-# Controleer frequenties van alle gecodeerde variabelen
-table(covid_data$geslacht, useNA = "always")
-table(covid_data$deelname_type, useNA = "always")
+# OPTIE 1: Opslaan als CSV (universeel, klein bestand)
+readr::write_csv(covid_data, "Output/covid_data_coded.csv")
 
-table(covid_data$opleidingsniveau, useNA = "always")
-# Let op de < tekens bij ordinale variabelen!
+# OPTIE 2: Opslaan als Excel (makkelijk te openen, leesbaar)
+readxl::write_excel(covid_data, "Output/covid_data_coded.xlsx")
 
-summary(covid_data$leeftijd)
-
-# Controleer op onmogelijke waarden
-range(covid_data$leeftijd, na.rm = TRUE)
-sum(covid_data$leeftijd < 18 | covid_data$leeftijd > 100, na.rm = TRUE)
-
-# VERGELIJK origineel met gecodeerd (sanity check)
-comparison_sample <- covid_data[1:10, c("W1_Geslacht", "geslacht", "W1_Diploma", "opleidingsniveau")]
-print(comparison_sample)
-
-# MISSING VALUES OVERZICHT
-missing_count <- covid_data %>%
-  select(geslacht, opleidingsniveau, leeftijd, partner_geslacht) %>%
-  summarise_all(~sum(is.na(.)))
-print(missing_count)
+# OPTIE 3: Opslaan als SPSS (compatibel met SPSS gebruikers)
+haven::write_sav(covid_data, "Output/covid_data_coded.sav")
 ```
 
-## Samenvatting: Codeerprincipes per Variabele Type
-
-**VOOR STUDENTEN - Gebruik deze richtlijnen voor jullie eigen variabelen:**
-
-### 📋 **NOMINALE variabelen (geen volgorde)**
-```r
-# Gebruik: factor() zonder ordered=TRUE
-variabele <- factor(data$origineel, levels = c(1,2,3), labels = c("A","B","C"))
-# Voorbeelden: geslacht, nationaliteit, ja/nee vragen
-```
-
-### 📊 **ORDINALE variabelen (volgorde belangrijk)**  
-```r
-# Gebruik: factor() met ordered=TRUE
-variabele <- factor(data$origineel, levels = c(1,2,3), 
-                   labels = c("Laag","Midden","Hoog"), ordered=TRUE)
-# Voorbeelden: opleidingsniveau, inkomen, tevredenheidsschalen
-```
-
-### 🔢 **RATIO/INTERVAL variabelen (numeriek)**
-```r  
-# Houd als numeric - geen factor() conversie!
-variabele <- as.numeric(data$origineel)
-# Voorbeelden: leeftijd, inkomen in euro's, schaalscores
-```
-
-### ⭐ **LIKERT schalen (flexibel)**
-```r
-# ORDINAAL: voor kruistabellen
-variabele_ord <- factor(covid_data$origineel, levels=1:5, 
-                       labels=c("Nooit","Zelden","Soms","Vaak","Altijd"), ordered=TRUE)
-
-# NUMERIEK: voor correlaties en regressie  
-variabele_num <- as.numeric(covid_data$origineel)
-```
-
-### ❌ **MISSING VALUES (altijd eerst opschonen)**
-```r
-# Eerst: vervang missing codes door NA
-covid_data$clean <- ifelse(covid_data$origineel %in% c(999, -99, -999), NA, covid_data$origineel)
-# Dan pas: codeer de schone variabele
-```
-
-**ONTHOUD:** Dit zijn voorbeelden - pas dezelfde principes toe op jullie eigen variabelen volgens jullie codebook!
-
-## Verdere Data Codering
-
-**Je kunt nu doorgaan met het coderen van alle andere variabelen** in je dataset volgens dezelfde principes:
-
-- **Nominale variabelen:** Gebruik `factor()` zonder `ordered=TRUE`
-- **Ordinale variabelen:** Gebruik `factor()` met `ordered=TRUE`
-- **Numerieke variabelen:** Houd als `numeric` voor berekeningen
-- **Likert schalen:** Kies ordinaal of numeriek afhankelijk van je analyse
-
-Raadpleeg je codebook en pas systematisch de codes toe op alle variabelen die je nodig hebt voor je analyses.
-
-### Waarom Deze Werkwijze?
-
-**Voordelen van ruwe data + codebook:**
-- **Flexibel:** Je kunt labels altijd wijzigen zonder data aan te passen
-- **Reproduceerbaar:** Iemand anders begrijpt exact wat elke code betekent  
-- **Professioneel:** Zo werken onderzoekers in de praktijk
-- **Foutpreventie:** Duidelijke documentatie voorkomt verkeerde interpretaties
-- **Samenwerking:** Makkelijk data delen met begeleiders/collega's
-
-**Dit is precies je scriptieproces:**
-1. **Design:** Maak vragenlijst met gecodeerde antwoorden
-2. **Collect:** Voer data in of export van online platform  
-3. **Document:** Houd codebook bij met alle betekenissen
-4. **Code:** Pas systematisch alle codes toe in R
-5. **Analyze:** Werk met betekenisvolle labels in je analyses
 
 ## Voor Deze Tutorial: Van SPSS naar CSV
 
@@ -627,10 +514,10 @@ covid_data <- readr::read_csv("Data/DATA_WAVE1_WAVE2_CenW.csv",
 # Uitgebreide inspectie van de geladen data
 print(paste("Dataset bevat", nrow(covid_data), "observaties en", ncol(covid_data), "variabelen"))
 
-# BELANGRIJK: Bij grote datasets kan de output pagina's invullen!
-# DAAROM gebruiken we head(..., 10) voor demonstratie van de structuur
+# Bij grote datasets kan de output pagina's invullen!
+# Daarom gebruiken we head(..., 10) voor demonstratie van de structuur
 
-# Bekijk de structuur van eerste 10 rijen - TWEE MANIEREN:
+# Bekijk de structuur van eerste 10 rijen - twee manieren:
 
 # Optie 1: glimpse() - mooi overzicht (aanbevolen voor studenten)
 # Dit toont eerst 10 rijen zodat output beperkt blijft
@@ -639,79 +526,9 @@ dplyr::glimpse(head(covid_data, 10))
 # Optie 2: str() - meer technische weergave (ook met eerste 10 rijen)
 str(head(covid_data, 10))
 
-# VOOR DE VOLLEDIGE DATA: Gebruik een van deze commando's in jouw RStudio console:
+# Voor volledige data: gebruik een van deze commando's in jouw RStudio console:
 # - dplyr::glimpse(covid_data)  # Hele dataset met glimpse
 # - str(covid_data)               # Hele dataset met str
 # - View(covid_data)              # Interactieve data viewer
-```
-
-**Verschil tussen `glimpse()` en `str()` - Welke moet je gebruiken?**
-
-Beide functies laten de structuur en data types van je dataset zien, maar:
-
-| Functie | Voordeel | Nadeel |
-|---------|----------|--------|
-| `glimpse()` (dplyr) | Horizontaal format, gemakkelijk te lezen, student-vriendelijk | Kunnen lang zijn |
-| `str()` (base R) | Zeer gedetailleerd, toont levels van factors | Technisch, soms confuserend |
-
-**Strategie voor grote datasets:**
-- In deze tutorial gebruiken we `head(covid_data, 10)` voor demonstratie
-- Dit houdt de uitvoer beperkt tot eerste 10 rijen
-- Voor volledige inspectie: runnen `dplyr::glimpse(covid_data)` of `str(covid_data)` in jouw console
-- Gebruik `View(covid_data)` voor interactieve data verkenning (veel beter dan console output!)
-
-**Begrijpen van R Data Types**
-
-Wanneer je `glimpse()` of `str()` uitvoert, zie je verschillende afkortingen die het data type aangeven. Het is essentieel om deze te begrijpen omdat elk type andere analyses mogelijk maakt:
-
-- **num (numeric):** Getallen met decimalen (2002, 6.5)
-  - Voor continue variabelen zoals leeftijden en scores
-  - Je kunt berekeningen uitvoeren: gemiddelde, standaarddeviatie
-  - Gebruikt voor histogram grafieken
-
-- **chr (character):** Tekst en labels ("Vrouw", "Hoger onderwijs")  
-  - Voor categorische variabelen met tekstlabels
-  - Je kunt frequentietabellen maken, maar geen berekeningen
-  - Gebruikt voor barplot grafieken
-
-- **logi (logical):** TRUE/FALSE waarden
-  - Voor ja/nee vragen en condities
-  - Ontstaat meestal bij filtering en vergelijken
-
-- **factor:** Categorische variabelen met vaste levels
-  - Voor statistische analyses van categorieën
-  - Geordende factors voor rangorde (laag, midden, hoog)
-
-- **NA:** Ontbrekende waarden (Not Available)
-  - Kunnen voorkomen in alle data types
-  - Let op: soms staan nog "999" codes in character variabelen
-
-**Waarom is dit belangrijk?** Verschillende data types vereisen verschillende analyses - `mean()` werkt niet op character variabelen, en je moet vaak converteren tussen types voor specifieke analyses.
-
-# Data Inspectie en Overzicht
-
-Hier zijn enkele handige commando's voor het verder verkennen van je data. 
-**Voor grote datasets gebruiken we `head()` om output beperkt te houden:**
-
-```{r data-inspection}
-# Extra Data Inspectie Commando's ----
-# DEMONSTRATIE met eerste 10 rijen (output beperkt)
-
-# Hoeveel rijen en kolommen heeft je dataset?
-base::dim(covid_data)
-
-# Samenvattende statistieken - EERST TIEN RIJEN voor demonstratie
-base::summary(head(covid_data, 10))
-
-# Controleer op ontbrekende waarden (NA's) - gehele dataset
-base::sum(base::is.na(covid_data))
-
-# Bekijk ontbrekende waarden per variabele - gehele dataset
-base::sapply(covid_data, function(x) base::sum(base::is.na(x)))
-
-# Voor volledige inspectie in jouw RStudio:
-# - base::summary(covid_data)  # Volledige summary van alle variabelen
-# - str(covid_data)              # Volledige structuur
-# - View(covid_data)             # Interactieve table viewer (aanbevolen!)
 ```
 

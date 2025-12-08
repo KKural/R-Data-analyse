@@ -1,0 +1,550 @@
+---
+title: "Databeheer en Data Cleaning in R"
+output: 
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# 4. Databeheer en Data Cleaning in R
+
+## 4.1 INLEIDING
+
+In hoofdstuk 3 maakte je kennis met het softwarepakket R, waarmee je statistische analyses kunt uitvoeren op de steekproefgegevens die je verzameld hebt of ter beschikking hebt. Vooraleer je echt aan de slag kunt met de verschillende statistische analysetechnieken, moet je de ruwe data opschonen, ook wel data cleaning of het opkuisen van data genoemd. In zo een opgekuiste dataset zijn de antwoorden van alle respondenten gecontroleerd op fouten, zijn cases die onvoldoende antwoorden gegenereerd hebben verwijderd en zijn de variabelen op de juiste manier geoperationaliseerd voor de analyses die je wilt uitvoeren.
+
+In dit hoofdstuk besteden we aandacht aan alles wat te maken heeft met databeheer in R. Onderzoekers die bijvoorbeeld om bepaalde redenen nog zouden werken met papieren vragenlijsten, moeten elke ingevulde vragenlijst handmatig ingeven in R, wat een zeer arbeidsintensieve taak is. Tegenwoordig bestaat natuurlijk de mogelijkheid om papieren vragenlijsten via een scanner te laten inlezen, maar ook dat vraagt tijd. In beide gevallen kunnen er fouten sluipen in je dataset. Daarnaast kunnen ook respondenten fouten maken tijdens het invullen van een papieren vragenlijst, zoals het invullen van hun geboortejaar in plaats van hun huidige leeftijd. Het is dus belangrijk dat je nadien die fouten opspoort en corrigeert.
+
+Tegenwoordig wordt meestal gewerkt met een digitaal platform om surveys af te nemen, waarbij je meteen een databestand ontvangt van de verzamelde gegevens. Dit bestand zal vaak een .xlsx (Microsoft Excel-werkblad) of een .csv (Comma-Separated Values)-bestand zijn, dat je eerst moet importeren in R. Het databestand kan ook afkomstig zijn uit SPSS en in .sav-formaat beschikbaar zijn, wat je met R ook kunt inladen.
+
+Tijdens het proces van data cleaning worden alle variabelen gecontroleerd op onregelmatigheden. In dit hoofdstuk leren we je hoe je een frequentietabel van een variabele kunt opvragen om deze controle uit te voeren. Een frequentietabel geeft weer hoeveel onderzoekseenheden een score hebben op een bepaalde variabele en laat je toe om snel zowel structurele fouten (bv. verkeerde codering van een categorische variabele) als toevallige invulfouten op te sporen. Na deze controle is de volgende stap het bewerken van je databestand. In dit hoofdstuk behandelen we de volgende zaken: foutieve of ontbrekende waarden aanpakken, verschillende databestanden samenvoegen, het tijdelijk weglaten van bepaalde cases, het verwijderen van cases, en het splitsen van een databestand om groepen te vergelijken.
+
+## 4.2 INVOEREN VAN DATA
+
+### 4.2.1 DATA MANUEEL INVOEREN
+
+Wanneer je handmatig data invoert (bijvoorbeeld voor kleine vragenlijsten), kun je dit in Excel doen en daarna in R laden. Hier is een voorbeeld van hoe je gestructureerd te werk gaat:
+
+Eerst laden we de packages die we nodig hebben voor databeheer en data cleaning:
+
+```{r load-packages}
+# Installeer packages indien nodig (uncomment om uit te voeren)
+# install.packages(c("readr", "readxl", "haven", "dplyr", "tidyr", 
+#                    "janitor", "naniar", "summarytools"))
+
+# Libraries Laden voor deze tutorial ----
+library(readr)       # Voor het lezen van CSV bestanden
+library(readxl)      # Voor het lezen van Excel bestanden (.xlsx, .xls)
+library(haven)       # Voor het lezen van SPSS (.sav) en Stata (.dta) bestanden
+library(dplyr)       # Voor data manipulatie en filtering
+library(tidyr)       # Voor data herstructureren (wide/long format)
+library(janitor)     # Voor data cleaning
+library(naniar)      # Voor het werken met ontbrekende waarden
+library(summarytools)# Voor beschrijvende statistieken en frequentietabellen
+```
+
+### 4.2.2 DATA IMPORTEREN
+
+#### Verschillende Bestandstypen
+
+R kan veel verschillende data formaten lezen. Voor criminologisch onderzoek zijn SPSS bestanden (.sav) het meest voorkomend. Hieronder behandelen we verschillende manieren om data in R in te laden.
+
+##### SPSS Bestanden
+
+```{r load-spss, eval=FALSE}
+# SPSS Data Laden in R ----
+# SPSS (.sav) bestanden zijn veel gebruikt in criminologisch onderzoek
+
+# Laad SPSS bestand direct met haven package
+data_spss <- haven::read_sav("Thesis/Data/DATA_WAVE1_CenW.sav")
+
+# Bekijk de structuur van de geladen SPSS data
+str(data_spss)
+
+# haven::read_sav() behoudt SPSS labels automatisch - dit is handig!
+# Bekijk variable labels
+attr(data_spss$W1_Geslacht, "label")
+
+# Bekijk value labels
+attr(data_spss$W1_Geslacht, "labels")
+
+# Eerste 6 rijen bekijken
+head(data_spss)
+
+# Hoeveel observaties en variabelen?
+dim(data_spss)
+```
+
+##### CSV en Excel Bestanden
+
+```{r load-csv-excel, eval=FALSE}
+# CSV bestanden laden ----
+data_csv <- readr::read_csv("Data/DATA_WAVE1_CenW.csv",
+                            locale = readr::locale(encoding = "UTF-8"))
+
+# Excel bestanden laden
+data_excel <- readxl::read_excel("Data/DATA_WAVE1_CenW.xlsx")
+
+# Nederlandse CSV (puntkomma gescheiden)
+data_csv_nl <- readr::read_csv2("Data/DATA_WAVE1_CenW.csv",
+                                locale = readr::locale(encoding = "UTF-8"))
+
+# Bekijk de geïmporteerde data
+head(data_csv)
+str(data_csv)
+```
+
+##### Ruimtelijke Data
+
+```{r load-spatial, eval=FALSE}
+# Ruimtelijke Data Laden ----
+# Voor criminologisch onderzoek met geografische componenten
+
+# Shapefile laden
+wijken_data <- sf::st_read("data/wijken_gent.shp")
+
+# GeoJSON bestanden
+crime_locations <- sf::st_read("data/crime_hotspots.geojson")
+
+# CSV met lat/lon coordinaten omzetten naar spatial data
+csv_coords <- readr::read_csv("data/crime_coordinates.csv")
+spatial_crime <- sf::st_as_sf(csv_coords, 
+                             coords = c("longitude", "latitude"),
+                             crs = 4326)
+```
+
+### 4.3.2 Data Manueel Invoeren en Organiseren
+
+Wanneer je handmatig data invoert (bijvoorbeeld voor kleine vragenlijsten), kun je dit in Excel doen en daarna in R laden. Hier is een voorbeeld van hoe je gestructureerd te werk gaat:
+
+```{r manual-data-entry}
+# HANDMATIGE DATA ENTRY WORKFLOW ----
+
+# Stap 1: Maak een dataset in Excel met kolommen voor elke variabele
+# Sla deze op als CSV bestand
+
+# Stap 2: Laad de handmatig ingevoerde data in R
+raw_data <- readr::read_csv("Data/handmatige_invoering.csv",
+                            locale = readr::locale(encoding = "UTF-8"))
+
+# Stap 3: Inspecteer de ruwe data
+print(paste("Dataset bevat", nrow(raw_data), "observaties en", ncol(raw_data), "variabelen"))
+
+# Bekijk eerste rijen
+head(raw_data, 10)
+
+# Voor volledige inspectie:
+# glimpse(raw_data)   # Overzicht van alle variabelen
+# View(raw_data)      # Interactieve data viewer (aanbevolen!)
+```
+
+## 4.3 DATA CLEANING
+
+### 4.3.1 CONTROLEREN VAN DATA VIA FREQUENCIES
+
+Na het laden van de gegevens, is het aangewezen om je data te verkennen en te controleren op onregelmatigheden. Dit proces heet data cleaning. Frequentietabellen geven een overzicht van het aantal keer dat een bepaalde waarde van een variabele voorkomt.
+
+```{r frequency-tables}
+# FREQUENTIETABELLEN AANMAKEN ----
+
+# Laad voorbeeld data
+covid_data <- readr::read_csv("Data/DATA_WAVE1_WAVE2_CenW.csv",
+                             locale = readr::locale(encoding = "UTF-8"))
+
+# Eenvoudige frequentietabel voor nominale variabele
+base::table(covid_data$W1_Geslacht, useNA = "always")
+
+# Frequentietabel met meer details
+janitor::tabyl(covid_data$W1_Geslacht, show_na = TRUE)
+
+# Voor ordinale variabelen (met ordering)
+base::table(covid_data$W1_Diploma, useNA = "always")
+
+# Frequentietabel met percentages
+covid_data %>%
+  dplyr::count(W1_Geslacht, name = "Frequency") %>%
+  dplyr::mutate(Percent = Frequency / sum(Frequency) * 100,
+                Cumulative = cumsum(Frequency),
+                Cumulative_Percent = cumsum(Percent))
+```
+
+### 4.3.2 FOUTIEVE OF ONTBREKENDE WAARDEN AANPAKKEN
+
+#### Foutieve Waarden Identificeren
+
+```{r incorrect-values}
+# FOUTIEVE WAARDEN IDENTIFICEREN EN AANPAKKEN ----
+
+# Voorbeeld: Smartphone bezit met verkeerde waarden
+# Zou slechts 0 of 1 moeten zijn
+
+table(covid_data$W2_Smartphonebezit1, useNA = "always")
+
+# Bekijk beschrijvende statistieken voor numerieke variabelen
+summary(covid_data$W1_Gebjaar)
+
+# Identificeer extreme waarden
+covid_data %>%
+  dplyr::select(W1_Gebjaar) %>%
+  dplyr::arrange(W1_Gebjaar) %>%
+  head(10)  # Laagste waarden
+
+covid_data %>%
+  dplyr::select(W1_Gebjaar) %>%
+  dplyr::arrange(desc(W1_Gebjaar)) %>%
+  head(10)  # Hoogste waarden
+```
+
+#### Foutieve Waarden Corrigeren
+
+```{r fix-incorrect-values}
+# FOUTIEVE WAARDEN CORRIGEREN ----
+
+# Optie 1: Vervang foutieve waarden door NA (ontbrekend)
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    W2_Smartphonebezit1 = dplyr::if_else(
+      W2_Smartphonebezit1 %in% c(2, 11, 99),  # Verkeerde waarden
+      NA_real_,                                # Vervang door NA
+      W2_Smartphonebezit1                      # Behoud juiste waarden
+    )
+  )
+
+# Controleer het resultaat
+table(covid_data$W2_Smartphonebezit1, useNA = "always")
+
+# Optie 2: Corrigeer foutieve waarden naar juiste waarde
+# (Alleen als je 100% zeker bent!)
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    W1_Gebjaar = dplyr::if_else(
+      W1_Gebjaar == 19,  # Respondent gaf leeftijd in plaats van geboortejaar
+      2002,              # Bereken juiste geboortejaar (2021 - 19 = 2002)
+      W1_Gebjaar         # Behoud andere waarden
+    )
+  )
+
+# Controleer opnieuw
+table(covid_data$W1_Gebjaar, useNA = "always")
+```
+
+#### Ontbrekende Waarden Aanpakken
+
+```{r missing-values}
+# ONTBREKENDE WAARDEN BEHANDELING ----
+
+# Stap 1: Identificeer missing value codes
+summary(covid_data$W1_Gesl_Partner)
+
+# Stap 2: Converteer missing codes naar NA
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    W1_Gesl_Partner_clean = dplyr::if_else(
+      W1_Gesl_Partner == 999,  # Missing code in SPSS
+      NA_real_,                # Vervang door R's NA
+      W1_Gesl_Partner           # Behoud andere waarden
+    )
+  )
+
+# Stap 3: Codeer de schone variabele
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    partner_geslacht = factor(
+      W1_Gesl_Partner_clean,
+      levels = c(0, 1),
+      labels = c("Man", "Vrouw")
+    )
+  )
+
+# Bekijk frequenties - inclusief ontbrekende waarden
+base::table(covid_data$partner_geslacht, useNA = "always")
+
+# Tellen van missing values
+naniar::vis_miss(covid_data)  # Visuele weergave
+
+# Aantal missing per variabele
+covid_data %>%
+  dplyr::summarise(dplyr::across(everything(), 
+                                 ~sum(is.na(.))))
+```
+
+#### Imputatie van Ontbrekende Waarden (Geavanceerd)
+
+```{r imputation}
+# IMPUTATIE VAN ONTBREKENDE WAARDEN ----
+# Alleen voor schaalitems waarbij ontbrekende waarden willekeurig zijn
+
+# Voorbeeld: Schaalvariabele met meerdere items
+# Als respondent 1 van 5 items niet ingevuld heeft,
+# kan je het gemiddelde van de andere items gebruiken
+
+covid_data <- covid_data %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    # Bijvoorbeeld: anger items 1-5
+    anger_mean = mean(c(W1_Anger1, W1_Anger2, W1_Anger3, W1_Anger4, W1_Anger5),
+                      na.rm = TRUE)
+  ) %>%
+  dplyr::ungroup()
+
+# WAARSCHUWING: Controleer altijd of waarden willekeurig ontbreken (MCAR)
+# en niet systematisch (MNAR) voordat je imputeert!
+```
+
+## 4.4 DATABESTANDEN SAMENVOEGEN, FILTEREN OF SPLITSEN
+
+### 4.4.1 SAMENVOEGEN VAN DATABESTANDEN VIA MERGE
+
+#### Cases Toevoegen (Add Cases)
+
+```{r add-cases}
+# CASES TOEVOEGEN VAN TWEE DATASETS ----
+
+# Scenario: Papieren vragenlijsten van collega + digitale vragenlijsten van jou
+
+# Laad beide datasets
+data_digital <- readr::read_csv("Data/DATA_WAVE1_digitaal.csv")
+data_paper <- readr::read_csv("Data/DATA_WAVE1_papier.csv")
+
+# Controleer dat beide dezelfde variabelen hebben
+names(data_digital)
+names(data_paper)
+
+# Combineer beide datasets (voeg rijen toe)
+data_combined <- dplyr::bind_rows(
+  data_digital %>% dplyr::mutate(source = "digital"),
+  data_paper %>% dplyr::mutate(source = "paper")
+)
+
+# Controleer het resultaat
+nrow(data_combined)  # Moet gelijk zijn aan nrow(data_digital) + nrow(data_paper)
+
+# Frequentietabel van source
+table(data_combined$source)
+```
+
+#### Variabelen Toevoegen (Add Variables / Merge)
+
+```{r add-variables}
+# VARIABELEN TOEVOEGEN VAN TWEE DATASETS ----
+
+# Scenario: Wave 1 en Wave 2 van longitudinaal onderzoek
+
+# Laad beide waves
+wave1 <- readr::read_csv("Data/DATA_WAVE1_CenW.csv")
+wave2 <- readr::read_csv("Data/DATA_WAVE2_CenW.csv")
+
+# Controleer dat beide een unieke ID hebben
+head(wave1$nummer)
+head(wave2$nummer)
+
+# Merge op basis van respondent ID
+data_longitudinal <- dplyr::full_join(
+  wave1,
+  wave2,
+  by = "nummer",
+  suffix = c("_W1", "_W2")  # Voeg suffix toe aan duplicate namen
+)
+
+# Controleer het resultaat
+dim(data_longitudinal)
+names(data_longitudinal)
+```
+
+### 4.4.2 FILTEREN OP BEPAALDE CASES VIA SELECT CASES
+
+```{r select-cases}
+# CASES SELECTEREN OP BASIS VAN VOORWAARDE ----
+
+# Originele dataset
+nrow(covid_data)
+
+# Selectie 1: Alleen respondenten ouder dan 40 jaar
+covid_data_40plus <- covid_data %>%
+  dplyr::filter(leeftijd > 40)
+
+nrow(covid_data_40plus)
+
+# Selectie 2: Alleen studenten
+covid_data_students <- covid_data %>%
+  dplyr::filter(W1_ACT == 1)  # 1 = student
+
+nrow(covid_data_students)
+
+# Selectie 3: Meerdere voorwaarden
+covid_data_filtered <- covid_data %>%
+  dplyr::filter(
+    W1_ACT == 1,              # Student
+    leeftijd >= 18,           # Minstens 18 jaar
+    W1_Geslacht == 1          # Vrouw
+  )
+
+nrow(covid_data_filtered)
+
+# Verwijder cases met te veel ontbrekende waarden
+covid_data_complete <- covid_data %>%
+  dplyr::filter(rowSums(is.na(.)) < 10)  # Verwijder rijen met 10+ NA's
+```
+
+### 4.4.3 VERGELIJKEN VAN GROEPEN VIA SPLIT FILE
+
+```{r split-file}
+# DATASET SPLITSEN VOOR GROEPSANALYSES ----
+
+# Maak frequentietabel per groep (activiteit status)
+
+# Methode 1: group_by en summarise
+covid_data %>%
+  dplyr::group_by(W1_ACT) %>%
+  dplyr::summarise(
+    n = dplyr::n(),
+    mean_age = mean(leeftijd, na.rm = TRUE),
+    sd_age = sd(leeftijd, na.rm = TRUE)
+  )
+
+# Methode 2: Frequentietabel per groep
+covid_data %>%
+  dplyr::group_by(W1_ACT, W1_Gezondheid) %>%
+  dplyr::summarise(
+    count = dplyr::n(),
+    .groups = 'drop'
+  ) %>%
+  dplyr::mutate(
+    percent = count / sum(count) * 100
+  )
+
+# Methode 3: Aparte frequentietabel voor elke groep
+# Lijst van frequentietabellen per W1_ACT
+freq_by_activity <- split(covid_data, covid_data$W1_ACT) %>%
+  purrr::map(~table(.x$W1_Gezondheid, useNA = "always"))
+
+freq_by_activity
+```
+
+## 4.5 BEST PRACTICES VOOR DATABEHEER
+
+### Structureerde Mappen voor Data Versies
+
+```{r file-organization}
+# STRUCTUREERDE DATAVERHIEKING ----
+
+# Maak mappen voor verschillende stadia van data cleaning
+# 2024_01_15_raw_data/              - Originele data
+# 2024_01_15_data_cleaning_v1/      - Eerste schoonmaken
+# 2024_01_15_data_cleaning_v2/      - Tweede schoonmaken (met correcties)
+# 2024_01_20_data_final/            - Finale dataset klaar voor analyse
+
+# Bewaar verschillende versies:
+readr::write_csv(covid_data, "Data/2024_01_15_covid_raw.csv")
+readr::write_csv(covid_data_clean, "Data/2024_01_20_covid_final.csv")
+
+# Documenteer alle wijzigingen in je R script/Rmarkdown
+# Dit is je "audit trail" voor reproduceerbare onderzoek
+```
+
+### Controlescripts Schrijven
+
+```{r data-quality-checks}
+# DATA KWALITEIT CHECKLIST ----
+
+# Script om regelmatig je data te controleren
+
+data_quality_report <- function(data) {
+  cat("=== DATA QUALITY REPORT ===\n\n")
+  
+  # 1. Dimensies
+  cat("Dimensies:\n")
+  cat("Rijen:", nrow(data), "\n")
+  cat("Kolommen:", ncol(data), "\n\n")
+  
+  # 2. Missing values
+  cat("Missing values per kolom:\n")
+  print(colSums(is.na(data)))
+  cat("\n")
+  
+  # 3. Data types
+  cat("Data types:\n")
+  print(str(data))
+  cat("\n")
+  
+  # 4. Extreme waarden
+  cat("Numerieke variabelen - min/max:\n")
+  print(data %>%
+    dplyr::select_if(is.numeric) %>%
+    dplyr::summarise(dplyr::across(everything(),
+                                   list(min = ~min(., na.rm = TRUE),
+                                        max = ~max(., na.rm = TRUE)))))
+}
+
+# Voer rapport uit
+data_quality_report(covid_data)
+```
+
+## 4.6 DATA EXPORT IN VERSCHILLENDE FORMATEN
+
+Na het schoonmaken van je data wil je deze opslaan voor verdere analyses:
+
+```{r save-data}
+# GECODEERDE DATA OPSLAAN IN VERSCHILLENDE FORMATEN ----
+
+# CSV: Universeel, klein bestand, makkelijk te delen
+readr::write_csv(covid_data, "Output/covid_data_clean.csv")
+
+# Excel: Makkelijk te openen, leesbaar, goed voor sharing
+writexl::write_xlsx(covid_data, "Output/covid_data_clean.xlsx")
+
+# SPSS: Compatibel met SPSS gebruikers
+haven::write_sav(covid_data, "Output/covid_data_clean.sav")
+
+# RDS: Snelste R formaat, behoud alle R objecten
+saveRDS(covid_data, "Output/covid_data_clean.rds")
+
+# Recovery van RDS:
+covid_data <- readRDS("Output/covid_data_clean.rds")
+```
+
+## 4.7 OEFENREEKS HOOFDSTUK 4
+
+```{r exercises, eval=FALSE}
+# OEFENING H4.1: Data laden en controleren
+# Load DATA_WAVE1_CenW.csv en vraag de eerste 5 rijen op
+# Hoeveel observaties en variabelen bevat de dataset?
+
+covid_wave1 <- readr::read_csv("Data/DATA_WAVE1_CenW.csv")
+dim(covid_wave1)
+head(covid_wave1, 5)
+
+# OEFENING H4.2: Frequentietabel
+# Hoeveel procent van de respondenten rapporteerde coronasymptomen (W1_Corona)?
+table(covid_wave1$W1_Corona, useNA = "always")
+
+# OEFENING H4.3: Cases toevoegen
+# Load DATA_WAVE1_digitaal.csv en DATA_WAVE1_papier.csv
+# Voeg deze samen en vraag frequentietabel op van W1_Relatiestatus
+# Wat is het percentage in relatie voor beide datasets?
+
+data_digital <- readr::read_csv("Data/DATA_WAVE1_digitaal.csv")
+data_paper <- readr::read_csv("Data/DATA_WAVE1_papier.csv")
+
+data_combined <- dplyr::bind_rows(
+  data_digital,
+  data_paper
+)
+
+table(data_combined$W1_Relatiestatus, useNA = "always")
+
+# OEFENING H4.4: Groepen vergelijken
+# Filter respondenten die in relatie zijn (W1_Relatiestatus == 1)
+# Filter respondenten die niet in relatie zijn (W1_Relatiestatus == 0)
+# Vergelijk eenzaamheid (W1_Eenz3) tussen beide groepen
+
+in_relationship <- covid_wave1 %>%
+  dplyr::filter(W1_Relatiestatus == 1)
+
+not_in_relationship <- covid_wave1 %>%
+  dplyr::filter(W1_Relatiestatus == 0)
+
+table(in_relationship$W1_Eenz3, useNA = "always")
+table(not_in_relationship$W1_Eenz3, useNA = "always")
+```

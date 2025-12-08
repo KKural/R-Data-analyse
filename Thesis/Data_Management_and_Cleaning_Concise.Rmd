@@ -1,0 +1,877 @@
+---
+title: "Databeheer en Data Cleaning in R"
+output: 
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# 4. Databeheer en Data Cleaning in R
+
+## 4.1 Inleiding
+
+Dit hoofdstuk behandelt data management en data cleaning taken in R. We gebruiken de Corona & Welzijn (C&W) dataset als voorbeeld.
+
+## Output Organisatie: Waarom Aparte Folders per Analyse?
+
+Voordat we beginnen met data laden, is het belangrijk om je **outputs georganiseerd** te houden. Elke keer dat je een analyse doet, maak je tabellen, grafieken en datasets. Zonder goede organisatie raak je snel het overzicht kwijt!
+
+### Het Probleem: Chaos in je Bestanden
+
+Wat gebeurt er meestal:
+- Je overschrijft oude versies van tabellen
+- Je weet niet meer welke grafiek bij welke analyse hoort  
+- Je verliest vorige versies die misschien beter waren
+- Je kunt niet vergelijken tussen verschillende analyse pogingen
+
+### De Oplossing: Tijdgestempelde Output Folders
+
+**Maak voor elke analyse sessie een aparte folder** met datum en tijd. Dit geeft je:
+- **Versiecontrole:** Alle versies blijven bewaard
+- **Overzicht:** Elke analyse heeft zijn eigen plek
+- **Vergelijken:** Makkelijk oude en nieuwe resultaten naast elkaar zien
+- **Opschonen:** Aan het eind kun je oude folders verwijderen als de analyse definitief is
+
+### R Functies Leren: Waarom en Hoe?
+
+Het is basis R code om folders te maken. Maar wat als je dit **herhaaldelijk** wilt doen? Dan schrijf je een **R functie**!
+
+**Voordelen van R functies schrijven:**
+- **Herbruikbaar:** Schrijf eens, gebruik vaak
+- **Consistent:** Altijd dezelfde werkwijze  
+- **Minder fouten:** Getest en betrouwbaar
+- **Professioneel:** Echte R programmeurs gebruiken functies
+
+**Leer functies schrijven:**
+- [**R for Data Science - Functions**](https://r4ds.had.co.nz/functions.html)
+- [**DataQuest R Functions Tutorial**](https://www.dataquest.io/blog/write-functions-in-r/)
+
+### R Functie voor Dagelijkse Output Folders
+
+Hier is een handige functie voor het maken van **één folder per dag**:
+
+```{r daily-output-function, eval=FALSE}
+# Datum-gebaseerde Output Folder Functie ----
+# Maakt één folder per dag - alle analyses van die dag gaan in dezelfde folder
+
+make_folder <- function(date = Sys.Date()) {
+  # Converteer de opgegeven datum naar "YYYYMMDD" formaat
+  folder_name <- format(as.Date(date), "%Y%m%d")
+  
+  # Definieer de volledige folder naam met extra tekst
+  full_folder_name <- paste0(folder_name, "_output")
+  
+  # Controleer of de folder bestaat, en maak hem aan als dat niet zo is
+  if (!dir.exists(here::here(full_folder_name))) {
+    dir.create(here::here(full_folder_name))
+    message("Folder aangemaakt: ", full_folder_name)
+  } else {
+    message("Folder bestaat al: ", full_folder_name)
+  }
+  
+  return(full_folder_name)  # Geef de folder naam terug om later te gebruiken
+}
+
+# Maak de folder aan
+folder_name <- make_folder()
+
+# Nu kun je deze folder gebruiken voor alle outputs vandaag:
+# readr::write_csv(data, here::here(folder_name, "cleaned_data.csv"))
+# flextable::save_as_docx(tabel, path = here::here(folder_name, "mijn_tabel.docx"))
+```
+
+**Voordelen van deze benadering:**
+- **Overzichtelijk:** Alle werk van één dag in één folder
+- **Minder folders:** Niet overspoeld met te veel folders
+- **Dagelijkse routine:** Elke dag een nieuwe, nette start
+- **Gemakkelijk opschonen:** Verwijder hele dagen tegelijk als niet meer nodig
+
+**Wat gebeurt er:**
+- **Eerste keer vandaag:** Folder wordt aangemaakt (bijv. `20241125_output`)
+- **Later vandaag:** Bericht dat folder al bestaat, gebruik dezelfde folder
+- **Morgen:** Nieuwe folder wordt aangemaakt voor de nieuwe dag
+
+### Waarom Elke Dag een Nieuwe Folder?
+
+**Scenario:** Je werkt aan je scriptie data-analyse over meerdere dagen:
+
+- **Dag 1:** Eerste poging - `Output/20241125_output/`  
+- **Dag 2:** Verbeteringen - `Output/20241126_output/`
+- **Dag 3:** Definitieve versie - `Output/20241127_output/`
+
+**Voordelen:**
+- Je kunt **teruggaan** naar dag 1 resultaten als dag 2 verkeerd ging
+- Je kunt **vergelijken** hoe je analyses verbeteren over tijd  
+- Je hebt **backup** van elke poging
+- **Geen stress** over het verliezen van werk
+
+**Opschonen:** Als je analyse definitief klaar is, verwijder dan de oude folders om ruimte te besparen.
+
+---
+
+## 4.2 Invoeren van data
+
+## Alternatieve Data Verzameling
+
+Je kunt data verzamelen met moderne methoden die direct CSV/Excel bestanden opleveren:
+
+### Digitale Data Verzameling
+
+- [**Google Forms**](https://www.youtube.com/watch?v=zsEVyBrTM3M): Gratis online formulieren → automatische CSV export → direct laden in R met `readr::read_csv()`
+- [**Microsoft Forms**](https://www.youtube.com/watch?v=3qMnGrWCGa8&t=336s): Geïntegreerd met Office 365 → directe Excel export → laden met `readxl::read_excel()`
+- [**LimeSurvey**](https://www.youtube.com/watch?v=H8hQ4kk55SM): Open source survey tool → CSV/Excel export → makkelijk in R laden
+- [**Qualtrics**](https://www.youtube.com/watch?v=aQsazNbb9Ic): Professionele survey tool → CSV/Excel export → makkelijk in R laden
+
+### Handmatige Data Entry
+
+- [**Excel entry**](https://www.youtube.com/watch?v=V4J6xYoKwAo): Maak kolommen voor elke variabele, voer data per respondent in → opslaan als CSV → laden met `readr::read_csv()`
+- **CSV direct:** Gebruik tekstprogramma of Excel om direct CSV bestand te maken
+
+**Best practices voor handmatige data entry:**
+- **Nummer je vragenlijsten/interviews** (1, 2, 3, etc.) voor verificatie en correcties
+- Voeg een 'ID' kolom toe in je Excel/CSV met deze nummers
+- Dit helpt bij het terugzoeken van fouten en het controleren van data
+
+**Voordeel:** Al deze methoden leveren CSV of Excel bestanden op die je direct kunt laden in R!
+
+---
+
+
+### 4.2.1 Data manueel invoeren
+
+```{r load-packages}
+# Benodigde packages
+library(readr)        # CSV files
+library(readxl)       # Excel files
+library(dplyr)        # Data manipulation
+library(tidyr)        # Data reshaping
+library(janitor)      # Data cleaning
+library(naniar)       # Missing values
+```
+
+### 4.2.2 Data importeren
+
+R kan veel verschillende data formaten lezen. Voor criminologisch onderzoek zijn SPSS bestanden het meest voorkomend, daarom beginnen we daar:
+
+### SPSS Bestanden
+
+```{r load-spss, eval=FALSE}
+# SPSS Data Laden in R ----
+# SPSS (.sav) bestanden zijn veel gebruikt in criminologisch onderzoek
+
+# Laad SPSS bestand direct met haven package
+data_spss <- haven::read_sav("Thesis/Data/DATA_WAVE1_WAVE2_CenW.sav")
+
+# Bekijk de structuur van de geladen SPSS data
+utils::str(data_spss)
+
+# haven::read_sav() behoudt SPSS labels automatisch - dit is handig!
+# Bekijk variable labels (zeer nuttig voor begrip van variabelen!)
+attr(data_spss$W1_Geslacht, "label")      # "Geslacht van de respondent"
+attr(data_spss$W1_Geslacht, "labels")     # 1 = "Man", 2 = "Vrouw"
+
+# Alle haven functies voor SPSS:
+# haven::read_sav()     # Lees SPSS .sav bestanden
+# haven::read_por()     # Lees SPSS .por bestanden 
+# haven::write_sav()    # Schrijf naar SPSS formaat
+
+# EERSTE 6 rijen bekijken
+head(data_spss)
+
+# Hoeveel observaties en variabelen?
+dim(data_spss)
+```
+
+### SPSS naar CSV/Excel Exporteren en Laden
+
+#### Stap 1: In SPSS exporteren
+1. Open je SPSS bestand in SPSS
+2. **File → Save As**
+3. Kies **"Comma delimited (*.csv)"** of **"Excel (*.xlsx)"**
+4. Vink beide opties aan:
+   - ✅ **"Write variable names to spreadsheet"** - geeft kolomnamen
+   - ✅ **"Save value labels where defined instead of data values"** - converteert 1,2 → "Man","Vrouw"
+
+#### Stap 2: CSV/Excel laden in R
+```{r load-exported, eval=FALSE}
+# Na export uit SPSS: laad CSV in R
+data_from_csv <- readr::read_csv("Data/DATA_WAVE1_WAVE2_CenW.csv",
+                                locale = readr::locale(encoding = "UTF-8"))
+
+# Of laad Excel in R  
+data_from_excel <- readxl::read_excel("Data/DATA_WAVE1_WAVE2_CenW.xlsx")
+
+# Voor Nederlandse CSV (puntkomma gescheiden):
+data_from_csv_nl <- readr::read_csv2("Data/DATA_WAVE1_WAVE2_CenW.csv",
+                                    locale = readr::locale(encoding = "UTF-8"))
+
+# Bekijk de geëxporteerde data
+head(data_from_csv)
+utils::str(data_from_csv)
+```
+
+**Waarom exporteren naar CSV/Excel vaak beter is:**
+- **Eenvoudiger:** Visuele controle in SPSS zelf
+- **Universeel:** CSV/Excel werkt overal (R, Python, Excel)
+- **Betrouwbaar:** SPSS weet hoe zijn eigen codes te converteren
+- **Delen:** Makkelijker om CSV/Excel te delen met anderen
+- **Snelheid:** CSV laadt sneller in R dan complexe SPSS bestanden
+
+### Ruimtelijke Data (Spatial Data)
+```{r load-spatial, eval=FALSE}
+# Ruimtelijke Data Laden ----
+# Voor criminologisch onderzoek met geografische componenten
+# Zeer belangrijk voor hotspot analyses, buurteffecten, etc.
+
+# Shapefile laden (meest voorkomend formaat)
+wijken_data <- sf::st_read("data/wijken_gent.shp")
+
+# GeoJSON bestanden (modern formaat)
+crime_locations <- sf::st_read("data/crime_hotspots.geojson")
+
+# KML bestanden (van Google Earth)
+patrols_data <- sf::st_read("data/police_patrols.kml")
+
+# Geografische databases
+gdb_data <- sf::st_read("data/crime_database.gdb")
+
+# CSV met lat/lon coordinaten omzetten naar spatial data
+csv_coords <- readr::read_csv("data/crime_coordinates.csv")
+spatial_crime <- sf::st_as_sf(csv_coords, 
+                             coords = c("longitude", "latitude"),
+                             crs = 4326)  # WGS84 coordinatensysteem
+
+```
+
+## Twee Benaderingen: Pre-coded Excel vs Manual Coding in R
+
+Voordat je begint met codering, moet je een belangrijk keuze maken: **Hoe ziet je Excel bestand eruit?**
+
+Je data kan op twee verschillende manieren gestructureerd zijn, en beide hebben voor- en nadelen.
+
+### Benadering A: Pre-coded Excel (Data al in Woorden)
+
+**Hoe ziet je Excel eruit:**
+
+| ID | Geslacht | Diploma | Leeftijd |
+|----|----------|---------|----------|
+| 1 | Man | Hoger onderwijs | 28 |
+| 2 | Vrouw | Middelbaar | 35 |
+| 3 | Man | Geen diploma | 42 |
+
+**Hoe laad je het:**
+```{r pre-coded-excel, eval=FALSE}
+# Excel is al in woorden - gewoon laden en gebruiken!
+covid_data <- readxl::read_excel("Thesis/Data/DATA_WAVE1_CenW.xlsx")
+
+# Data is KLAAR - geen codering nodig!
+table(covid_data$Geslacht)  # Direct bruikbaar
+```
+
+**✅ Voordelen:**
+- ⚡ **Snel:** Geen extra coderingstap nodig
+- 👁️ **Visueel:** Je ziet de echte waarden in Excel (makkelijker controleren)
+- 📊 **Direct analyseren:** Meteen frequenties en statistieken
+- 🔍 **Minder R kennis:** Geen factor() of levels/labels nodig
+
+**❌ Nadelen & Risico's:**
+
+1. **SPELLINGSFOUTEN zijn erger:** 
+   - In Excel: "Man", "man", "MAN" → R ziet dit als 3 verschillende waarden!
+   - Voorbeeld dat fout gaat:
+   ```{r spelling-error, eval=FALSE}
+   # Je hebt in Excel:
+   # "Man"      (correct)
+   # "man"      (lowercase - fout!)
+   # "Vrouw" 
+   # Dit geeft 4 categorieën in plaats van 2!
+   table(covid_data$Geslacht)  # "Man" en "man" apart!
+   ```
+
+2. **WITRUIMTE problemen:**
+   - Excel: " Man" (met spatie ervoor) vs "Man" 
+   - R herkent dit als verschillend!
+   - Oplossing: `janitor::clean_names()` helpt, maar niet volledig
+
+3. **ACCENTEN en SPECIALE TEKENS:**
+   - "Gent" vs "Gënт" (verkeerde letter)
+   - "Opleidingsniveau" vs "Opleiding sniveau" (spatie)
+   - Komt makkelijk voor bij handmatige Excel entry
+
+4. **Minder CONTROL:**
+   - Je kunt fouten in Excel niet gemakkelijk repareren in R
+   - Je moet teruggaan naar Excel, wijzigen, opnieuw laden
+
+5. **MOEILIJKER voor ordening:**
+   - Ordinale variabelen: "Laag", "Midden", "Hoog"
+   - R sorteert alfabetisch: "Hoog", "Laag", "Midden" (verkeerd!)
+   - Je moet de factor levels toch handmatig instellen
+
+### Benadering B: Manual Coding in R (Nummers → Woorden)
+
+**Hoe ziet je Excel eruit:**
+
+| ID | Geslacht | Diploma | Leeftijd |
+|----|----------|---------|----------|
+| 1 | 0 | 3 | 1975 |
+| 2 | 1 | 2 | 1989 |
+| 3 | 0 | 1 | 1982 |
+
+**Met Codebook (jij schrijft dit op):**
+- Geslacht: 0=Man, 1=Vrouw
+- Diploma: 1=Geen, 2=Middelbaar, 3=Hoger
+
+**Hoe codeer je het:**
+```{r manual-coding, eval=FALSE}
+covid_data <- readxl::read_excel("Thesis/Data/DATA_WAVE1_CenW.xlsx")
+
+# Codeer Geslacht: 0,1 → Man, Vrouw
+covid_data$geslacht <- factor(covid_data$Geslacht,
+                             levels = c(0, 1),
+                             labels = c("Man", "Vrouw"))
+
+# Codeer Diploma: 1,2,3 → Geen, Middelbaar, Hoger (GEORDEND!)
+covid_data$diploma <- factor(covid_data$Diploma,
+                            levels = c(1, 2, 3),
+                            labels = c("Geen", "Middelbaar", "Hoger"),
+                            ordered = TRUE)  # Dit zorgt voor juiste volgorde!
+```
+
+**✅ Voordelen:**
+- Alles gedocumenteerd in R: 0→"Man", 1→"Vrouw" (reproduceerbaar)
+- Controle over ordening: `ordered=TRUE` voor juiste volgorde
+- Fouten gemakkelijker detecteren: `table()` toont alle unieke waarden
+- Consistent tussen Wave 1 en Wave 2
+- Missing values duidelijk: 999 → NA
+
+**❌ Nadelen:**
+- Meer R code nodig
+- Extra tijd per variabele
+
+### Voor Deze Tutorial: Wij Gebruiken Benadering B
+
+**Dit is de standaard werkwijze in de praktijk** omdat het beter is voor:
+- Ordinale variabelen (juiste volgorde met `ordered=TRUE`)
+- Grote datasets
+- Reproduceerbaar onderzoek
+- Hergebruik tussen verschillende data waves
+
+**Dit is ook hoe professionele R programmeurs het doen!**
+---
+
+## Van Ruwe Data naar Gecodeerde Data: Het Echte Proces
+
+### Stap 1: Ruwe Data met Alleen Nummers
+```{r load-raw-data, eval=FALSE}
+# STAP 1: Laad de ruwe data (Corona & Welzijn Wave 1) ----
+# DATA_WAVE1_CenW.xlsx bevat originele Survey data van 2020
+raw_data <- readxl::read_excel("Thesis/Data/DATA_WAVE1_CenW.xlsx")
+
+# STAP 2: Inspecteer de ruwe data structuur ----
+# Dit is essentieel - je moet weten wat je laadt!
+
+print(paste("Ruwe dataset bevat", nrow(raw_data), "observaties en", ncol(raw_data), "variabelen"))
+
+# Bekijk de eerste paar rijen en kolommen
+head(raw_data[, 1:15], 6)
+
+# VOOR VOLLEDIGE INSPECTIE: Gebruik deze commando's in jouw RStudio console:
+# - str(raw_data)              # Volledige structuur van ALLE variabelen
+# - dplyr::glimpse(raw_data)   # Volledige overzicht met dplyr (makkelijker te lezen)
+# - View(raw_data)             # Interactieve data viewer (aanbevolen!)
+
+# Controleer dimensies
+dim(raw_data)  # Aantal rijen en kolommen
+
+# Kijk naar alle kolomnamen
+names(raw_data)[1:20]  # Eerste 20 kolomnamen
+```
+
+### Stap 2: Variabelen Coderen per Type
+
+We demonstreren hier enkele voorbeelden van elke variabele type. Jullie passen dezelfde principes toe op de rest van jullie variabelen volgens jullie eigen codebook.
+
+**Voor deze tutorial gebruiken we de Corona & Welzijn dataset:**
+
+```{r load-data-for-coding, eval=FALSE}
+# Laad Wave 1 data van Corona & Welzijn onderzoek
+# Dit is de RUWE data met alleen nummers (0, 1, 999, etc.)
+ruwe_covid_data <- readxl::read_excel("Data/DATA_WAVE1_CenW - Raw.xlsx")
+
+# Controleer unieke waarden van variabelen die we gaan coderen
+base::table(ruwe_covid_data$W1_Geslacht, useNA = "always")       # Geslacht (0, 1)
+base::table(ruwe_covid_data$W1_Diploma, useNA = "always")        # Opleidingsniveau (1, 2, 3)
+base::summary(ruwe_covid_data$W1_Gebjaar)                         # Geboortejaar (getallen)
+base::table(ruwe_covid_data$W1_Angst1, useNA = "always")         # Angst schaal (1-5)
+```
+
+#### Type 1: NOMINALE Variabelen (Categorieën zonder volgorde)
+
+Nominale variabelen hebben categorieën die niet geordend kunnen worden. Bijvoorbeeld: geslacht, nationaliteit, burgerlijke staat.
+
+```{r nominal-variables, eval=FALSE}
+# NOMINALE VARIABELE VOORBEELD 1: Geslacht ----
+# W1_Geslacht: 0 = Man, 1 = Vrouw
+
+# Controleer eerst de unieke waarden
+base::table(ruwe_covid_data$W1_Geslacht, useNA = "always")
+
+# Codeer als factor ZONDER ordering
+ruwe_covid_data$geslacht <- base::factor(ruwe_covid_data$W1_Geslacht,
+                                   levels = c(0, 1),
+                                   labels = c("Man", "Vrouw"))
+
+# Controleer het resultaat
+base::table(ruwe_covid_data$geslacht, useNA = "always")
+
+# Voor nominale variabelen: factor() ZONDER ordered=TRUE
+# Categorieen hebben geen logische volgorde
+```
+
+#### Type 2: ORDINALE Variabelen (Geordende categorieën)
+
+Ordinale variabelen hebben categorieën met een duidelijke volgorde. Bijvoorbeeld: opleidingsniveau, inkomenscategorieën.
+
+```{r ordinal-variables, eval=FALSE}
+# ORDINALE VARIABELE VOORBEELD: Opleidingsniveau ----
+# W1_Diploma: 1=Geen/Lager, 2=Middelbaar, 3=Hoger onderwijs
+# Dit is ordinaal - er is een duidelijke volgorde van laag naar hoog
+
+# Controleer unieke waarden
+base::table(ruwe_covid_data$W1_Diploma, useNA = "always")
+
+# Codeer als GEORDENDE factor (ordered = TRUE)
+ruwe_covid_data$opleidingsniveau <- base::factor(ruwe_covid_data$W1_Diploma,
+                                           levels = c(1, 2, 3),
+                                           labels = c("Geen diploma/Lager onderwijs", 
+                                                     "Middelbaar onderwijs", 
+                                                     "Hoger onderwijs"),
+                                           ordered = TRUE)  # ordered=TRUE voor volgorde
+
+base::table(ruwe_covid_data$opleidingsniveau)
+```
+
+#### Type 3: RATIO/INTERVAL Variabelen (Numerieke schalen)
+
+Ratio en interval variabelen zijn numeriek met betekenisvolle afstanden tussen waarden.
+
+```{r ratio-interval-variables, eval=FALSE}
+# RATIO VARIABELE VOORBEELD: Leeftijd ----
+# W1_Gebjaar bevat geboortejaren, we berekenen leeftijd (ratio variabele)
+
+# Bekijk de geboortejaren
+base::summary(ruwe_covid_data$W1_Gebjaar)
+
+# Bereken leeftijd in 2024
+ruwe_covid_data$leeftijd <- 2024 - ruwe_covid_data$W1_Gebjaar
+
+# Toon de leeftijd verdeling
+base::summary(ruwe_covid_data$leeftijd)
+```
+
+#### Type 4: LIKERT SCHAAL Variabelen 
+
+Likert schalen vereisen speciale aandacht - ze kunnen zowel ordinaal als interval behandeld worden.
+
+```{r likert-variables, eval=FALSE}
+# LIKERT SCHAAL VOORBEELD: Angst items ----
+# Likert schalen: meestal 1-5 of 1-7 punt schalen
+
+# OPTIE A: Behandel als ORDINALE factor (voor categoriale analyses)
+ruwe_covid_data$angst1_ordinaal <- factor(ruwe_covid_data$W1_Angst1,
+                                levels = c(1, 2, 3, 4, 5),
+                                labels = c("Helemaal niet", "Weinig", "Soms", 
+                                          "Vaak", "Heel vaak"),
+                                ordered = TRUE)
+
+# OPTIE B: Houd als NUMERIEK (voor gemiddelden en correlaties)
+ruwe_covid_data$angst1_numeriek <- as.numeric(ruwe_covid_data$W1_Angst1)
+
+# LIKERT SCHAAL BESLISSINGSREGEL:
+# - Gebruik ORDINAAL voor kruistabellen en chi-kwadraat tests
+# - Gebruik NUMERIEK voor correlaties, t-tests, of regressie
+```
+
+#### Type 5: MISSING VALUES Behandeling
+
+Alle variabele types kunnen missing values hebben.
+
+```{r missing-values-handling, eval=FALSE}
+# MISSING VALUES BEHANDELING ----
+# In data zijn 999 of -99 vaak codes voor missing values
+
+# STAP 1: Identificeer missing value codes
+summary(ruwe_covid_data$W1_Gesl_Partner)  # 999 is vaak missing
+
+# STAP 2: Converteer missing codes naar NA
+ruwe_covid_data$W1_Gesl_Partner_clean <- ifelse(ruwe_covid_data$W1_Gesl_Partner == 999, 
+                                     NA, ruwe_covid_data$W1_Gesl_Partner)
+
+# STAP 3: Codeer de schone variabele
+ruwe_covid_data$partner_geslacht <- factor(ruwe_covid_data$W1_Gesl_Partner_clean,
+                               levels = c(0, 1),
+                               labels = c("Man", "Vrouw"))
+
+# Bekijk frequenties - inclusief ontbrekende waarden
+table(ruwe_covid_data$partner_geslacht, useNA = "always")
+
+# Regel: Altijd eerst missing codes opschonen, dan pas coderen!
+```
+
+
+Na het handmatig coderen van **ALLE variabelen** volgens hun type (Types 1-5 hierboven), sla je de gecodeerde data op:
+
+
+**Belangrijk voor jouw onderzoek:**
+- Je hebt nu alle variabelen handmatig gecodeerd (Types 1-5)
+- De gecodeerde data is opgeslagen in CSV, Excel en SPSS formaten
+- Dit is je **finale gecodeerde dataset** klaar voor verdere analyse
+
+### Voor Deze Tutorial: Data Voor Cleaning en Analyse
+
+**⚠️ Voor deze tutorial gebruiken we een al-gecodeerde dataset voor het onderwijsdoel.**
+
+In de vorige stappen heb je geleerd hoe je variabelen handmatig moet coderen (Types 1-6). Dit is **essentieel** voor je onderzoek!
+
+**Het volledige coderingsproces dat JIJ moet doen:**
+1. Je laadt ruwe data → `ruwe_covid_data`
+2. Je codeert **ALLE variabelen zelf** (Types 1-5) - dit is jouw werk!
+3. Na alle codering: `covid_data <- ruwe_covid_data`
+4. Nu laad je die gecodeerde data voor cleaning en analyse
+
+**Twee opties na het coderen:**
+
+**Als je alle variabelen ZELF hebt gecodeerd (Types 1-5)**
+
+Na het handmatig coderen van ALLE variabelen in je script, gebruik je eenvoudig:
+
+```{r load-coded-data-yourself, eval=FALSE}
+# JOUW EIGEN CODERINGSWERK uit Types 1-5
+# ... alle 67 variabelen gecodeerd in je script ...
+
+# Stap: Hernoem naar covid_data (na alle codering)
+covid_data <- ruwe_covid_data
+
+# Je bent klaar - geen extern script nodig!
+head(covid_data)
+str(covid_data)
+```
+
+**Als referentie - het volledige coderingsscript**
+
+We hebben een script `code_raw_data.R` (zie APPENDIX) dat laat zien hoe je **alle 67 variabelen** correct codeert. Gebruik dit als referentie:
+
+**Dit script in de APPENDIX kan je gebruiken als referentie** als je zelf variabelen moet coderen. Bestudeer het om te begrijpen hoe Types 1-6 werken.
+
+**Belangrijk:** In jouw onderzoek moet je alle variabelen **zelf** coderen voordat je bij data cleaning aankomt! Veel beter is om je eigen coderingsscript te schrijven (OPTIE A) dan het referentiescript copy-pasten.
+
+```{r load-coded-data-reference, eval=FALSE}
+# Laad het referentiescript om te zien hoe alles codeert
+source("Script/code_raw_data.R")
+
+# Dit laadt covid_data met alle 67 variabelen al gecodeerd
+# Bekijk eerste 10 rijen
+head(covid_data, 10)
+
+# Bekijk data types van eerste 10 variabelen
+str(covid_data[1:10])
+
+# Om ALLE 67 variabelen en hun data types te zien (voer dit in RStudio console):
+# str(covid_data)  # Dit toont de volledige structuur van alle variabelen
+```
+
+
+
+## Interpreteren van str() Output: Data Types Begrijpen
+
+Wanneer je `str()` gebruikt, zie je veel informatie. Dit is essentieel om te begrijpen welke variabelen je hebt en in welk formaat ze zijn.
+
+### Voorbeeld: str(covid_data[1:10])
+
+```
+tibble [2,020 × 10] (S3: tbl_df/tbl/data.frame)
+ $ Nummer          : num [1:2020] 1 2 3 4 5 7 8 9 10 11 ...
+ $ W1_Geslacht     : chr [1:2020] "Vrouw" "Vrouw" "Vrouw" "Vrouw" ...
+ $ W1_Gebjaar      : num [1:2020] 2002 2002 2002 2002 2002 ...
+ $ W1_Nationaliteit: chr [1:2020] "Ik ben in België geboren..." ...
+ $ W1_Diploma      : chr [1:2020] "Een diploma hoger onderwijs" ...
+ $ W1_Burg_staat   : chr [1:2020] "Ongehuwd" "Ongehuwd" ...
+ $ W1_ACT          : chr [1:2020] "Ik studeer thuis" ...
+ $ W1_Relatiestatus: chr [1:2020] "Nee" "Nee" "Ja" ...
+ $ W1_Gesl_Partner : chr [1:2020] "999" "999" "Man" ...
+ $ W1_Relduur      : num [1:2020] 999 999 1 999 999 ...
+```
+
+### Wat Betekent Dit?
+
+**Regel 1:** `tibble [2,020 × 10]`
+- **2,020 observaties** (rijen) - respondenten
+- **10 variabelen** (kolommen) - alleen eerste 10 getoond
+
+**Kolommen:**
+
+1. **`$ Nummer : num`** = **num**eriek (getal)
+   - `num [1:2020]` = 2,020 getallen
+   - Waarden: 1, 2, 3, 4, 5, 7, 8, 9, 10, 11...
+
+2. **`$ W1_Geslacht : chr`** = **chr**aracter (tekst)
+   - `chr [1:2020]` = 2,020 tekstwaarden
+   - Waarden: "Vrouw", "Vrouw", "Vrouw"...
+
+3. **`$ W1_Gebjaar : num`** = **num**eriek
+   - Waarden: 2002, 2002, 2002...
+
+4. **`$ W1_Nationaliteit : chr`** = **chr**aracter (lange tekst)
+   - Waarden: "Ik ben in België geboren en mijn ouders zijn ook..."
+
+### Data Types in R
+
+| Type | Afkorting | Voorbeeld | Gebruik |
+|------|-----------|-----------|---------|
+| **Numeric** | `num` | 1, 2, 3.5, 999 | Getallen, berekeningen |
+| **Character** | `chr` | "Man", "Vrouw", "Ja" | Tekst, categorieën |
+| **Integer** | `int` | 1L, 2L, 3L | Gehele getallen |
+| **Logical** | `logi` | TRUE, FALSE | Ja/nee waarden |
+| **Factor** | `Factor w/ 3 levels` | Man, Vrouw (ordered) | Categorieën met volgorde |
+| **Date** | `Date` | 2002-01-15 | Datums |
+
+### Waarom Is Dit Belangrijk?
+
+**Problem in dit voorbeeld:**
+- `W1_Geslacht` is **chr** (tekst) → zou een **factor** moeten zijn
+- `W1_Gebjaar` is **num** (getal) → correct voor berekeningen
+- `W1_Relduur` is **num** maar bevat 999 → moet NA worden
+
+**Dit is WHY we Types 1-6 doen!** We moeten:
+1. `chr` → `factor` omzetten (Nominal/Ordinal)
+2. Missing codes (999) → NA omzetten (Type 5)
+3. Numerieke berekeningen uitvoeren (Type 3)
+
+### Tip voor Studenten
+
+Gebruik altijd `str()` voordat je analyses begint:
+```r
+# Zie structuur van je HELE dataset
+str(covid_data)
+
+# Nu weet je:
+# - Welke variabelen je hebt
+# - In welk formaat ze zijn
+# - Welke nog gecodeerd moeten worden
+```
+
+---
+
+## 4.3 Data cleaning
+### 4.3.1 Controleren van data via Frequencies
+
+Frequentietabellen geven een overzicht van het aantal keer dat een bepaalde waarde van een variabele voorkomt.
+
+```{r frequency-tables, eval=FALSE}
+# Frequentietabel W1_Relatiestatus
+table(covid_data$W1_Relatiestatus, useNA = "always")
+
+# Met percentages
+janitor::tabyl(covid_data$W1_Geslacht, show_na = TRUE)
+
+# Frequentietabel W1_Gezondheid
+covid_data %>%
+  dplyr::count(W1_Gezondheid) %>%
+  dplyr::mutate(
+    percent = n / sum(n) * 100,
+    cumulative = cumsum(n),
+    cumulative_percent = cumsum(percent)
+  )
+```
+
+### 4.3.2 Foutieve of ontbrekende waarden aanpakken
+
+**Foutieve waarden identificeren:**
+```{r identify-errors, eval=FALSE}
+# Beschrijvende statistieken W1_Gebjaar
+summary(covid_data$W1_Gebjaar)
+
+# Extreme waarden
+covid_data %>% dplyr::arrange(W1_Gebjaar) %>% head()
+
+# Frequentietabel met mogelijke fouten
+table(covid_data$W1_Gebjaar, useNA = "always")
+```
+
+**Foutieve waarden corrigeren:**
+```{r fix-errors, eval=FALSE}
+# Optie 1: Vervang foute waarden door NA (W2_Smartphonebezit1)
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    W2_Smartphonebezit1 = dplyr::if_else(
+      W2_Smartphonebezit1 %in% c(2, 11, 99),
+      NA_real_,
+      W2_Smartphonebezit1
+    )
+  )
+
+# Optie 2: Corrigeer naar juiste waarde (W2_Gebjaar: leeftijd → geboortejaar)
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    W2_Gebjaar = dplyr::if_else(
+      W2_Gebjaar == 19,
+      2002,  # 2021 - 19 = 2002
+      W2_Gebjaar
+    )
+  )
+
+# Controleer resultaat
+table(covid_data$W2_Smartphonebezit1, useNA = "always")
+```
+
+**Ontbrekende waarden aanpakken:**
+```{r missing-values, eval=FALSE}
+# Visualiseer missing values
+naniar::vis_miss(covid_data)
+
+# Tel missings per kolom
+colSums(is.na(covid_data))
+
+# Converteer SPSS missing codes naar NA (W1_ACT_Partner = 999)
+covid_data <- covid_data %>%
+  dplyr::mutate(
+    W1_ACT_Partner = dplyr::if_else(W1_ACT_Partner == 999, NA_real_, W1_ACT_Partner)
+  )
+
+# Imputatie: gemiddelde van schaalitems (W1 anger items)
+covid_data <- covid_data %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    W1_Anger_mean = mean(c(W1_Anger1, W1_Anger2, W1_Anger3, W1_Anger4, W1_Anger5), na.rm = TRUE)
+  ) %>%
+  dplyr::ungroup()
+```
+
+## 4.4 Databestanden samenvoegen, filteren of splitsen
+
+### 4.4.1 Samenvoegen van databestanden via Merge
+
+**Cases Toevoegen (rijen samenvoegen):**
+```{r add-cases, eval=FALSE}
+data_digital <- readr::read_csv("Data/DATA_WAVE1_digitaal.csv")
+data_paper <- readr::read_csv("Data/DATA_WAVE1_papier.csv")
+
+# Combineer (voeg rijen toe)
+data_combined <- dplyr::bind_rows(
+  data_digital %>% dplyr::mutate(source = "digital"),
+  data_paper %>% dplyr::mutate(source = "paper")
+)
+
+# Controleer
+nrow(data_combined)  # Moet 2020 zijn (2010 + 10)
+table(data_combined$source)
+```
+
+**Variabelen Toevoegen (kolommen samenvoegen):**
+```{r add-variables, eval=FALSE}
+# Laad Wave 1 en Wave 2
+wave1 <- readr::read_csv("Data/DATA_WAVE1_CenW.csv")
+wave2 <- readr::read_csv("Data/DATA_WAVE2_CenW.csv")
+
+# Merge op basis van respondent ID (nummer)
+data_long <- dplyr::full_join(
+  wave1,
+  wave2,
+  by = "nummer",
+  suffix = c("_W1", "_W2")
+)
+
+# Controleer: 2020 (W1) + 178 (nieuw in W2) = 2198
+dim(data_long)
+```
+
+### 4.4.2 Filteren op bepaalde cases via Select Cases
+
+```{r select-cases, eval=FALSE}
+# Filter: Alleen studenten (W1_ACT == 1)
+students <- covid_data %>%
+  dplyr::filter(W1_ACT == 1)
+
+nrow(students)  # 724 studenten
+
+# Filter: Respondenten ouder dan 40 jaar
+older <- covid_data %>%
+  dplyr::filter(leeftijd > 40)
+
+# Filter: Geen relatie (W1_Relatiestatus == 0)
+no_relationship <- covid_data %>%
+  dplyr::filter(W1_Relatiestatus == 0)
+
+# Filter: Verwijder incomplete cases (> 10 missing)
+complete_data <- covid_data %>%
+  dplyr::filter(rowSums(is.na(.)) < 10)
+```
+
+### 4.4.3 Vergelijken van groepen via Split File
+
+Dataset splitsen en groepsanalyses uitvoeren:
+
+```{r split-file, eval=FALSE}
+# Samenvatting per W1_ACT groep
+covid_data %>%
+  dplyr::group_by(W1_ACT) %>%
+  dplyr::summarise(
+    n = dplyr::n(),
+    mean_age = mean(leeftijd, na.rm = TRUE),
+    sd_age = sd(leeftijd, na.rm = TRUE)
+  )
+
+# Frequentietabel W1_Gezondheid per W1_ACT
+covid_data %>%
+  dplyr::group_by(W1_ACT, W1_Gezondheid) %>%
+  dplyr::count() %>%
+  dplyr::mutate(percent = n / sum(n) * 100)
+
+# Aparte frequenties W1_Relatiestatus per W1_Geslacht
+split(covid_data, covid_data$W1_Geslacht) %>%
+  purrr::map(~table(.x$W1_Relatiestatus, useNA = "always"))
+```
+
+## 4.5 BEST PRACTICES VOOR DATABEHEER
+
+```{r best-practices, eval=FALSE}
+# Sla verschillende versies op
+readr::write_csv(data_raw, "Data/2024_01_15_covid_raw.csv")
+readr::write_csv(data_clean, "Data/2024_01_20_covid_clean.csv")
+readr::write_csv(data_final, "Data/2024_01_25_covid_final.csv")
+
+# Documenteer wijzigingen in R script als "audit trail"
+# Dit maakt je onderzoek reproduceerbaar
+```
+
+## 4.6 DATA EXPORT IN VERSCHILLENDE FORMATEN
+
+```{r save-data, eval=FALSE}
+# CSV
+readr::write_csv(data, "Output/data_clean.csv")
+
+# Excel
+writexl::write_xlsx(data, "Output/data_clean.xlsx")
+
+# SPSS
+haven::write_sav(data, "Output/data_clean.sav")
+
+# RDS (R native format)
+saveRDS(data, "Output/data_clean.rds")
+```
+
+## 4.5 Oefenreeks hoofdstuk 4
+
+**H4.1** Load DATA_WAVE1_CenW.csv. Hoeveel observaties en variabelen?
+
+**H4.2** Laad DATA_WAVE1_CenW.csv. Maak frequentietabel van W1_Corona. Hoeveel % had symptomen?
+
+**H4.3** Load en voeg samen: DATA_WAVE1_digitaal.csv + DATA_WAVE1_papier.csv. Frequentietabel W1_Relatiestatus. % in relatie origineel vs gecombineerd?
+
+**H4.4** Load DATA_WAVE1_CenW.csv + data_oefening415_add_variables.sav. Merge op nummer. Frequentietabel W1_Geslacht. Verschil % mannen/vrouwen?
+
+**H4.5** Load DATA_WAVE1_CenW.csv. Filter: W1_ACT == 2 (thuis werken). Frequentietabel W1_Diploma. % hoger onderwijs?
+
+**H4.6** Load DATA_WAVE1_CenW.csv. Split op W1_Relatiestatus. Frequentietabel W1_Eenz3 ("ik voel me alleen"). % "zeer vaak" per groep (met relatie vs zonder)?
